@@ -5,25 +5,25 @@ MediaExplant/
 lib/
 ├── core/
 │   ├── constants/
-│   │   ├── app_colors.dart
-│   │   ├── app_strings.dart
-│   │   └── app_routes.dart
+│   │   ├── app_colors.dart           // Warna dan design token (menggantikan file color XML)
+│   │   ├── app_strings.dart          // String/label aplikasi
+│   │   └── app_routes.dart           // Definisi route/navigasi
 │   ├── errors/
 │   │   └── exceptions.dart
 │   ├── network/
 │   │   ├── api_client.dart
 │   │   └── network_info.dart
 │   ├── theme/
-│   │   ├── app_theme.dart
-│   │   └── text_styles.dart
+│   │   ├── app_theme.dart            // Tema global aplikasi
+│   │   └── text_styles.dart          // Gaya teks khusus
 │   ├── utils/
-│   │   ├── date_utils.dart         // Menyesuaikan DateUtils.kt
-│   │   └── email_sender.dart       // Menyesuaikan EmailSender.kt
-│   └── widgets/
+│   │   ├── date_utils.dart           // Adaptasi DateUtils.kt
+│   │   └── email_sender.dart         // Adaptasi EmailSender.kt
+│   └── widgets/                      // Widget umum (misal: button, card, dsb.)
 │       └── common_widgets.dart
 │
 ├── features/
-│   ├── auth/                          // Autentikasi & Manajemen Akun
+│   ├── auth/                         // Fitur autentikasi & manajemen akun
 │   │   ├── data/
 │   │   │   ├── datasources/
 │   │   │   │   └── auth_remote_data_source.dart
@@ -42,27 +42,28 @@ lib/
 │   │   │       ├── reset_password.dart
 │   │   │       └── forgot_password.dart
 │   │   └── presentation/
-│   │       ├── screens/
-│   │       │   ├── sign_in_screen.dart              // Menyesuaikan SignInFragment.kt
-│   │       │   ├── sign_up_screen.dart              // Menyesuaikan SignUpFragment.kt
-│   │       │   ├── sign_up_input_screen.dart        // Menyesuaikan SignUpInputFragment.kt
-│   │       │   └── reset_password_screen.dart        // Menyesuaikan ResetPasswordFragment.kt
-│   │       ├── dialogs/
-│   │       │   ├── change_password_dialog.dart       // ChangePasswordDialog.kt
-│   │       │   ├── confirm_change_email_dialog.dart  // KonfirmasiUbahEmail.kt
-│   │       │   ├── forgot_password_confirm_email_dialog.dart  
-│   │       │   │   // LupaPasswordKonfirmasiEmailDialog.kt
-│   │       │   ├── forgot_password_verify_email_dialog.dart  
-│   │       │   │   // LupaPasswordVerifEmailDialog.kt
-│   │       │   └── sign_up_verify_email_dialog.dart  // SignUpVerifikasiEmailDialog.kt
-│   │       └── viewmodels/                          // Mengganti ViewModel Kotlin dengan state management (BLoC, Provider, dll)
-│   │           ├── lupa_password_viewmodel.dart     // LupaPasswordViewModel.kt
-│   │           ├── reset_password_viewmodel.dart    // ResetPasswordViewModel.kt
-│   │           ├── sign_in_viewmodel.dart           // SignInViewModel.kt
-│   │           ├── sign_up_input_viewmodel.dart     // SignUpInputViewModel.kt
-│   │           └── sign_up_viewmodel.dart           // SignUpViewModel.kt
+│   │       ├── ui/                   // Bagian tampilan (desain) – mirip file XML di Android
+│   │       │   ├── screens/
+│   │       │   │   ├── sign_in_screen.dart           // (fragment_sign_in.xml)
+│   │       │   │   ├── sign_up_screen.dart           // (fragment_sign_up.xml)
+│   │       │   │   ├── sign_up_input_screen.dart     // (fragment_sign_up_input.xml)
+│   │       │   │   └── reset_password_screen.dart     // (fragment_input_password.xml)
+│   │       │   └── dialogs/          // Desain dialog
+│   │       │       ├── change_password_dialog.dart   // (dialog_change_password.xml)
+│   │       │       ├── confirm_change_email_dialog.dart// (dialog_konfirmasi_ubah_email.xml)
+│   │       │       ├── forgot_password_confirm_email_dialog.dart
+│   │       │       │   // (dialog_lupa_password_konfirmasi_email.xml)
+│   │       │       ├── forgot_password_verify_email_dialog.dart
+│   │       │       │   // (dialog_lupa_password_verif_email.xml)
+│   │       │       └── sign_up_verify_email_dialog.dart// (dialog_sign_up_verifikasi_email.xml)
+│   │       └── logic/                // Logika bisnis (ViewModels/BLoC/Provider)
+│   │           ├── lupa_password_viewmodel.dart      // (LupaPasswordViewModel.kt)
+│   │           ├── reset_password_viewmodel.dart     // (ResetPasswordViewModel.kt)
+│   │           ├── sign_in_viewmodel.dart            // (SignInViewModel.kt)
+│   │           ├── sign_up_input_viewmodel.dart      // (SignUpInputViewModel.kt)
+│   │           └── sign_up_viewmodel.dart            // (SignUpViewModel.kt)
 │   │
-│   ├── home/                          // Beranda & Tampilan Berita
+│   ├── home/                         // Fitur Beranda & Berita
 │   │   ├── data/
 │   │   │   ├── datasources/
 │   │   │   │   └── news_remote_data_source.dart
@@ -77,34 +78,35 @@ lib/
 │   │   │   ├── repositories/
 │   │   │   │   └── news_repository.dart
 │   │   │   └── usecases/
-│   │   │       ├── get_popular_news.dart           // BeritaPopuler
-│   │   │       ├── get_recommended_news.dart         // BeritaRekomendasi
-│   │   │       ├── get_latest_news.dart              // BeritaTerkini
-│   │   │       ├── get_related_news.dart             // BeritaTerkait
-│   │   │       ├── get_most_commented_news.dart      // KomentarTerbanyak
-│   │   │       └── get_popular_tags.dart             // TagPopuler
+│   │   │       ├── get_popular_news.dart        // (BeritaPopuler)
+│   │   │       ├── get_recommended_news.dart      // (BeritaRekomendasi)
+│   │   │       ├── get_latest_news.dart           // (BeritaTerkini)
+│   │   │       ├── get_related_news.dart          // (BeritaTerkait)
+│   │   │       ├── get_most_commented_news.dart   // (KomentarTerbanyak)
+│   │   │       └── get_popular_tags.dart          // (TagPopuler)
 │   │   └── presentation/
-│   │       ├── screens/
-│   │       │   ├── home_screen.dart                 // HomeFragment.kt
-│   │       │   ├── home_popular_screen.dart         // HomePopulerFragment.kt
-│   │       │   ├── home_latest_screen.dart          // HomeTerbaruFragment.kt
-│   │       │   └── detail_article_screen.dart       // DetailArtikelFragment.kt
-│   │       ├── widgets/
-│   │       │   ├── berita_terkait_item.dart         // BeritaTerkaitAdapter.kt
-│   │       │   ├── berita_populer_item.dart          // BeritaPopulerAdapter.kt
-│   │       │   ├── berita_rekomendasi_item.dart      // BeritaRekomendasiAdapter.kt
-│   │       │   ├── komentar_terbanyak_item.dart       // KomentarTerbanyakAdapter.kt
-│   │       │   ├── tag_populer_item.dart             // TagPopulerAdapter.kt
-│   │       │   └── berita_terkini_item.dart           // BeritaTerkiniAdapater.kt
-│   │       └── viewmodels/
-│   │           ├── berita_terkait_viewmodel.dart      // BeritaTerkaitViewModel.kt
-│   │           ├── berita_populer_viewmodel.dart      // BeritaPopulerViewModel.kt
-│   │           ├── berita_rekomendasi_viewmodel.dart  // BeritaRekomendasiViewModel.kt
-│   │           ├── komentar_terbanyak_viewmodel.dart   // KomentarTerbanyakViewModel.kt
-│   │           ├── tag_populer_viewmodel.dart         // TagPopulerViewModel.kt
-│   │           └── berita_terkini_viewmodel.dart        // BeritaTerkiniViewModel.kt
+│   │       ├── ui/                   // Tampilan (UI)
+│   │       │   ├── screens/
+│   │       │   │   ├── home_screen.dart           // (fragment_home.xml)
+│   │       │   │   ├── home_popular_screen.dart    // (fragment_home_populer.xml)
+│   │       │   │   ├── home_latest_screen.dart     // (fragment_home_terbaru.xml)
+│   │       │   │   └── detail_article_screen.dart  // (fragment_detail_artikel.xml)
+│   │       │   └── widgets/          // Widget-item untuk tampilan list dsb.
+│   │       │       ├── berita_terkait_item.dart    // (item_berita_terkait.xml)
+│   │       │       ├── berita_populer_item.dart     // (item_berita_populer.xml)
+│   │       │       ├── berita_rekomendasi_item.dart // (item_berita_rekomendasi.xml)
+│   │       │       ├── komentar_terbanyak_item.dart  // (item_komentar_terbanyak.xml)
+│   │       │       ├── tag_populer_item.dart        // (item_tag_populer.xml)
+│   │       │       └── berita_terkini_item.dart      // (item_berita_terkini.xml)
+│   │       └── logic/                // Logika untuk beranda
+│   │           ├── berita_terkait_viewmodel.dart
+│   │           ├── berita_populer_viewmodel.dart
+│   │           ├── berita_rekomendasi_viewmodel.dart
+│   │           ├── komentar_terbanyak_viewmodel.dart
+│   │           ├── tag_populer_viewmodel.dart
+│   │           └── berita_terkini_viewmodel.dart
 │   │
-│   ├── comments/                      // Komentar Artikel
+│   ├── comments/                     // Fitur Komentar Artikel
 │   │   ├── data/
 │   │   │   ├── datasources/
 │   │   │   │   └── comments_remote_data_source.dart
@@ -120,20 +122,22 @@ lib/
 │   │   │   └── usecases/
 │   │   │       └── get_comments.dart
 │   │   └── presentation/
-│   │       ├── screens/
-│   │       │   └── comments_screen.dart           // KomentarArtikelFragment.kt
-│   │       ├── dialogs/
-│   │       │   └── comment_dialog.dart             // KomentarDialogFragment.kt
-│   │       ├── widgets/
-│   │       │   └── comment_item.dart               // KomentarArtikelAdapter.kt (item)
-│   │       └── viewmodels/
-│   │           └── komentar_viewmodel.dart         // KomentarViewModel.kt
+│   │       ├── ui/                   // Tampilan untuk komentar
+│   │       │   ├── screens/
+│   │       │   │   └── comments_screen.dart      // (fragment_komentar_dialog.xml)
+│   │       │   ├── dialogs/
+│   │       │   │   └── comment_dialog.dart         // (item_dialog_komentar_artikel.xml)
+│   │       │   └── widgets/
+│   │       │       └── comment_item.dart           // Item tampilan komentar
+│   │       └── logic/                // Logika komentar
+│   │           └── komentar_viewmodel.dart        // (KomentarViewModel.kt)
 │   │
-│   ├── license/                       // Lisensi
+│   ├── license/                      // Fitur Lisensi
 │   │   └── presentation/
-│   │       └── license_screen.dart                // LicenseFragment.kt
+│   │       └── ui/
+│   │           └── license_screen.dart           // (fragment_license.xml)
 │   │
-│   ├── notifications/                 // Notifikasi
+│   ├── notifications/                // Fitur Notifikasi
 │   │   ├── data/
 │   │   │   ├── datasources/
 │   │   │   │   └── notification_remote_data_source.dart
@@ -149,14 +153,15 @@ lib/
 │   │   │   └── usecases/
 │   │   │       └── get_notifications.dart
 │   │   └── presentation/
-│   │       ├── screens/
-│   │       │   └── notifications_screen.dart        // NotifikasiFragment.kt
+│   │       ├── ui/                   // Tampilan notifikasi
+│   │       │   └── screens/
+│   │       │       └── notifications_screen.dart // (fragment_notifikasi.xml)
 │   │       ├── widgets/
-│   │       │   └── notification_item.dart           // NotifikasiAdapter.kt (item)
-│   │       └── viewmodels/
-│   │           └── notifications_viewmodel.dart     // NotifikasiViewModel.kt
+│   │       │   └── notification_item.dart        // (item_notifikasi.xml)
+│   │       └── logic/                // Logika notifikasi
+│   │           └── notifications_viewmodel.dart
 │   │
-│   ├── profile/                       // Profil & Pengaturan Akun
+│   ├── profile/                      // Fitur Profil & Pengaturan Akun
 │   │   ├── data/
 │   │   │   ├── datasources/
 │   │   │   │   └── profile_remote_data_source.dart
@@ -173,16 +178,17 @@ lib/
 │   │   │       ├── get_profile.dart
 │   │   │       └── update_profile.dart
 │   │   └── presentation/
-│   │       ├── screens/
-│   │       │   ├── profile_screen.dart             // ProfileFragment.kt
-│   │       │   ├── settings_screen.dart            // Menggabungkan PengaturanAkunFragment.kt, KeamananFragment.kt, PusatBantuanFragment.kt, SettingNotifikasiFragment.kt, TentangFragment.kt, UmumFragment.kt, HubungiFragment.kt
-│   │       │   └── contact_us_screen.dart          // HubungiFragment.kt (jika dipisah)
-│   │       ├── dialogs/
-│   │       │   └── logout_confirmation_dialog.dart // KonfirmasiKeluarDialog.kt
-│   │       └── viewmodels/
-│   │           └── profile_viewmodel.dart           // ProfileViewModel.kt
+│   │       ├── ui/                   // Tampilan profil & pengaturan
+│   │       │   ├── screens/
+│   │       │   │   ├── profile_screen.dart      // (fragment_profile.xml)
+│   │       │   │   ├── settings_screen.dart       // Gabungan: fragment_pengaturan_akun.xml, fragment_keamanan.xml, fragment_pusat_bantuan.xml, fragment_settingnotifikasi.xml, fragment_tentang.xml, fragment_umum.xml, fragment_hubungi.xml
+│   │       │   │   └── contact_us_screen.dart     // Jika dipisah (HubungiFragment.kt)
+│   │       │   └── dialogs/
+│   │       │       └── logout_confirmation_dialog.dart // (dialog_konfirmasi_keluar.xml)
+│   │       └── logic/                // Logika profil & pengaturan
+│   │           └── profile_viewmodel.dart         // (ProfileViewModel.kt)
 │   │
-│   ├── reaksi/                        // Reaksi & Bookmark
+│   ├── reaksi/                       // Fitur Reaksi & Bookmark
 │   │   ├── data/
 │   │   │   ├── datasources/
 │   │   │   │   └── reaksi_remote_data_source.dart
@@ -196,22 +202,23 @@ lib/
 │   │   │   ├── repositories/
 │   │   │   │   └── reaksi_repository.dart
 │   │   │   └── usecases/
-│   │   │       ├── get_bookmarked_news.dart         // Bookmark
-│   │   │       ├── get_liked_news.dart              // Like
-│   │   │       └── get_view_count.dart              // ViewCount
+│   │   │       ├── get_bookmarked_news.dart      // Bookmark
+│   │   │       ├── get_liked_news.dart           // Like
+│   │   │       └── get_view_count.dart           // ViewCount
 │   │   └── presentation/
-│   │       ├── screens/
-│   │       │   └── bookmarked_news_screen.dart      // DaftarBeritaBookmarkFragment.kt
+│   │       ├── ui/                   // Tampilan reaksi/bookmark
+│   │       │   └── screens/
+│   │       │       └── bookmarked_news_screen.dart // (fragment_daftar_berita_bookmark.xml)
 │   │       ├── widgets/
-│   │       │   ├── bookmark_item.dart               // DaftarBeritaBookmarkAdapter.dart
-│   │       │   └── like_item.dart                   // DaftarBeritaLikeAdapter.dart
-│   │       └── viewmodels/
-│   │           ├── bookmark_viewmodel.dart           // BookmarkViewModel.kt
-│   │           ├── daftar_berita_bookmark_viewmodel.dart  // DaftarBeritaBookmarkViewModel.kt
-│   │           ├── daftar_berita_like_viewmodel.dart       // DaftarBeritaLikeViewModel.kt
-│   │           └── view_count_viewmodel.dart          // ViewCountViewModel.kt
+│   │       │   ├── bookmark_item.dart           // (item_berita_bookmark.xml)
+│   │       │   └── like_item.dart               // (item_berita_like.xml)
+│   │       └── logic/                // Logika reaksi/bookmark
+│   │           ├── bookmark_viewmodel.dart
+│   │           ├── daftar_berita_bookmark_viewmodel.dart
+│   │           ├── daftar_berita_like_viewmodel.dart
+│   │           └── view_count_viewmodel.dart
 │   │
-│   ├── report/                        // Report / Pelaporan
+│   ├── report/                       // Fitur Pelaporan
 │   │   ├── data/
 │   │   │   ├── datasources/
 │   │   │   │   └── report_remote_data_source.dart
@@ -227,12 +234,13 @@ lib/
 │   │   │   └── usecases/
 │   │   │       └── submit_report.dart
 │   │   └── presentation/
-│   │       ├── dialogs/
-│   │       │   └── report_dialog.dart               // ReportDialogFragment.kt
-│   │       └── viewmodels/
-│   │           └── report_viewmodel.dart            // ReportViewModel.kt
+│   │       ├── ui/                   // Tampilan dialog pelaporan
+│   │       │   └── dialogs/
+│   │       │       └── report_dialog.dart       // (fragment_report_dialog.xml)
+│   │       └── logic/                // Logika pelaporan
+│   │           └── report_viewmodel.dart
 │   │
-│   ├── search/                        // Pencarian
+│   ├── search/                       // Fitur Pencarian
 │   │   ├── data/
 │   │   │   ├── datasources/
 │   │   │   │   └── search_remote_data_source.dart
@@ -248,28 +256,30 @@ lib/
 │   │   │   └── usecases/
 │   │   │       └── perform_search.dart
 │   │   └── presentation/
-│   │       ├── screens/
-│   │       │   ├── search_screen.dart             // SearchFragment.kt
-│   │       │   └── search_results_screen.dart       // SearchResultsFragment.kt
-│   │       ├── widgets/
-│   │       │   └── search_result_item.dart          // Item Search Result
-│   │       └── viewmodels/
-│   │           └── search_viewmodel.dart            // SearchViewModel.kt
+│   │       ├── ui/                   // Tampilan pencarian
+│   │       │   ├── screens/
+│   │       │   │   ├── search_screen.dart        // (fragment_search.xml)
+│   │       │   │   └── search_results_screen.dart  // (fragment_search_results.xml)
+│   │       │   └── widgets/
+│   │       │       └── search_result_item.dart     // (item_riwayat_search.xml, dsb.)
+│   │       └── logic/                // Logika pencarian
+│   │           └── search_viewmodel.dart
 │   │
-│   ├── welcome/                       // Onboarding & Welcome Page
+│   ├── welcome/                      // Fitur Onboarding & Welcome Page
 │   │   └── presentation/
-│   │       ├── screens/
-│   │       │   ├── welcome_screen.dart            // WelcomeFragment.kt
-│   │       │   ├── welcome_page1.dart             // WelcomePage1Fragment.kt
-│   │       │   ├── welcome_page2.dart             // WelcomePage2Fragment.kt
-│   │       │   └── welcome_page3.dart             // WelcomePage3Fragment.kt
-│   │       └── viewmodels/
-│   │           └── welcome_viewmodel.dart         // WelcomeViewModel.kt
+│   │       ├── ui/                   // Tampilan welcome
+│   │       │   ├── screens/
+│   │       │   │   ├── welcome_screen.dart       // (fragment_welcome.xml)
+│   │       │   │   ├── welcome_page1.dart        // (fragment_welcome_page_1.xml)
+│   │       │   │   ├── welcome_page2.dart        // (fragment_welcome_page_2.xml)
+│   │       │   │   └── welcome_page3.dart        // (fragment_welcome_page_3.xml)
+│   │       └── logic/                // Logika welcome
+│   │           └── welcome_viewmodel.dart
 │   │
-│   └── navigation/                    // Navigasi & Routing
+│   └── navigation/                   // Konfigurasi navigasi/routing
 │       └── app_router.dart
 │
-└── main.dart                           // Entry point aplikasi
+└── main.dart                         // Entry point aplikasi
 │
 ├── assets/                              // Asset seperti gambar, font, dll.
 │   ├── images/
