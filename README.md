@@ -5,7 +5,7 @@ MediaExplant/
 lib/
 ├── core/
 │   ├── constants/
-│   │   ├── app_colors.dart           // Warna dan design token (menggantikan file color XML)
+│   │   ├── app_colors.dart           // Warna & design token (menggantikan file XML)
 │   │   ├── app_strings.dart          // String/label aplikasi
 │   │   └── app_routes.dart           // Definisi route/navigasi
 │   ├── errors/
@@ -19,8 +19,8 @@ lib/
 │   ├── utils/
 │   │   ├── date_utils.dart           // Adaptasi DateUtils.kt
 │   │   └── email_sender.dart         // Adaptasi EmailSender.kt
-│   └── widgets/                      // Widget umum (misal: button, card, dsb.)
-│       └── common_widgets.dart
+│   └── widgets/
+│       └── common_widgets.dart       // Widget umum (misal: button, card, dsb.)
 │
 ├── features/
 │   ├── auth/                         // Fitur autentikasi & manajemen akun
@@ -42,20 +42,18 @@ lib/
 │   │   │       ├── reset_password.dart
 │   │   │       └── forgot_password.dart
 │   │   └── presentation/
-│   │       ├── ui/                   // Bagian tampilan (desain) – mirip file XML di Android
+│   │       ├── ui/                   // Tampilan (mirip file XML Android)
 │   │       │   ├── screens/
 │   │       │   │   ├── sign_in_screen.dart           // (fragment_sign_in.xml)
 │   │       │   │   ├── sign_up_screen.dart           // (fragment_sign_up.xml)
 │   │       │   │   ├── sign_up_input_screen.dart     // (fragment_sign_up_input.xml)
 │   │       │   │   └── reset_password_screen.dart     // (fragment_input_password.xml)
-│   │       │   └── dialogs/          // Desain dialog
-│   │       │       ├── change_password_dialog.dart   // (dialog_change_password.xml)
-│   │       │       ├── confirm_change_email_dialog.dart// (dialog_konfirmasi_ubah_email.xml)
-│   │       │       ├── forgot_password_confirm_email_dialog.dart
-│   │       │       │   // (dialog_lupa_password_konfirmasi_email.xml)
-│   │       │       ├── forgot_password_verify_email_dialog.dart
-│   │       │       │   // (dialog_lupa_password_verif_email.xml)
-│   │       │       └── sign_up_verify_email_dialog.dart// (dialog_sign_up_verifikasi_email.xml)
+│   │       │   └── dialogs/
+│   │       │       ├── change_password_dialog.dart           // (dialog_change_password.xml)
+│   │       │       ├── confirm_change_email_dialog.dart        // (dialog_konfirmasi_ubah_email.xml)
+│   │       │       ├── forgot_password_confirm_email_dialog.dart // (dialog_lupa_password_konfirmasi_email.xml)
+│   │       │       ├── forgot_password_verify_email_dialog.dart  // (dialog_lupa_password_verif_email.xml)
+│   │       │       └── sign_up_verify_email_dialog.dart        // (dialog_sign_up_verifikasi_email.xml)
 │   │       └── logic/                // Logika bisnis (ViewModels/BLoC/Provider)
 │   │           ├── lupa_password_viewmodel.dart      // (LupaPasswordViewModel.kt)
 │   │           ├── reset_password_viewmodel.dart     // (ResetPasswordViewModel.kt)
@@ -85,20 +83,20 @@ lib/
 │   │   │       ├── get_most_commented_news.dart   // (KomentarTerbanyak)
 │   │   │       └── get_popular_tags.dart          // (TagPopuler)
 │   │   └── presentation/
-│   │       ├── ui/                   // Tampilan (UI)
+│   │       ├── ui/                   // Tampilan UI
 │   │       │   ├── screens/
 │   │       │   │   ├── home_screen.dart           // (fragment_home.xml)
 │   │       │   │   ├── home_popular_screen.dart    // (fragment_home_populer.xml)
 │   │       │   │   ├── home_latest_screen.dart     // (fragment_home_terbaru.xml)
 │   │       │   │   └── detail_article_screen.dart  // (fragment_detail_artikel.xml)
-│   │       │   └── widgets/          // Widget-item untuk tampilan list dsb.
+│   │       │   └── widgets/
 │   │       │       ├── berita_terkait_item.dart    // (item_berita_terkait.xml)
 │   │       │       ├── berita_populer_item.dart     // (item_berita_populer.xml)
 │   │       │       ├── berita_rekomendasi_item.dart // (item_berita_rekomendasi.xml)
 │   │       │       ├── komentar_terbanyak_item.dart  // (item_komentar_terbanyak.xml)
 │   │       │       ├── tag_populer_item.dart        // (item_tag_populer.xml)
 │   │       │       └── berita_terkini_item.dart      // (item_berita_terkini.xml)
-│   │       └── logic/                // Logika untuk beranda
+│   │       └── logic/                // Logika Beranda
 │   │           ├── berita_terkait_viewmodel.dart
 │   │           ├── berita_populer_viewmodel.dart
 │   │           ├── berita_rekomendasi_viewmodel.dart
@@ -122,7 +120,7 @@ lib/
 │   │   │   └── usecases/
 │   │   │       └── get_comments.dart
 │   │   └── presentation/
-│   │       ├── ui/                   // Tampilan untuk komentar
+│   │       ├── ui/                   // Tampilan komentar
 │   │       │   ├── screens/
 │   │       │   │   └── comments_screen.dart      // (fragment_komentar_dialog.xml)
 │   │       │   ├── dialogs/
@@ -178,15 +176,15 @@ lib/
 │   │   │       ├── get_profile.dart
 │   │   │       └── update_profile.dart
 │   │   └── presentation/
-│   │       ├── ui/                   // Tampilan profil & pengaturan
+│   │       ├── ui/                   // Tampilan profil & pengaturan (bisa gabungan atau dipisah)
 │   │       │   ├── screens/
 │   │       │   │   ├── profile_screen.dart      // (fragment_profile.xml)
-│   │       │   │   ├── settings_screen.dart       // Gabungan: fragment_pengaturan_akun.xml, fragment_keamanan.xml, fragment_pusat_bantuan.xml, fragment_settingnotifikasi.xml, fragment_tentang.xml, fragment_umum.xml, fragment_hubungi.xml
+│   │       │   │   ├── settings_screen.dart       // Gabungan atau tampilan khusus settings
 │   │       │   │   └── contact_us_screen.dart     // Jika dipisah (HubungiFragment.kt)
 │   │       │   └── dialogs/
 │   │       │       └── logout_confirmation_dialog.dart // (dialog_konfirmasi_keluar.xml)
-│   │       └── logic/                // Logika profil & pengaturan
-│   │           └── profile_viewmodel.dart         // (ProfileViewModel.kt)
+│   │       └── logic/
+│   │           └── profile_viewmodel.dart
 │   │
 │   ├── reaksi/                       // Fitur Reaksi & Bookmark
 │   │   ├── data/
@@ -267,17 +265,35 @@ lib/
 │   │
 │   ├── welcome/                      // Fitur Onboarding & Welcome Page
 │   │   └── presentation/
-│   │       ├── ui/                   // Tampilan welcome
+│   │       ├── ui/
 │   │       │   ├── screens/
 │   │       │   │   ├── welcome_screen.dart       // (fragment_welcome.xml)
 │   │       │   │   ├── welcome_page1.dart        // (fragment_welcome_page_1.xml)
 │   │       │   │   ├── welcome_page2.dart        // (fragment_welcome_page_2.xml)
 │   │       │   │   └── welcome_page3.dart        // (fragment_welcome_page_3.xml)
-│   │       └── logic/                // Logika welcome
+│   │       └── logic/
 │   │           └── welcome_viewmodel.dart
 │   │
-│   └── navigation/                   // Konfigurasi navigasi/routing
-│       └── app_router.dart
+│   └── settings/                     // Fitur Settings (terpisah dari profil)
+│       └── presentation/
+│           ├── ui/
+│           │   ├── screens/
+│           │   │   ├── hubungi_screen.dart             // (HubungiFragment.kt)
+│           │   │   ├── keamanan_screen.dart            // (KeamananFragment.kt)
+│           │   │   ├── pengaturan_akun_screen.dart       // (PengaturanAkunFragment.kt)
+│           │   │   ├── pusat_bantuan_screen.dart         // (PusatBantuanFragment.kt)
+│           │   │   ├── setting_notifikasi_screen.dart    // (SettingNotifikasiFragment.kt)
+│           │   │   ├── tentang_screen.dart               // (TentangFragment.kt)
+│           │   │   └── umum_screen.dart                  // (UmumFragment.kt)
+│           │   └── dialogs/                              // Jika ada dialog terkait settings
+│           └── logic/
+│               ├── hubungi_viewmodel.dart             // (HubungiViewModel.kt)
+│               ├── keamanan_viewmodel.dart            // (KeamananViewModel.kt)
+│               ├── pengaturan_akun_viewmodel.dart       // (PengaturanAkunViewModel.kt)
+│               └── umum_viewmodel.dart                // (UmumViewModel.kt)
+│
+├── navigation/
+│   └── app_router.dart               // Konfigurasi routing/navigasi aplikasi
 │
 └── main.dart                         // Entry point aplikasi
 │
