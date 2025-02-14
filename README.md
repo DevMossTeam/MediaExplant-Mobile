@@ -133,67 +133,6 @@ lib/
 │   │   └── presentation/
 │   │       └── license_screen.dart                // LicenseFragment.kt
 │   │
-│   ├── article_management/            // Manajemen Artikel (Penulis)
-│   │   ├── data/
-│   │   │   ├── datasources/
-│   │   │   │   └── article_remote_data_source.dart
-│   │   │   ├── models/
-│   │   │   │   └── article_management_model.dart
-│   │   │   └── repositories/
-│   │   │       └── article_repository_impl.dart
-│   │   ├── domain/
-│   │   │   ├── entities/
-│   │   │   │   └── article_entity.dart
-│   │   │   ├── repositories/
-│   │   │   │   └── article_repository.dart
-│   │   │   └── usecases/
-│   │   │       ├── create_article.dart           // BuatArtikelFragment.kt
-│   │   │       ├── get_draft_articles.dart         // DrafPenulisFragment.kt
-│   │   │       ├── get_under_review_articles.dart   // DalamPeninjauanFragment.kt
-│   │   │       ├── confirm_publication.dart         // KonfirmasiPublikasiFragment.kt
-│   │   │       └── get_published_articles.dart      // PublishedArtikelFragment.kt
-│   │   └── presentation/
-│   │       ├── screens/
-│   │       │   ├── create_article_screen.dart       // BuatArtikelFragment.dart
-│   │       │   ├── draft_articles_screen.dart       // DrafPenulisFragment.dart
-│   │       │   ├── under_review_screen.dart         // DalamPeninjauanFragment.dart
-│   │       │   ├── confirm_publication_screen.dart    // KonfirmasiPublikasiFragment.dart
-│   │       │   ├── manage_articles_screen.dart      // ManajemenArtikelFragment.dart
-│   │       │   └── published_articles_screen.dart   // PublishedArtikelFragment.dart
-│   │       ├── widgets/
-│   │       │   ├── dalam_peninjauan_item.dart       // Adapter untuk DalamPeninjauan
-│   │       │   ├── draft_article_item.dart          // DrafPenulisAdapter.kt
-│   │       │   └── published_article_item.dart      // PublishedArtikelAdapter.kt
-│   │       └── viewmodels/
-│   │           ├── dalam_peninjauan_viewmodel.dart   // DalamPeninjauanViewModel.kt
-│   │           ├── draft_articles_viewmodel.dart     // DrafPenulisViewModel.kt
-│   │           └── published_article_viewmodel.dart  // PublishedArtikelViewModel.kt
-│   │
-│   ├── reviewer_management/           // Manajemen Reviewer
-│   │   ├── data/
-│   │   │   ├── datasources/
-│   │   │   │   └── reviewer_remote_data_source.dart
-│   │   │   ├── models/
-│   │   │   │   └── reviewer_model.dart
-│   │   │   └── repositories/
-│   │   │       └── reviewer_repository_impl.dart
-│   │   ├── domain/
-│   │   │   ├── entities/
-│   │   │   │   └── reviewer.dart
-│   │   │   ├── repositories/
-│   │   │   │   └── reviewer_repository.dart
-│   │   │   └── usecases/
-│   │   │       └── get_under_review_reviewer.dart  // Mengambil data reviewer dalam peninjauan
-│   │   └── presentation/
-│   │       ├── screens/
-│   │       │   ├── under_review_reviewer_screen.dart  // DalamPeninjauanReviewerFragment.kt
-│   │       │   └── reviewer_management_screen.dart    // ManajemenReviewerFragment.kt
-│   │       ├── widgets/
-│   │       │   ├── reviewer_item.dart                 // Adapter: DalamPeninjauanReviewerAdapter.kt
-│   │       │   └── reviewer_pager.dart                // ViewPagerAdapterReviewer.kt
-│   │       └── viewmodels/
-│   │           └── under_review_reviewer_viewmodel.dart  // DalamPeninjauanReviewerViewModel.kt
-│   │
 │   ├── notifications/                 // Notifikasi
 │   │   ├── data/
 │   │   │   ├── datasources/
