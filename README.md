@@ -159,7 +159,7 @@ lib/
 │   │       └── logic/                // Logika notifikasi
 │   │           └── notifications_viewmodel.dart
 │   │
-│   ├── profile/                      // Fitur Profil & Pengaturan Akun
+│   ├── profile/                      // Fitur Profil
 │   │   ├── data/
 │   │   │   ├── datasources/
 │   │   │   │   └── profile_remote_data_source.dart
@@ -173,16 +173,11 @@ lib/
 │   │   │   ├── repositories/
 │   │   │   │   └── profile_repository.dart
 │   │   │   └── usecases/
-│   │   │       ├── get_profile.dart
-│   │   │       └── update_profile.dart
+│   │   │       └── get_profile.dart
 │   │   └── presentation/
-│   │       ├── ui/                   // Tampilan profil & pengaturan (bisa gabungan atau dipisah)
+│   │       ├── ui/                   // Tampilan profil
 │   │       │   ├── screens/
-│   │       │   │   ├── profile_screen.dart      // (fragment_profile.xml)
-│   │       │   │   ├── settings_screen.dart       // Gabungan atau tampilan khusus settings
-│   │       │   │   └── contact_us_screen.dart     // Jika dipisah (HubungiFragment.kt)
-│   │       │   └── dialogs/
-│   │       │       └── logout_confirmation_dialog.dart // (dialog_konfirmasi_keluar.xml)
+│   │       │   │   └── profile_screen.dart      // (fragment_profile.xml)
 │   │       └── logic/
 │   │           └── profile_viewmodel.dart
 │   │
