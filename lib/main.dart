@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+// Import fitur Home & Navigation
 import 'features/home/presentation/ui/screens/home_screen.dart';
+import 'features/home/presentation/ui/screens/detail_article_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,12 +16,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MediaExplant',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        // Atur tema bottom navigation agar label berwarna hitam
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.black,
+        ),
+      ),
       home: const MainNavigationScreen(),
+      routes: {
+        '/detail_article': (context) => const DetailArticleScreen(),
+      },
     );
   }
 }
 
+// Halaman utama dengan Bottom Navigation Bar
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
   
@@ -42,9 +56,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          setState(() => _currentIndex = index);
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
