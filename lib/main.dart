@@ -1,51 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'features/auth/data/datasources/auth_remote_data_source.dart';
-import 'features/auth/data/repositories/auth_repository_impl.dart';
-import 'features/auth/domain/usecases/sign_in.dart';
-import 'features/auth/domain/usecases/sign_up.dart';
-import 'features/auth/domain/usecases/forgot_password.dart';
-import 'features/auth/presentation/logic/sign_in_viewmodel.dart';
-import 'features/auth/presentation/logic/sign_up_viewmodel.dart';
-import 'features/auth/presentation/logic/forgot_password_viewmodel.dart';
-import 'features/auth/presentation/ui/screens/sign_in_screen.dart';
-import 'features/auth/presentation/ui/screens/sign_up_screen.dart';
-import 'features/auth/presentation/ui/screens/forgot_password_screen.dart';
+import 'features/home/presentation/ui/screens/home_screen.dart';
 
 void main() {
-  final authRemoteDataSource = AuthRemoteDataSourceImpl();
-  final authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
-  final signInUseCase = SignIn(authRepository);
-  final signUpUseCase = SignUp(authRepository);
-  final forgotPasswordUseCase = ForgotPassword(authRepository);
-  final signInViewModel = SignInViewModel(signInUseCase: signInUseCase);
-  final signUpViewModel = SignUpViewModel(signUpUseCase: signUpUseCase);
-  final forgotPasswordViewModel = ForgotPasswordViewModel(forgotPasswordUseCase: forgotPasswordUseCase);
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider<SignInViewModel>.value(value: signInViewModel),
-        ChangeNotifierProvider<SignUpViewModel>.value(value: signUpViewModel),
-        ChangeNotifierProvider<ForgotPasswordViewModel>.value(value: forgotPasswordViewModel),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MediaExplant',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const SignInScreen(),
-      routes: {
-        '/sign_up': (context) => const SignUpScreen(),
-        '/forgot_password': (context) => const ForgotPasswordScreen(),
-      },
+      home: const MainNavigationScreen(),
+    );
+  }
+}
+
+class MainNavigationScreen extends StatefulWidget {
+  const MainNavigationScreen({super.key});
+  
+  @override
+  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
+}
+
+class _MainNavigationScreenState extends State<MainNavigationScreen> {
+  int _currentIndex = 0;
+  final List<Widget> _pages = const [
+    HomeScreen(),
+    SearchScreen(),
+    NotificationScreen(),
+    ProfileScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notification'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        ],
+      ),
+    );
+  }
+}
+
+// Halaman placeholder untuk item Bottom Navigation lainnya
+
+class SearchScreen extends StatelessWidget {
+  const SearchScreen({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Search")),
+      body: const Center(child: Text("Search Screen")),
+    );
+  }
+}
+
+class NotificationScreen extends StatelessWidget {
+  const NotificationScreen({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Notification")),
+      body: const Center(child: Text("Notification Screen")),
+    );
+  }
+}
+
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Profile")),
+      body: const Center(child: Text("Profile Screen")),
     );
   }
 }
