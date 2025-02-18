@@ -1,0 +1,2 @@
+D:/Programming/Clone Github/MediaExplant-Mobile/android/app/.cxx/Debug/6k81o36i/x86_64/CMakeFiles/edit_cache.dir
+D:/Programming/Clone Github/MediaExplant-Mobile/android/app/.cxx/Debug/6k81o36i/x86_64/CMakeFiles/rebuild_cache.dir
