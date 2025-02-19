@@ -280,7 +280,6 @@ MediaExplant/
 │   │           │   │   ├── settings_screen.dart             // Layar utama Settings
 │   │           │   │   ├── hubungi_screen.dart               // (HubungiFragment.kt)
 │   │           │   │   ├── keamanan_screen.dart              // (KeamananFragment.kt)
-│   │           │   │   ├── pengaturan_akun_screen.dart         // (PengaturanAkunFragment.kt)
 │   │           │   │   ├── pusat_bantuan_screen.dart           // (PusatBantuanFragment.kt)
 │   │           │   │   ├── setting_notifikasi_screen.dart      // (SettingNotifikasiFragment.kt)
 │   │           │   │   ├── tentang_screen.dart                 // (TentangFragment.kt)
@@ -289,7 +288,7 @@ MediaExplant/
 │   │           └── logic/
 │   │               ├── hubungi_viewmodel.dart              // (HubungiViewModel.kt)
 │   │               ├── keamanan_viewmodel.dart             // (KeamananViewModel.kt)
-│   │               ├── pengaturan_akun_viewmodel.dart        // (PengaturanAkunViewModel.kt)
+│   │               ├── settings_viewmodel.dart        // (PengaturanAkunViewModel.kt)
 │   │               ├── pusat_bantuan_viewmodel.dart          // (opsional)
 │   │               ├── setting_notifikasi_viewmodel.dart     // (opsional)
 │   │               ├── tentang_viewmodel.dart                // (opsional)
