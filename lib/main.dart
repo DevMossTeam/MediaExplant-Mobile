@@ -1,37 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-// Import fitur Home & Navigation
-import 'features/home/presentation/ui/screens/home_screen.dart';
-import 'features/home/presentation/ui/screens/detail_article_screen.dart';
-// Import fitur Profile
+import './features/navigation/app_router.dart';
 import 'features/profile/presentation/logic/profile_viewmodel.dart';
-import 'features/profile/presentation/ui/screens/profile_screen.dart';
-
-// Halaman placeholder untuk item Bottom Navigation lainnya
-class SearchScreen extends StatelessWidget {
-  const SearchScreen({super.key});
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Search")),
-      body: const Center(child: Text("Search Screen")),
-    );
-  }
-}
-
-class NotificationScreen extends StatelessWidget {
-  const NotificationScreen({super.key});
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Notification")),
-      body: const Center(child: Text("Notification Screen")),
-    );
-  }
-}
 
 void main() {
   runApp(
@@ -40,6 +10,7 @@ void main() {
         ChangeNotifierProvider<ProfileViewModel>(
           create: (_) => ProfileViewModel(),
         ),
+        // Tambahkan provider lain jika diperlukan
       ],
       child: const MyApp(),
     ),
@@ -60,44 +31,8 @@ class MyApp extends StatelessWidget {
           unselectedItemColor: Colors.black,
         ),
       ),
-      home: const MainNavigationScreen(),
-      routes: {
-        '/detail_article': (context) => const DetailArticleScreen(),
-      },
-    );
-  }
-}
-
-class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
-  
-  @override
-  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
-}
-
-class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _currentIndex = 0;
-  final List<Widget> _pages = const [
-    HomeScreen(),
-    SearchScreen(),
-    NotificationScreen(),
-    ProfileScreen(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notification'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
+      initialRoute: '/',
+      routes: AppRouter.routes,
     );
   }
 }

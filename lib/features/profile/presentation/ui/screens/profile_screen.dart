@@ -126,6 +126,20 @@ class ProfileScreen extends StatelessWidget {
                               );
                             },
                           ),
+                          // Tombol Settings
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/settings');
+                              },
+                              icon: const Icon(Icons.settings),
+                              label: const Text('Settings'),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
