@@ -22,8 +22,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     final prefs = await SharedPreferences.getInstance();
     bool hasSeenWelcome = prefs.getBool('hasSeenWelcome') ?? false;
     if (hasSeenWelcome) {
-      // Jika sudah, langsung navigasi ke halaman utama
-      Navigator.pushReplacementNamed(context, '/main');
+      // Jika sudah, langsung navigasi ke halaman home
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
       setState(() {
         _isLoading = false;
@@ -68,7 +68,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       style: Theme.of(context).textTheme.titleMedium,
                       textAlign: TextAlign.center,
                     ),
-                    // Anda bisa menambahkan gambar atau widget lain di sini
+                    // Tambahkan widget atau gambar sesuai kebutuhan
                   ],
                 ),
               ),
@@ -78,7 +78,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               child: ElevatedButton(
                 onPressed: () async {
                   await _markWelcomeSeen();
-                  Navigator.pushReplacementNamed(context, '/main');
+                  Navigator.pushReplacementNamed(context, '/home');
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),

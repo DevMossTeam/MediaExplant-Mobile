@@ -13,7 +13,8 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/tentang_s
 import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_screen.dart';
 // Import fitur Profile
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
-// Import Welcome Splash Screen (dengan path yang sudah disesuaikan)
+// Import SplashScreen dan WelcomeScreen
+import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
 
 /// Halaman placeholder untuk Search dan Notification
@@ -42,7 +43,7 @@ class NotificationScreen extends StatelessWidget {
 /// Halaman utama dengan Bottom Navigation Bar
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
-  
+
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
@@ -55,7 +56,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     NotificationScreen(),
     ProfileScreen(),
   ];
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +67,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notification'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.notifications), label: 'Notification'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
@@ -79,7 +81,9 @@ class AppRouter {
   static final Map<String, WidgetBuilder> routes = {
     // Layar awal: SplashScreen
     '/': (context) => const SplashScreen(),
-    // Setelah splash, navigasi ke MainNavigationScreen
+    // Setelah splash, navigasi ke WelcomeScreen
+    '/welcome': (context) => const WelcomeScreen(),
+    // Setelah welcome, navigasi ke MainNavigationScreen (halaman utama)
     '/main': (context) => const MainNavigationScreen(),
     '/detail_article': (context) => const DetailArticleScreen(),
     '/settings': (context) => const SettingsScreen(),
@@ -87,7 +91,8 @@ class AppRouter {
     '/settings/keamanan': (context) => const KeamananScreen(),
     '/settings/pengaturan_akun': (context) => const SettingsScreen(),
     '/settings/pusat_bantuan': (context) => const PusatBantuanScreen(),
-    '/settings/setting_notifikasi': (context) => const SettingNotifikasiScreen(),
+    '/settings/setting_notifikasi': (context) =>
+        const SettingNotifikasiScreen(),
     '/settings/tentang': (context) => const TentangScreen(),
     '/settings/umum': (context) => const UmumScreen(),
   };
