@@ -266,11 +266,13 @@ MediaExplant/
 │   │   │   └── presentation/
 │   │   │       ├── ui/
 │   │   │       │   ├── screens/
-│   │   │       │   │   ├── welcome_screen.dart       // (fragment_welcome.xml)
-│   │   │       │   │   ├── welcome_page1.dart        // (fragment_welcome_page_1.xml)
-│   │   │       │   │   ├── welcome_page2.dart        // (fragment_welcome_page_2.xml)
-│   │   │       │   │   └── welcome_page3.dart        // (fragment_welcome_page_3.xml)
+│   │   │       │   │   ├── splash_screen.dart        // Splash screen (baru)
+│   │   │       │   │   ├── welcome_screen.dart         // (fragment_welcome.xml)
+│   │   │       │   │   ├── welcome_page1.dart          // (fragment_welcome_page_1.xml)
+│   │   │       │   │   ├── welcome_page2.dart          // (fragment_welcome_page_2.xml)
+│   │   │       │   │   └── welcome_page3.dart          // (fragment_welcome_page_3.xml)
 │   │   │       └── logic/
+│   │   │           ├── splash_viewmodel.dart         // ViewModel untuk Splash Screen
 │   │   │           └── welcome_viewmodel.dart
 │   │   │
 │   │   └── settings/                     // Fitur Settings (setara dengan fitur lainnya)
