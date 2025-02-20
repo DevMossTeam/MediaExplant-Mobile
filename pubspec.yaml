@@ -4,14 +4,16 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.6.1
+  sdk: ^3.6.0
 
 dependencies:
   flutter:
     sdk: flutter
   provider: ^6.0.0
   cupertino_icons: ^1.0.8
-  shared_preferences: ^2.0.15
+  shared_preferences: ^2.5.2
+
+
 
 dev_dependencies:
   flutter_test:
