@@ -13,8 +13,10 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/tentang_s
 import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_screen.dart';
 // Import fitur Profile
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
+// Import Welcome Splash Screen
+import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
 
-// Halaman placeholder untuk Search dan Notification
+/// Halaman placeholder untuk Search dan Notification
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
   @override
@@ -75,7 +77,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 /// Daftar route aplikasi
 class AppRouter {
   static final Map<String, WidgetBuilder> routes = {
-    '/': (context) => const MainNavigationScreen(),
+    // Layar awal: SplashScreen
+    '/': (context) => const SplashScreen(),
+    // Setelah splash, navigasi ke MainNavigationScreen
+    '/main': (context) => const MainNavigationScreen(),
     '/detail_article': (context) => const DetailArticleScreen(),
     '/settings': (context) => const SettingsScreen(),
     '/settings/hubungi': (context) => const HubungiScreen(),
