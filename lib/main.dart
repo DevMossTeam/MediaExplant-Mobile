@@ -1,38 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import './features/navigation/app_router.dart';
-import 'features/profile/presentation/logic/profile_viewmodel.dart';
+import 'package:mediaexplant/features/navigation/app_router.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ProfileViewModel>(
-          create: (_) => ProfileViewModel(),
-        ),
-        // Tambahkan provider lain jika diperlukan  
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
   
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MediaExplant',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.black,
-        ),
-      ),
+      debugShowCheckedModeBanner: false,
       initialRoute: '/',
-      routes: AppRouter.routes,
+      onGenerateRoute: AppRouter.generateRoute,
     );
   }
 }

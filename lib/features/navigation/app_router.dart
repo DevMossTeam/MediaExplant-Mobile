@@ -13,13 +13,14 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/tentang_s
 import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_screen.dart';
 // Import fitur Profile
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
-// Import SplashScreen dan WelcomeScreen
+// Import Welcome & Splash Screens
 import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
 
 /// Halaman placeholder untuk Search dan Notification
 class SearchScreen extends StatelessWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({Key? key}) : super(key: key);
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +31,8 @@ class SearchScreen extends StatelessWidget {
 }
 
 class NotificationScreen extends StatelessWidget {
-  const NotificationScreen({super.key});
+  const NotificationScreen({Key? key}) : super(key: key);
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,8 +44,8 @@ class NotificationScreen extends StatelessWidget {
 
 /// Halaman utama dengan Bottom Navigation Bar
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
-
+  const MainNavigationScreen({Key? key}) : super(key: key);
+  
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
@@ -56,7 +58,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     NotificationScreen(),
     ProfileScreen(),
   ];
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +70,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.notifications), label: 'Notification'),
+            icon: Icon(Icons.notifications), label: 'Notification'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
@@ -76,24 +78,43 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 }
 
-/// Daftar route aplikasi
+/// Fungsi untuk menghasilkan route berdasarkan nama route yang diberikan.
 class AppRouter {
-  static final Map<String, WidgetBuilder> routes = {
-    // Layar awal: SplashScreen
-    '/': (context) => const SplashScreen(),
-    // Setelah splash, navigasi ke WelcomeScreen
-    '/welcome': (context) => const WelcomeScreen(),
-    // Setelah welcome, navigasi ke MainNavigationScreen (halaman utama)
-    '/main': (context) => const MainNavigationScreen(),
-    '/detail_article': (context) => const DetailArticleScreen(),
-    '/settings': (context) => const SettingsScreen(),
-    '/settings/hubungi': (context) => const HubungiScreen(),
-    '/settings/keamanan': (context) => const KeamananScreen(),
-    '/settings/pengaturan_akun': (context) => const SettingsScreen(),
-    '/settings/pusat_bantuan': (context) => const PusatBantuanScreen(),
-    '/settings/setting_notifikasi': (context) =>
-        const SettingNotifikasiScreen(),
-    '/settings/tentang': (context) => const TentangScreen(),
-    '/settings/umum': (context) => const UmumScreen(),
-  };
+  static Route<dynamic> generateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case '/':
+        // Layar awal: SplashScreen
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
+      case '/welcome':
+        // Setelah SplashScreen, navigasi ke WelcomeScreen
+        return MaterialPageRoute(builder: (_) => const WelcomeScreen());
+      case '/home':
+        // Setelah WelcomeScreen, masuk ke halaman utama dengan BottomNavigationBar
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case '/detail_article':
+        return MaterialPageRoute(builder: (_) => const DetailArticleScreen());
+      case '/settings':
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
+      case '/settings/hubungi':
+        return MaterialPageRoute(builder: (_) => const HubungiScreen());
+      case '/settings/keamanan':
+        return MaterialPageRoute(builder: (_) => const KeamananScreen());
+      case '/settings/pengaturan_akun':
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
+      case '/settings/pusat_bantuan':
+        return MaterialPageRoute(builder: (_) => const PusatBantuanScreen());
+      case '/settings/setting_notifikasi':
+        return MaterialPageRoute(builder: (_) => const SettingNotifikasiScreen());
+      case '/settings/tentang':
+        return MaterialPageRoute(builder: (_) => const TentangScreen());
+      case '/settings/umum':
+        return MaterialPageRoute(builder: (_) => const UmumScreen());
+      default:
+        return MaterialPageRoute(
+          builder: (_) => Scaffold(
+            body: Center(child: Text("No route defined for ${settings.name}")),
+          ),
+        );
+    }
+  }
 }
