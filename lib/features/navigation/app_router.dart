@@ -13,7 +13,7 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/tentang_s
 import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_screen.dart';
 // Import fitur Profile
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
-// Import Welcome Splash Screen
+// Import Welcome Splash Screen (dengan path yang sudah disesuaikan)
 import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
 
 /// Halaman placeholder untuk Search dan Notification

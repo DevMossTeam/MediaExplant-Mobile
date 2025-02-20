@@ -11,11 +11,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Tunda selama 2 detik, lalu navigasikan ke Welcome Screen
+    // Tunda selama 2 detik, lalu navigasikan ke WelcomeScreen
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
-      // Navigasi ke MainNavigationScreen (gunakan route '/main')
-      Navigator.pushReplacementNamed(context, '/main');
+      Navigator.pushReplacementNamed(context, '/welcome');
     });
   }
   
@@ -25,7 +24,6 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Center(
         child: Text(
           'MediaExplant',
-          // Menggunakan headlineMedium, karena properti headline4 telah digantikan di versi Flutter terbaru
           style: Theme.of(context).textTheme.headlineMedium,
         ),
       ),
