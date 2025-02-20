@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,24 +30,6 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text("Pengaturan Akun"),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.pushNamed(context, '/settings/pengaturan_akun');
-            },
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.help),
-            title: const Text("Pusat Bantuan"),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.pushNamed(context, '/settings/pusat_bantuan');
-            },
-          ),
-          const Divider(),
-          ListTile(
             leading: const Icon(Icons.notifications),
             title: const Text("Setting Notifikasi"),
             trailing: const Icon(Icons.arrow_forward_ios),
@@ -62,6 +44,15 @@ class SettingsScreen extends StatelessWidget {
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
               Navigator.pushNamed(context, '/settings/tentang');
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.help),
+            title: const Text("Pusat Bantuan"),
+            trailing: const Icon(Icons.arrow_forward_ios),
+            onTap: () {
+              Navigator.pushNamed(context, '/settings/pusat_bantuan');
             },
           ),
           const Divider(),
