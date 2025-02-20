@@ -90,7 +90,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const WelcomeScreen());
       case '/home':
         // Setelah WelcomeScreen, masuk ke halaman utama dengan BottomNavigationBar
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return MaterialPageRoute(builder: (_) => const MainNavigationScreen());
       case '/detail_article':
         return MaterialPageRoute(builder: (_) => const DetailArticleScreen());
       case '/settings':
