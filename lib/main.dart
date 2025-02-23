@@ -4,6 +4,7 @@ import 'package:mediaexplant/features/navigation/app_router.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
+import 'package:mediaexplant/features/notifications/presentation/ui/screens/notifications_screen.dart';
 
 /// Halaman utama dengan Bottom Navigation Bar
 class MainNavigationScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   final List<Widget> _pages = const [
     HomeScreen(),
     SearchScreen(),
-    NotificationScreen(),
+    NotificationsScreen(),
     ProfileScreen(),
   ];
   

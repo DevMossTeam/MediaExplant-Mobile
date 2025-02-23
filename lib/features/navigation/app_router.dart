@@ -13,11 +13,13 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/tentang_s
 import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_screen.dart';
 // Import fitur Profile
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
+// Import fitur Notifications
+import 'package:mediaexplant/features/notifications/presentation/ui/screens/notifications_screen.dart';
 // Import Welcome & Splash Screens
 import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
 
-/// Halaman placeholder untuk Search dan Notification
+/// Halaman placeholder untuk Search
 class SearchScreen extends StatelessWidget {
   const SearchScreen({Key? key}) : super(key: key);
   
@@ -26,18 +28,6 @@ class SearchScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Search")),
       body: const Center(child: Text("Search Screen")),
-    );
-  }
-}
-
-class NotificationScreen extends StatelessWidget {
-  const NotificationScreen({Key? key}) : super(key: key);
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Notification")),
-      body: const Center(child: Text("Notification Screen")),
     );
   }
 }
@@ -52,10 +42,12 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
-  final List<Widget> _pages = const [
+  // Hapus `const` pada list agar widget yang tidak memiliki constructor const bisa digunakan
+  final List<Widget> _pages = [
     HomeScreen(),
     SearchScreen(),
-    NotificationScreen(),
+    // Pastikan nama widget sesuai dengan yang didefinisikan pada file notifications_screen.dart
+    NotificationsScreen(),
     ProfileScreen(),
   ];
   
@@ -69,8 +61,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications), label: 'Notification'),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notification'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
@@ -109,6 +100,9 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const TentangScreen());
       case '/settings/umum':
         return MaterialPageRoute(builder: (_) => const UmumScreen());
+      case '/notifications':
+        // Gunakan widget NotificationsScreen yang sudah diimpor
+        return MaterialPageRoute(builder: (_) => NotificationsScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
