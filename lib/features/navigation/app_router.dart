@@ -42,11 +42,10 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
-  // Hapus `const` pada list agar widget yang tidak memiliki constructor const bisa digunakan
+  // Widget list tanpa const agar mendukung widget yang tidak memiliki constructor const.
   final List<Widget> _pages = [
     HomeScreen(),
-    SearchScreen(),
-    // Pastikan nama widget sesuai dengan yang didefinisikan pada file notifications_screen.dart
+    const SearchScreen(),
     NotificationsScreen(),
     ProfileScreen(),
   ];
@@ -90,6 +89,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const HubungiScreen());
       case '/settings/keamanan':
         return MaterialPageRoute(builder: (_) => const KeamananScreen());
+      // Route '/settings/pengaturan_akun' dapat disesuaikan jika ada layar pengaturan akun khusus.
       case '/settings/pengaturan_akun':
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
       case '/settings/pusat_bantuan':
@@ -101,11 +101,12 @@ class AppRouter {
       case '/settings/umum':
         return MaterialPageRoute(builder: (_) => const UmumScreen());
       case '/notifications':
-        // Gunakan widget NotificationsScreen yang sudah diimpor
         return MaterialPageRoute(builder: (_) => NotificationsScreen());
       default:
+        // Route fallback untuk route yang tidak terdefinisi.
         return MaterialPageRoute(
           builder: (_) => Scaffold(
+            appBar: AppBar(title: const Text("Not Found")),
             body: Center(child: Text("No route defined for ${settings.name}")),
           ),
         );

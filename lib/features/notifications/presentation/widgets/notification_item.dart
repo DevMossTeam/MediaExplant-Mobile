@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart' hide Notification;
-import 'package:mediaexplant/features/notifications/domain/entities/notification.dart';
+import 'package:flutter/material.dart';
+import 'package:mediaexplant/features/notifications/domain/entities/notification.dart'
+    as app_notification;
 
 class NotificationItem extends StatelessWidget {
-  final Notification notification;
+  final app_notification.Notification notification;
   const NotificationItem({super.key, required this.notification});
 
   @override
@@ -32,7 +33,7 @@ class NotificationItem extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    // Format tanggal sederhana, Anda dapat menggunakan package intl untuk format yang lebih lengkap
+    // Format tanggal sederhana, gunakan package intl untuk format yang lebih lengkap jika diperlukan.
     return '${date.day}/${date.month}/${date.year}';
   }
 }

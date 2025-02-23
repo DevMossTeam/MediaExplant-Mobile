@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart' hide Notification;
-import 'package:mediaexplant/features/notifications/domain/entities/notification.dart';
+import 'package:flutter/material.dart';
+import 'package:mediaexplant/features/notifications/domain/entities/notification.dart'
+    as app_notification;
 import 'package:mediaexplant/features/notifications/domain/usecases/get_notifications.dart';
 
 class NotificationsViewModel extends ChangeNotifier {
@@ -7,8 +8,8 @@ class NotificationsViewModel extends ChangeNotifier {
 
   NotificationsViewModel({required this.getNotifications});
 
-  List<Notification> _notifications = [];
-  List<Notification> get notifications => _notifications;
+  List<app_notification.Notification> _notifications = [];
+  List<app_notification.Notification> get notifications => _notifications;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
