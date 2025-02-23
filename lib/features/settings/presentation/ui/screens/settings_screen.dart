@@ -8,63 +8,69 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Settings"),
+        elevation: 0,
       ),
       body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
-          ListTile(
-            leading: const Icon(Icons.contact_mail),
-            title: const Text("Hubungi"),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.pushNamed(context, '/settings/hubungi');
-            },
+          _buildSettingItem(
+            context,
+            icon: Icons.contact_mail,
+            title: "Hubungi",
+            routeName: '/settings/hubungi',
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.lock),
-            title: const Text("Keamanan"),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.pushNamed(context, '/settings/keamanan');
-            },
+          _buildSettingItem(
+            context,
+            icon: Icons.lock,
+            title: "Keamanan",
+            routeName: '/settings/keamanan',
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.notifications),
-            title: const Text("Setting Notifikasi"),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.pushNamed(context, '/settings/setting_notifikasi');
-            },
+          _buildSettingItem(
+            context,
+            icon: Icons.notifications,
+            title: "Setting Notifikasi",
+            routeName: '/settings/setting_notifikasi',
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.info),
-            title: const Text("Tentang"),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.pushNamed(context, '/settings/tentang');
-            },
+          _buildSettingItem(
+            context,
+            icon: Icons.info,
+            title: "Tentang",
+            routeName: '/settings/tentang',
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.help),
-            title: const Text("Pusat Bantuan"),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.pushNamed(context, '/settings/pusat_bantuan');
-            },
+          _buildSettingItem(
+            context,
+            icon: Icons.help,
+            title: "Pusat Bantuan",
+            routeName: '/settings/pusat_bantuan',
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text("Umum"),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.pushNamed(context, '/settings/umum');
-            },
+          _buildSettingItem(
+            context,
+            icon: Icons.settings,
+            title: "Umum",
+            routeName: '/settings/umum',
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSettingItem(BuildContext context,
+      {required IconData icon,
+      required String title,
+      required String routeName}) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Icon(icon, color: Theme.of(context).primaryColor),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: () {
+          Navigator.pushNamed(context, routeName);
+        },
       ),
     );
   }
