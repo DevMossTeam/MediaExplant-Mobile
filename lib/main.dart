@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 import 'package:mediaexplant/features/navigation/app_router.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
+import 'package:mediaexplant/features/notifications/presentation/logic/notifications_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
 import 'package:mediaexplant/features/notifications/presentation/ui/screens/notifications_screen.dart';
+import 'package:mediaexplant/features/notifications/domain/usecases/get_notifications.dart';
+import 'package:mediaexplant/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:mediaexplant/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:mediaexplant/features/notifications/data/datasources/notification_remote_data_source.dart';
+
+/// Halaman placeholder untuk Search
+class SearchScreen extends StatelessWidget {
+  const SearchScreen({Key? key}) : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Search")),
+      body: const Center(child: Text("Search Screen")),
+    );
+  }
+}
 
 /// Halaman utama dengan Bottom Navigation Bar
 class MainNavigationScreen extends StatefulWidget {
@@ -16,10 +35,10 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
-  final List<Widget> _pages = const [
+  final List<Widget> _pages = [
     HomeScreen(),
-    SearchScreen(),
-    NotificationsScreen(),
+    const SearchScreen(),
+    NotificationsScreen(), // Pastikan tidak menggunakan 'const'
     ProfileScreen(),
   ];
   
@@ -33,8 +52,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications), label: 'Notification'),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notification'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
@@ -48,6 +66,27 @@ void main() {
       providers: [
         ChangeNotifierProvider<ProfileViewModel>(
           create: (_) => ProfileViewModel(),
+        ),
+        // Daftarkan remote data source dengan parameter yang diperlukan
+        Provider<NotificationRemoteDataSource>(
+          create: (_) => NotificationRemoteDataSourceImpl(
+            client: http.Client(),
+            baseUrl: 'https://api.example.com', // Ganti dengan base URL yang sesuai
+          ),
+        ),
+        // Daftarkan repository yang menggunakan remoteDataSource
+        Provider<NotificationRepository>(
+          create: (context) => NotificationRepositoryImpl(
+            remoteDataSource: context.read<NotificationRemoteDataSource>(),
+          ),
+        ),
+        // Daftarkan NotificationsViewModel
+        ChangeNotifierProvider<NotificationsViewModel>(
+          create: (context) => NotificationsViewModel(
+            getNotifications: GetNotifications(
+              context.read<NotificationRepository>(),
+            ),
+          ),
         ),
       ],
       child: const MyApp(),
@@ -71,6 +110,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       onGenerateRoute: AppRouter.generateRoute,
+      builder: (context, child) => child!,
     );
   }
 }
