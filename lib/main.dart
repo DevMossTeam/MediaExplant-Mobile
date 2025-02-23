@@ -5,32 +5,6 @@ import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmod
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
 
-/// Placeholder untuk Search
-class SearchScreen extends StatelessWidget {
-  const SearchScreen({Key? key}) : super(key: key);
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Search")),
-      body: const Center(child: Text("Search Screen")),
-    );
-  }
-}
-
-/// Placeholder untuk Notification
-class NotificationScreen extends StatelessWidget {
-  const NotificationScreen({Key? key}) : super(key: key);
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Notification")),
-      body: const Center(child: Text("Notification Screen")),
-    );
-  }
-}
-
 /// Halaman utama dengan Bottom Navigation Bar
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({Key? key}) : super(key: key);
