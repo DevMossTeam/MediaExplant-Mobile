@@ -18,7 +18,7 @@ class NotificationsScreen extends StatelessWidget {
           if (viewModel.isLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (viewModel.notifications.isEmpty) {
-            return const Center(child: Text('Tidak ada notifikasi'));
+            return const Center(child: Text('Woy ada notifikasi'));
           } else {
             return RefreshIndicator(
               onRefresh: () async {
