@@ -9,9 +9,6 @@ class SettingNotifikasiScreen extends StatefulWidget {
 
 class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
   bool _pushNotifications = true;
-  bool _emailNotifications = false;
-  bool _smsNotifications = false;
-  bool _soundNotifications = true;
 
   @override
   Widget build(BuildContext context) {
@@ -41,42 +38,6 @@ class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
             onChanged: (bool value) {
               setState(() {
                 _pushNotifications = value;
-              });
-            },
-            activeColor: Theme.of(context).primaryColor,
-          ),
-          // Notifikasi Email
-          SwitchListTile(
-            title: const Text('Notifikasi Email'),
-            subtitle: const Text('Dapatkan pembaruan melalui email'),
-            value: _emailNotifications,
-            onChanged: (bool value) {
-              setState(() {
-                _emailNotifications = value;
-              });
-            },
-            activeColor: Theme.of(context).primaryColor,
-          ),
-          // Notifikasi SMS
-          SwitchListTile(
-            title: const Text('Notifikasi SMS'),
-            subtitle: const Text('Terima notifikasi melalui SMS'),
-            value: _smsNotifications,
-            onChanged: (bool value) {
-              setState(() {
-                _smsNotifications = value;
-              });
-            },
-            activeColor: Theme.of(context).primaryColor,
-          ),
-          // Suara Notifikasi
-          SwitchListTile(
-            title: const Text('Suara Notifikasi'),
-            subtitle: const Text('Aktifkan atau nonaktifkan suara notifikasi'),
-            value: _soundNotifications,
-            onChanged: (bool value) {
-              setState(() {
-                _soundNotifications = value;
               });
             },
             activeColor: Theme.of(context).primaryColor,
