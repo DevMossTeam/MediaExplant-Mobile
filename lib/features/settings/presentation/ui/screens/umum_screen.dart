@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class UmumScreen extends StatefulWidget {
   const UmumScreen({super.key});
-  
+
   @override
   State<UmumScreen> createState() => _UmumScreenState();
 }
@@ -11,24 +11,24 @@ class _UmumScreenState extends State<UmumScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _usernameController;
   late TextEditingController _namaLengkapController;
-  
+
   // Placeholder untuk foto profil, misalnya asset default
   String? _profileImagePath;
-  
+
   @override
   void initState() {
     super.initState();
     _usernameController = TextEditingController(text: "username_default");
     _namaLengkapController = TextEditingController(text: "Nama Lengkap Default");
   }
-  
+
   @override
   void dispose() {
     _usernameController.dispose();
     _namaLengkapController.dispose();
     super.dispose();
   }
-  
+
   // Fungsi simulasi untuk memilih foto profil
   void _pickImage() async {
     // Implementasi pemilihan gambar dapat menggunakan package seperti image_picker.
@@ -37,7 +37,7 @@ class _UmumScreenState extends State<UmumScreen> {
       _profileImagePath = 'assets/profile_sample.png';
     });
   }
-  
+
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
       // Simulasikan penyimpanan data profil
@@ -46,7 +46,7 @@ class _UmumScreenState extends State<UmumScreen> {
       );
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +54,7 @@ class _UmumScreenState extends State<UmumScreen> {
         title: const Text("Umum"),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Form(
           key: _formKey,
           child: Column(
@@ -66,7 +66,7 @@ class _UmumScreenState extends State<UmumScreen> {
                 children: [
                   CircleAvatar(
                     radius: 60,
-                    backgroundImage: _profileImagePath != null 
+                    backgroundImage: _profileImagePath != null
                         ? AssetImage(_profileImagePath!) as ImageProvider
                         : const AssetImage('assets/default_profile.png'),
                   ),
@@ -78,7 +78,8 @@ class _UmumScreenState extends State<UmumScreen> {
                       child: CircleAvatar(
                         radius: 20,
                         backgroundColor: Theme.of(context).primaryColor,
-                        child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                        child: const Icon(Icons.camera_alt,
+                            color: Colors.white, size: 20),
                       ),
                     ),
                   ),
@@ -94,7 +95,8 @@ class _UmumScreenState extends State<UmumScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -113,7 +115,8 @@ class _UmumScreenState extends State<UmumScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -121,6 +124,21 @@ class _UmumScreenState extends State<UmumScreen> {
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 16),
+              // Tampilkan Role (Read-only)
+              TextFormField(
+                initialValue: 'Pembaca',
+                decoration: InputDecoration(
+                  labelText: 'Role',
+                  prefixIcon: const Icon(Icons.verified_user_outlined),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+                readOnly: true,
               ),
               const SizedBox(height: 24),
               // Tombol untuk menyimpan perubahan
