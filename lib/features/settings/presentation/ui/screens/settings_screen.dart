@@ -13,11 +13,19 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // Section: Pengaturan
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              "Pengaturan",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
           _buildSettingItem(
             context,
-            icon: Icons.contact_mail,
-            title: "Hubungi",
-            routeName: '/settings/hubungi',
+            icon: Icons.settings,
+            title: "Umum",
+            routeName: '/settings/umum',
           ),
           _buildSettingItem(
             context,
@@ -30,6 +38,15 @@ class SettingsScreen extends StatelessWidget {
             icon: Icons.notifications,
             title: "Setting Notifikasi",
             routeName: '/settings/setting_notifikasi',
+          ),
+          const SizedBox(height: 24),
+          // Section: Pusat Informasi
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              "Pusat Informasi",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
           _buildSettingItem(
             context,
@@ -45,9 +62,9 @@ class SettingsScreen extends StatelessWidget {
           ),
           _buildSettingItem(
             context,
-            icon: Icons.settings,
-            title: "Umum",
-            routeName: '/settings/umum',
+            icon: Icons.contact_mail,
+            title: "Hubungi",
+            routeName: '/settings/hubungi',
           ),
         ],
       ),
@@ -63,8 +80,7 @@ class SettingsScreen extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Icon(icon, color: Theme.of(context).primaryColor),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
