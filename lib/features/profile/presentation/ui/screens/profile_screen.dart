@@ -67,7 +67,7 @@ class ProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 16.0, vertical: 12.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Judul section untuk artikel tersimpan.
                     const SectionTitle(title: 'Saved Articles'),
