@@ -70,13 +70,13 @@ MediaExplant/
 │   │   │   │   ├── datasources/
 │   │   │   │   │   └── news_remote_data_source.dart
 │   │   │   │   ├── models/
-│   │   │   │   │   ├── article_model.dart
+│   │   │   │   │   ├
 │   │   │   │   │   └── berita_model.dart
 │   │   │   │   └── repositories/
 │   │   │   │       └── news_repository_impl.dart
 │   │   │   ├── domain/
 │   │   │   │   ├── entities/
-│   │   │   │   │   └── article.dart
+│   │   │   │   │   └── berita.dart
 │   │   │   │   ├── repositories/
 │   │   │   │   │   └── news_repository.dart
 │   │   │   │   └── usecases/
@@ -92,7 +92,7 @@ MediaExplant/
 │   │   │       │   │   ├── home_screen.dart           // (fragment_home.xml)
 │   │   │       │   │   ├── home_popular_screen.dart    // (fragment_home_populer.xml)
 │   │   │       │   │   ├── home_latest_screen.dart     // (fragment_home_terbaru.xml)
-│   │   │       │   │   └── detail_article_screen.dart  // (fragment_detail_artikel.xml)
+│   │   │       │   │   └── detail_berita_screen.dart  // (fragment_detail_artikel.xml)
 │   │   │       │   └── widgets/
 │   │   │       │       ├── berita_terkait_item.dart    // (item_berita_terkait.xml)
 │   │   │       │       ├── berita_populer_item.dart     // (item_berita_populer.xml)
