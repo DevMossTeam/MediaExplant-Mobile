@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-// Import fitur Home & Navigation
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_article_screen.dart';
-// Import fitur Settings
 import 'package:mediaexplant/features/settings/presentation/ui/screens/settings_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/hubungi_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/keamanan_screen.dart';
@@ -11,11 +9,8 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/pusat_ban
 import 'package:mediaexplant/features/settings/presentation/ui/screens/setting_notifikasi_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/tentang_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_screen.dart';
-// Import fitur Profile
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
-// Import fitur Notifications
 import 'package:mediaexplant/features/notifications/presentation/ui/screens/notifications_screen.dart';
-// Import Welcome & Splash Screens
 import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
 

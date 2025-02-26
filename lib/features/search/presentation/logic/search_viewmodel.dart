@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/usecases/perform_search.dart';
+import '../../domain/entities/searh.dart';
 
 class SearchViewModel extends ChangeNotifier {
   final PerformSearch performSearch;
