@@ -50,11 +50,16 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: Colors.grey[100],
       // Tombol Floating Action untuk navigasi ke halaman Settings.
       floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: const Color(0xFF0D47A1),
+        elevation: 6,
         onPressed: () {
           Navigator.pushNamed(context, '/settings');
         },
-        icon: const Icon(Icons.settings),
-        label: const Text('Settings'),
+        icon: const Icon(Icons.settings, color: Colors.white),
+        label: const Text(
+          'Settings',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: SafeArea(
         child: CustomScrollView(
@@ -86,8 +91,6 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-/// Widget header profil yang menggunakan SliverAppBar dengan background gradient,
-/// menampilkan nama dan avatar pengguna dengan animasi Hero.
 class ProfileHeader extends StatelessWidget {
   final Map<String, String> profile;
   const ProfileHeader({Key? key, required this.profile}) : super(key: key);
@@ -97,78 +100,76 @@ class ProfileHeader extends StatelessWidget {
     return SliverAppBar(
       expandedHeight: 300,
       pinned: true,
-      flexibleSpace: FlexibleSpaceBar(
-        centerTitle: true,
-        // Hapus atau komentar baris berikut untuk menghilangkan judul di AppBar
-        // title: Text(
-        //   profile["name"]!,
-        //   style: const TextStyle(
-        //     fontSize: 16,
-        //     color: Colors.white,
-        //     shadows: [
-        //       Shadow(
-        //         blurRadius: 2,
-        //         color: Colors.black45,
-        //         offset: Offset(0, 1),
-        //       )
-        //     ],
-        //   ),
-        // ),
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Background gradient.
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
-            // Tampilan avatar dan nama profil.
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Hero(
-                      tag: 'avatar_${profile["avatarUrl"]}',
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.white,
-                        backgroundImage: NetworkImage(profile["avatarUrl"]!),
-                      ),
+      flexibleSpace: LayoutBuilder(
+        builder: (context, constraints) {
+          double percentage =
+              (constraints.maxHeight - kToolbarHeight) / (300 - kToolbarHeight);
+          bool isCollapsed = percentage < 0.01; // tampilkan teks ketika app bar sudah collapse
+
+          return FlexibleSpaceBar(
+            centerTitle: true,
+            title: isCollapsed
+                ? const Text(
+                    'Saved Article',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )
+                : null,
+            background: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      profile["name"]!,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 2,
-                            color: Colors.black45,
-                            offset: Offset(0, 1),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Hero(
+                          tag: 'avatar_${profile["avatarUrl"]}',
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Colors.white,
+                            backgroundImage: NetworkImage(profile["avatarUrl"]!),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          profile["name"]!,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 2,
+                                color: Colors.black45,
+                                offset: Offset(0, 1),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 }
+
 
 /// Widget untuk menampilkan statistik profil secara individual.
 class ProfileStat extends StatelessWidget {
@@ -206,7 +207,7 @@ class SectionTitle extends StatelessWidget {
       title,
       style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: const Color(0xFF0D47A1),
           ),
     );
   }
@@ -250,8 +251,8 @@ class SavedArticleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 4,
-      borderRadius: BorderRadius.circular(16),
+      elevation: 6,
+      borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: () {
           // Navigasi ke halaman detail artikel ketika kartu ditekan.
@@ -266,12 +267,18 @@ class SavedArticleCard extends StatelessWidget {
             ),
           );
         },
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         child: Container(
-          width: double.infinity,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                offset: const Offset(0, 4),
+                blurRadius: 6,
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,8 +288,8 @@ class SavedArticleCard extends StatelessWidget {
                 tag: thumbnailUrl,
                 child: ClipRRect(
                   borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
                   child: Image.network(
                     thumbnailUrl,
@@ -294,8 +301,8 @@ class SavedArticleCard extends StatelessWidget {
                         height: 140,
                         width: double.infinity,
                         color: Colors.grey.shade300,
-                        child:
-                            const Icon(Icons.broken_image, color: Colors.grey),
+                        child: const Icon(Icons.broken_image,
+                            color: Colors.grey),
                       );
                     },
                   ),
@@ -312,6 +319,7 @@ class SavedArticleCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF0D47A1),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -319,7 +327,11 @@ class SavedArticleCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       description,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                        height: 1.4,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -352,7 +364,7 @@ class ArticleDetailScreen extends StatelessWidget {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(title),
-        backgroundColor: Colors.blue[800],
+        backgroundColor: const Color(0xFF0D47A1),
       ),
       body: ListView(
         children: [
