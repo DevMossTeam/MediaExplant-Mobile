@@ -30,7 +30,7 @@ class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
             style: TextStyle(fontSize: 16),
           ),
           const Divider(height: 32, thickness: 1),
-          // Notifikasi Push
+          // Notifikasi Push dengan snackbar saat perubahan
           SwitchListTile(
             title: const Text('Notifikasi Push'),
             subtitle: const Text('Terima notifikasi langsung di perangkat Anda'),
@@ -39,32 +39,16 @@ class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
               setState(() {
                 _pushNotifications = value;
               });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Notifikasi ${value ? 'diaktifkan' : 'dinonaktifkan'}',
+                  ),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
             },
             activeColor: Theme.of(context).primaryColor,
-          ),
-          const SizedBox(height: 24),
-          // Tombol Simpan Pengaturan
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () {
-                // Simulasikan penyimpanan pengaturan notifikasi
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Pengaturan notifikasi telah disimpan')),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                'Simpan Pengaturan',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
-            ),
           ),
         ],
       ),

@@ -75,19 +75,12 @@ class _UmumScreenState extends State<UmumScreen> {
     final String? result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditFieldScreen(
+        builder: (context) => const EditFieldScreen(
           title: "Ubah Username",
-          initialValue: _usernameController.text,
+          initialValue: "username_default",
           description:
               "Username hanya boleh mengandung huruf, angka, dan underscore.",
           fieldLabel: "Username",
-          validator: (value) {
-            final regex = RegExp(r'^[a-zA-Z0-9_]+$');
-            if (!regex.hasMatch(value)) {
-              return 'Username tidak valid! (hanya huruf, angka, dan underscore)';
-            }
-            return null;
-          },
         ),
       ),
     );
@@ -95,6 +88,12 @@ class _UmumScreenState extends State<UmumScreen> {
       setState(() {
         _usernameController.text = result;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Perubahan tersimpan'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -102,17 +101,11 @@ class _UmumScreenState extends State<UmumScreen> {
     final String? result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditFieldScreen(
+        builder: (context) => const EditFieldScreen(
           title: "Ubah Nama Lengkap",
-          initialValue: _namaLengkapController.text,
+          initialValue: "Nama Lengkap Default",
           description: "Nama lengkap akan ditampilkan di profil Anda.",
           fieldLabel: "Nama Lengkap",
-          validator: (value) {
-            if (value.trim().isEmpty) {
-              return 'Nama Lengkap tidak boleh kosong!';
-            }
-            return null;
-          },
         ),
       ),
     );
@@ -120,6 +113,12 @@ class _UmumScreenState extends State<UmumScreen> {
       setState(() {
         _namaLengkapController.text = result;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Perubahan tersimpan'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -262,8 +261,7 @@ typedef FieldValidator = String? Function(String value);
 class EditFieldScreen extends StatefulWidget {
   final String title;
   final String initialValue;
-  final String
-      description; // Contoh: "Nama lengkap akan ditampilkan di profil. Hanya boleh berisi huruf dan spasi, minimal 3 karakter."
+  final String description;
   final String fieldLabel;
   final FieldValidator? validator;
 
@@ -292,7 +290,7 @@ class _EditFieldScreenState extends State<EditFieldScreen>
     super.initState();
     _controller = TextEditingController(text: widget.initialValue);
     _controller.addListener(() {
-      setState(() {}); // Untuk mengupdate tampilan ikon clear
+      setState(() {}); // Untuk mengupdate tampilan ikon clear dan counter
     });
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -312,11 +310,27 @@ class _EditFieldScreenState extends State<EditFieldScreen>
     super.dispose();
   }
 
+  // Fungsi untuk mengubah teks menjadi Title Case.
+  String _toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text.split(' ').map((word) {
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
+  }
+
   // Fungsi untuk menyimpan nilai dengan validasi dan animasi fade out sebelum kembali.
   void _save() {
     if (_formKey.currentState!.validate()) {
+      String resultText = _controller.text;
+      // Otomatis mengubah format berdasarkan field yang diedit
+      if (widget.fieldLabel == "Nama Lengkap") {
+        resultText = _toTitleCase(resultText);
+      } else if (widget.fieldLabel == "Username") {
+        resultText = resultText.toLowerCase();
+      }
       _animationController.reverse().then((value) {
-        Navigator.pop(context, _controller.text);
+        Navigator.pop(context, resultText);
       });
     }
   }
@@ -369,7 +383,7 @@ class _EditFieldScreenState extends State<EditFieldScreen>
             key: _formKey,
             child: ListView(
               children: [
-                // TextFormField dengan styling modern dan clear icon
+                // TextFormField dengan styling modern, clear icon, dan counter karakter
                 Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
@@ -391,6 +405,16 @@ class _EditFieldScreenState extends State<EditFieldScreen>
                     autofocus: true,
                     style: const TextStyle(
                         fontSize: 18, fontWeight: FontWeight.w500),
+                    maxLength: 25,
+                    // Menampilkan counter dengan format "0/25"
+                    buildCounter: (BuildContext context,
+                        {int? currentLength, int? maxLength, bool? isFocused}) {
+                      return Text(
+                        '${currentLength ?? 0}/${maxLength ?? 25}',
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
+                      );
+                    },
                     decoration: InputDecoration(
                       hintText: widget.fieldLabel,
                       hintStyle: const TextStyle(color: Colors.grey),
@@ -398,7 +422,8 @@ class _EditFieldScreenState extends State<EditFieldScreen>
                       // Clear icon yang muncul saat ada teks
                       suffixIcon: _controller.text.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear, color: Colors.grey),
+                              icon:
+                                  const Icon(Icons.clear, color: Colors.grey),
                               onPressed: () {
                                 _controller.clear();
                               },
@@ -417,7 +442,7 @@ class _EditFieldScreenState extends State<EditFieldScreen>
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Deskripsi field (contoh untuk Nama Lengkap)
+                // Deskripsi field (contoh untuk Nama Lengkap atau Username)
                 Text(
                   widget.description,
                   style: const TextStyle(fontSize: 14, color: Colors.grey),
