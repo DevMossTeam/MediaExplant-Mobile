@@ -26,7 +26,7 @@ class TentangScreen extends StatelessWidget {
             const SizedBox(height: 16.0),
             // Nama Aplikasi
             const Text(
-              'Nama Aplikasi',
+              'Media Explant',
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
@@ -44,7 +44,6 @@ class TentangScreen extends StatelessWidget {
             const SizedBox(height: 24.0),
             // Deskripsi Aplikasi
             const Text(
-              'Deskripsi Aplikasi:\n\n'
               'Aplikasi ini merupakan solusi terbaik untuk memenuhi kebutuhan informasi dan interaksi di lingkungan kampus. '
               'Dengan antarmuka yang intuitif dan fitur-fitur unggulan, aplikasi ini memudahkan pengguna untuk mendapatkan '
               'berita terkini, mengakses informasi akademik, dan berinteraksi dengan komunitas kampus secara efektif. '
@@ -62,7 +61,7 @@ class TentangScreen extends StatelessWidget {
             const SizedBox(height: 24.0),
             // Hak Cipta
             const Text(
-              '© 2025 Nama Aplikasi. All rights reserved.',
+              '© 2025 Media Explant. All rights reserved.',
               style: TextStyle(fontSize: 12.0, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
@@ -72,7 +71,7 @@ class TentangScreen extends StatelessWidget {
               onPressed: () {
                 showLicensePage(
                   context: context,
-                  applicationName: 'Nama Aplikasi',
+                  applicationName: 'Media Explant',
                   applicationVersion: '1.0.0',
                   applicationIcon: Image.asset(
                     'assets/app_logo.png',

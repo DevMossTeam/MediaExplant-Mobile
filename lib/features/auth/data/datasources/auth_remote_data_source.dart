@@ -11,7 +11,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<UserModel> signIn({required String email, required String password}) async {
     await Future.delayed(const Duration(seconds: 2));
     if (email == "test@example.com" && password == "password") {
-      return UserModel(id: "1", name: "Test User", email: email);
+      return UserModel(id: "112", name: "Test User", email: email);
     } else {
       throw Exception("Invalid credentials");
     }
@@ -21,7 +21,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<UserModel> signUp({required String username, required String email, required String password}) async {
     await Future.delayed(const Duration(seconds: 2));
     if (email != "existing@example.com") {
-      return UserModel(id: "2", name: username, email: email);
+      return UserModel(id: "5", name: username, email: email);
     } else {
       throw Exception("Email already in use");
     }

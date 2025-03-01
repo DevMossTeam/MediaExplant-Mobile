@@ -61,7 +61,6 @@ class KeamananScreen extends StatelessWidget {
             const Text(
               '• Jangan bagikan informasi login Anda kepada siapa pun.\n'
               '• Gunakan password yang kuat dan unik untuk setiap akun.\n'
-              '• Aktifkan verifikasi dua langkah jika tersedia.\n'
               '• Perbarui pengaturan keamanan secara berkala.',
               style: TextStyle(fontSize: 16, height: 1.5),
             ),

@@ -99,77 +99,74 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       expandedHeight: 300,
-      pinned: true,
+      pinned: false,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
           double percentage =
               (constraints.maxHeight - kToolbarHeight) / (300 - kToolbarHeight);
-          bool isCollapsed = percentage < 0.01; // tampilkan teks ketika app bar sudah collapse
+          bool isCollapsed = percentage < 0.01;
 
           return FlexibleSpaceBar(
             centerTitle: true,
-            title: isCollapsed
-                ? const Text(
-                    'Saved Article',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  )
-                : null,
-            background: Stack(
-              fit: StackFit.expand,
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Hero(
-                          tag: 'avatar_${profile["avatarUrl"]}',
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Colors.white,
-                            backgroundImage: NetworkImage(profile["avatarUrl"]!),
+            title: null, // Don't show title when collapsed
+            background: isCollapsed
+                ? const SizedBox.shrink() // Hide everything when collapsed
+                : Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        Text(
-                          profile["name"]!,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                blurRadius: 2,
-                                color: Colors.black45,
-                                offset: Offset(0, 1),
-                              )
+                      ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 20.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Hero(
+                                tag: 'avatar_${profile["avatarUrl"]}',
+                                child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor: Colors.white,
+                                  backgroundImage:
+                                      NetworkImage(profile["avatarUrl"]!),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                profile["name"]!,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 2,
+                                      color: Colors.black45,
+                                      offset: Offset(0, 1),
+                                    )
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
           );
         },
       ),
     );
   }
 }
-
 
 /// Widget untuk menampilkan statistik profil secara individual.
 class ProfileStat extends StatelessWidget {
