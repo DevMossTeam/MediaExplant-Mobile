@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
 /// Main widget untuk tampilan profil dengan data dummy.
+/// Tampilan akan berbeda jika pengguna sudah login atau belum.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
+
+  /// Dummy state login.
+  /// Ubah nilai isLoggedIn ke true untuk mensimulasikan pengguna yang sudah login.
+  final bool isLoggedIn = false;
 
   /// Data dummy untuk artikel tersimpan (hanya sebagai contoh).
   static const List<Map<String, String>> dummySavedArticles = [
@@ -48,7 +53,8 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      // Tombol Floating Action untuk navigasi ke halaman Settings.
+      // Tombol Floating Action untuk navigasi ke halaman Settings,
+      // selalu tampil dan ditempatkan secara eksplisit di pojok kanan bawah.
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF0D47A1),
         elevation: 6,
@@ -61,26 +67,111 @@ class ProfileScreen extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // Header profil dengan tampilan gradient dan avatar.
-            ProfileHeader(profile: dummyProfile),
-            // Konten utama profil dan artikel tersimpan.
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Judul section untuk artikel tersimpan.
-                    const SectionTitle(title: 'Saved Articles'),
-                    const SizedBox(height: 12),
-                    // Daftar artikel tersimpan yang ditampilkan secara horizontal.
-                    SavedArticlesSection(articles: dummySavedArticles),
-                    const SizedBox(height: 24),
-                  ],
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      body: isLoggedIn
+          ? LoggedInProfileContent(
+              profile: dummyProfile, articles: dummySavedArticles)
+          : const NotLoggedInProfileContent(),
+    );
+  }
+}
+
+/// Widget yang menampilkan konten profil bagi pengguna yang sudah login.
+class LoggedInProfileContent extends StatelessWidget {
+  final Map<String, String> profile;
+  final List<Map<String, String>> articles;
+
+  const LoggedInProfileContent({
+    Key? key,
+    required this.profile,
+    required this.articles,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: CustomScrollView(
+        slivers: [
+          // Header profil dengan gradient dan avatar.
+          ProfileHeader(profile: profile),
+          // Konten utama berisi judul dan daftar artikel tersimpan.
+          SliverToBoxAdapter(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SectionTitle(title: 'Saved Articles'),
+                  const SizedBox(height: 12),
+                  SavedArticlesSection(articles: articles),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Widget yang menampilkan tampilan profil ketika pengguna belum login.
+class NotLoggedInProfileContent extends StatelessWidget {
+  const NotLoggedInProfileContent({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Placeholder avatar.
+            CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.grey[300],
+              child: const Icon(
+                Icons.person_outline,
+                size: 50,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Anda belum login',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0D47A1),
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Silakan login untuk mengakses profil dan artikel tersimpan Anda.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 30),
+            // Tombol untuk navigasi ke halaman login.
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/login');
+                },
+                icon: const Icon(Icons.login),
+                label: const Text(
+                  'Login',
+                  style: TextStyle(fontSize: 16),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0D47A1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
                 ),
               ),
             ),
@@ -91,6 +182,7 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
+/// ProfileHeader membuat header profil yang menampilkan background gradient dan avatar.
 class ProfileHeader extends StatelessWidget {
   final Map<String, String> profile;
   const ProfileHeader({Key? key, required this.profile}) : super(key: key);
@@ -102,15 +194,15 @@ class ProfileHeader extends StatelessWidget {
       pinned: false,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
-          double percentage =
-              (constraints.maxHeight - kToolbarHeight) / (300 - kToolbarHeight);
+          double percentage = (constraints.maxHeight - kToolbarHeight) /
+              (300 - kToolbarHeight);
           bool isCollapsed = percentage < 0.01;
 
           return FlexibleSpaceBar(
             centerTitle: true,
-            title: null, // Don't show title when collapsed
+            title: null, // Jangan tampilkan judul saat collapse.
             background: isCollapsed
-                ? const SizedBox.shrink() // Hide everything when collapsed
+                ? const SizedBox.shrink() // Sembunyikan isi saat collapse.
                 : Stack(
                     fit: StackFit.expand,
                     children: [
@@ -168,32 +260,7 @@ class ProfileHeader extends StatelessWidget {
   }
 }
 
-/// Widget untuk menampilkan statistik profil secara individual.
-class ProfileStat extends StatelessWidget {
-  final String label;
-  final String value;
-  const ProfileStat({Key? key, required this.label, required this.value})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-      ],
-    );
-  }
-}
-
-/// Widget judul section untuk memberikan konsistensi tampilan antar bagian.
+/// SectionTitle memberikan konsistensi tampilan judul antar bagian.
 class SectionTitle extends StatelessWidget {
   final String title;
   const SectionTitle({Key? key, required this.title}) : super(key: key);
@@ -210,10 +277,10 @@ class SectionTitle extends StatelessWidget {
   }
 }
 
+/// SavedArticlesSection menampilkan daftar artikel tersimpan.
 class SavedArticlesSection extends StatelessWidget {
   final List<Map<String, String>> articles;
-  const SavedArticlesSection({Key? key, required this.articles})
-      : super(key: key);
+  const SavedArticlesSection({Key? key, required this.articles}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -234,6 +301,8 @@ class SavedArticlesSection extends StatelessWidget {
   }
 }
 
+/// SavedArticleCard merepresentasikan satu artikel tersimpan dengan thumbnail, judul, dan deskripsi singkat.
+/// Menggunakan animasi Hero untuk transisi yang halus.
 class SavedArticleCard extends StatelessWidget {
   final String title;
   final String thumbnailUrl;
@@ -298,8 +367,10 @@ class SavedArticleCard extends StatelessWidget {
                         height: 140,
                         width: double.infinity,
                         color: Colors.grey.shade300,
-                        child: const Icon(Icons.broken_image,
-                            color: Colors.grey),
+                        child: const Icon(
+                          Icons.broken_image,
+                          color: Colors.grey,
+                        ),
                       );
                     },
                   ),
@@ -344,6 +415,7 @@ class SavedArticleCard extends StatelessWidget {
 }
 
 /// Halaman detail artikel untuk menampilkan konten lengkap artikel yang dipilih.
+/// Menggunakan animasi Hero untuk transisi gambar.
 class ArticleDetailScreen extends StatelessWidget {
   final String title;
   final String thumbnailUrl;
@@ -377,8 +449,11 @@ class ArticleDetailScreen extends StatelessWidget {
                 return Container(
                   height: 250,
                   color: Colors.grey.shade300,
-                  child: const Icon(Icons.broken_image,
-                      color: Colors.grey, size: 50),
+                  child: const Icon(
+                    Icons.broken_image,
+                    color: Colors.grey,
+                    size: 50,
+                  ),
                 );
               },
             ),
