@@ -13,6 +13,10 @@ import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_sc
 import 'package:mediaexplant/features/notifications/presentation/ui/screens/notifications_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
+import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_in_screen.dart';
+import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_screen.dart';
+// import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_input_screen.dart';
+// import 'package:mediaexplant/features/auth/presentation/ui/screens/reset_password_screen.dart';
 
 /// Halaman placeholder untuk Search
 class SearchScreen extends StatelessWidget {
@@ -97,6 +101,14 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const UmumScreen());
       case '/notifications':
         return MaterialPageRoute(builder: (_) => NotificationsScreen());
+      case '/login':
+        return MaterialPageRoute(builder: (_) => const SignInScreen());
+      case '/sign_up':
+        return MaterialPageRoute(builder: (_) => const SignUpScreen());
+      // case '/sign_up_input':
+      //   return MaterialPageRoute(builder: (_) => const SignUpInputScreen());
+      // case '/reset_password':
+      //   return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
       default:
         // Route fallback untuk route yang tidak terdefinisi.
         return MaterialPageRoute(

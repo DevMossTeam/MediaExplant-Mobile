@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+
+// Import screens and view models from your project
 import 'package:mediaexplant/features/navigation/app_router.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
 import 'package:mediaexplant/features/notifications/presentation/logic/notifications_viewmodel.dart';
@@ -12,7 +14,7 @@ import 'package:mediaexplant/features/notifications/domain/repositories/notifica
 import 'package:mediaexplant/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:mediaexplant/features/notifications/data/datasources/notification_remote_data_source.dart';
 
-/// Halaman placeholder untuk Search
+/// Halaman placeholder untuk Search.
 class SearchScreen extends StatelessWidget {
   const SearchScreen({Key? key}) : super(key: key);
   
@@ -25,7 +27,7 @@ class SearchScreen extends StatelessWidget {
   }
 }
 
-/// Halaman utama dengan Bottom Navigation Bar
+/// Halaman utama dengan Bottom Navigation Bar.
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({Key? key}) : super(key: key);
   
@@ -38,7 +40,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   final List<Widget> _pages = [
     HomeScreen(),
     const SearchScreen(),
-    NotificationsScreen(), // Pastikan tidak menggunakan 'const'
+    // Pastikan NotificationsScreen tidak menggunakan const, sehingga dapat rebuild sesuai update.
+    NotificationsScreen(),
     ProfileScreen(),
   ];
   
@@ -64,23 +67,24 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        // Profile view model provider.
         ChangeNotifierProvider<ProfileViewModel>(
           create: (_) => ProfileViewModel(),
         ),
-        // Daftarkan remote data source dengan parameter yang diperlukan
+        // Provider for the remote data source with required parameters.
         Provider<NotificationRemoteDataSource>(
           create: (_) => NotificationRemoteDataSourceImpl(
             client: http.Client(),
-            baseUrl: 'https://api.example.com', // Ganti dengan base URL yang sesuai
+            baseUrl: 'https://api.example.com', // Replace with your actual base URL.
           ),
         ),
-        // Daftarkan repository yang menggunakan remoteDataSource
+        // Provider for the notification repository using the remote data source.
         Provider<NotificationRepository>(
           create: (context) => NotificationRepositoryImpl(
             remoteDataSource: context.read<NotificationRemoteDataSource>(),
           ),
         ),
-        // Daftarkan NotificationsViewModel
+        // Notifications view model provider.
         ChangeNotifierProvider<NotificationsViewModel>(
           create: (context) => NotificationsViewModel(
             getNotifications: GetNotifications(

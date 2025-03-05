@@ -1,202 +1,282 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../logic/sign_up_viewmodel.dart';
 
+/// SignUpScreen merupakan halaman pendaftaran akun.
+/// Halaman ini menyediakan tiga input field: Nama Lengkap, Username, dan Email.
+/// Terdapat tombol "Kirim OTP" untuk memulai proses verifikasi, dan tombol "Sign In"
+/// sebagai alternatif bagi pengguna yang sudah memiliki akun.
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  const SignUpScreen({Key? key}) : super(key: key);
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _usernameController;
-  late final TextEditingController _emailController;
-  late final TextEditingController _passwordController;
-  late final TextEditingController _confirmPasswordController;
+  // Global key untuk mengidentifikasi dan memvalidasi form.
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    super.initState();
-    _usernameController = TextEditingController();
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-    _confirmPasswordController = TextEditingController();
-  }
+  // Controller untuk masing-masing input field.
+  final TextEditingController _namaLengkapController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   void dispose() {
+    // Pastikan semua controller di-dispose saat widget dihapus.
+    _namaLengkapController.dispose();
     _usernameController.dispose();
     _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _onSignUp() {
-    if (_formKey.currentState?.validate() ?? false) {
-      final viewModel = context.read<SignUpViewModel>();
-      viewModel.signUp(
-        username: _usernameController.text.trim(),
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
+  /// Fungsi untuk mengirim OTP (One-Time Password).
+  /// Fungsi ini akan memvalidasi input dan mensimulasikan proses pengiriman OTP.
+  void _sendOTP() {
+    if (_formKey.currentState!.validate()) {
+      // Tampilkan SnackBar sebagai feedback bahwa OTP sedang dikirim.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Mengirim OTP...")),
       );
+      // Simulasikan delay (misalnya, pemanggilan API) selama 2 detik.
+      Future.delayed(const Duration(seconds: 2), () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("OTP berhasil dikirim!")),
+        );
+        // Optionally, navigasi ke halaman verifikasi OTP bisa dilakukan di sini.
+        // Navigator.pushNamed(context, '/otp_verification');
+      });
     }
+  }
+
+  /// Fungsi untuk navigasi ke halaman Sign In.
+  void _goToSignIn() {
+    Navigator.pushNamed(context, '/login');
   }
 
   @override
   Widget build(BuildContext context) {
+    // Mendapatkan ukuran layar untuk penyesuaian layout secara responsif.
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Sign Up"),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Consumer<SignUpViewModel>(
-              builder: (context, viewModel, child) {
-                return Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const FlutterLogo(size: 80),
-                      const SizedBox(height: 24),
-                      Text(
-                        "Create Account",
-                        style: Theme.of(context).textTheme.headlineMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Sign up to get started",
-                        style: Theme.of(context).textTheme.titleMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 32),
-                      TextFormField(
-                        controller: _usernameController,
-                        decoration: InputDecoration(
-                          labelText: "Username",
-                          prefixIcon: const Icon(Icons.person),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+      // Gunakan Stack untuk menampilkan background gradient dan overlay
+      // serta konten utama yang dapat di-scroll.
+      body: Stack(
+        children: [
+          // Latar belakang gradient.
+          Container(
+            height: size.height,
+            width: size.width,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          // Overlay semi-transparan untuk menambah dimensi visual.
+          Container(
+            height: size.height,
+            width: size.width,
+            color: Colors.black.withOpacity(0.2),
+          ),
+          // Konten utama dengan SingleChildScrollView agar tidak terpotong saat keyboard muncul.
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: size.width * 0.08,
+                vertical: size.height * 0.1,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Bagian header: logo aplikasi dan teks sambutan.
+                  Center(
+                    child: Column(
+                      children: [
+                        // Logo menggunakan Hero widget untuk transisi halus.
+                        Hero(
+                          tag: 'signup_logo',
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Colors.white,
+                            child: Icon(
+                              Icons.person_add,
+                              size: 50,
+                              color: Colors.blue.shade800,
+                            ),
                           ),
                         ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return "Please enter a username";
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          labelText: "Email",
-                          prefixIcon: const Icon(Icons.email),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                        const SizedBox(height: 16),
+                        const Text(
+                          "Buat Akun Baru",
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return "Please enter an email";
-                          }
-                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                            return "Please enter a valid email";
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: "Password",
-                          prefixIcon: const Icon(Icons.lock),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                        const SizedBox(height: 8),
+                        const Text(
+                          "Isi data Anda untuk mendaftar",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white70,
                           ),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Please enter a password";
-                          }
-                          if (value.length < 6) {
-                            return "Password must be at least 6 characters";
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _confirmPasswordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: "Confirm Password",
-                          prefixIcon: const Icon(Icons.lock_outline),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  // Kontainer form pendaftaran dengan latar belakang putih.
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Please confirm your password";
-                          }
-                          if (value != _passwordController.text) {
-                            return "Passwords do not match";
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                      viewModel.isLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : ElevatedButton(
-                              onPressed: _onSignUp,
+                      ],
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          // Input untuk "Nama Lengkap"
+                          TextFormField(
+                            controller: _namaLengkapController,
+                            keyboardType: TextInputType.name,
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.person),
+                              labelText: "Nama Lengkap",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return "Nama Lengkap wajib diisi";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          // Input untuk "Username"
+                          TextFormField(
+                            controller: _usernameController,
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.alternate_email),
+                              labelText: "Username",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return "Username wajib diisi";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          // Input untuk "Email"
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.email),
+                              labelText: "Email",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return "Email wajib diisi";
+                              }
+                              // Validasi sederhana format email.
+                              if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                                return "Email tidak valid";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 30),
+                          // Tombol "Kirim OTP" untuk proses verifikasi.
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: _sendOTP,
                               style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                backgroundColor: const Color(0xFF0D47A1),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
                               child: const Text(
-                                "Sign Up",
-                                style: TextStyle(fontSize: 16),
+                                "Kirim OTP",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                      if (viewModel.errorMessage != null) ...[
-                        const SizedBox(height: 16),
-                        Text(
-                          viewModel.errorMessage!,
-                          style: const TextStyle(color: Colors.red),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                      const SizedBox(height: 32),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text("Already have an account?"),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text("Sign In"),
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                );
-              },
+                  const SizedBox(height: 20),
+                  // Tombol "Sign In" untuk pengguna yang sudah memiliki akun.
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Sudah punya akun? ",
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        TextButton(
+                          onPressed: _goToSignIn,
+                          child: const Text(
+                            "Sign In",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  // Informasi tambahan, misalnya persetujuan syarat dan ketentuan.
+                  Center(
+                    child: Text(
+                      "Dengan mendaftar, Anda menyetujui Syarat dan Ketentuan kami.",
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Area tambahan untuk social sign-up atau informasi lain jika diperlukan.
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
