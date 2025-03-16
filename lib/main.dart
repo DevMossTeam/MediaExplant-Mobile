@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
-// Import screens and view models from your project
+// Import screens dan view model dari project
 import 'package:mediaexplant/features/navigation/app_router.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
 import 'package:mediaexplant/features/notifications/presentation/logic/notifications_viewmodel.dart';
@@ -49,16 +49,40 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notification'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
+bottomNavigationBar: BottomNavigationBar(
+  currentIndex: _currentIndex,
+  onTap: (index) => setState(() => _currentIndex = index),
+  type: BottomNavigationBarType.fixed,
+  items: const [
+    BottomNavigationBarItem(
+      icon: Icon(Icons.home),
+      label: ' ', // Menggunakan spasi untuk reserve layout
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.search),
+      label: ' ',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.notifications),
+      label: ' ',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.person),
+      label: ' ',
+    ),
+  ],
+  selectedIconTheme: const IconThemeData(
+    color: Colors.blue, // Warna ikon saat terpilih.
+    size: 24,
+  ),
+  unselectedIconTheme: const IconThemeData(
+    color: Colors.grey, // Warna ikon saat tidak terpilih.
+    size: 24,
+  ),
+  // Mengatur style label agar tidak tampil (font size 0) tapi tetap reserve ruangnya
+  selectedLabelStyle: const TextStyle(fontSize: 0),
+  unselectedLabelStyle: const TextStyle(fontSize: 0),
+),
     );
   }
 }
@@ -67,24 +91,24 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        // Profile view model provider.
+        // Provider untuk Profile view model.
         ChangeNotifierProvider<ProfileViewModel>(
           create: (_) => ProfileViewModel(),
         ),
-        // Provider for the remote data source with required parameters.
+        // Provider untuk remote data source dengan parameter yang diperlukan.
         Provider<NotificationRemoteDataSource>(
           create: (_) => NotificationRemoteDataSourceImpl(
             client: http.Client(),
-            baseUrl: 'https://api.example.com', // Replace with your actual base URL.
+            baseUrl: 'https://api.example.com', // Ganti dengan URL dasar yang benar.
           ),
         ),
-        // Provider for the notification repository using the remote data source.
+        // Provider untuk notification repository menggunakan remote data source.
         Provider<NotificationRepository>(
           create: (context) => NotificationRepositoryImpl(
             remoteDataSource: context.read<NotificationRemoteDataSource>(),
           ),
         ),
-        // Notifications view model provider.
+        // Provider untuk Notifications view model.
         ChangeNotifierProvider<NotificationsViewModel>(
           create: (context) => NotificationsViewModel(
             getNotifications: GetNotifications(
@@ -107,9 +131,11 @@ class MyApp extends StatelessWidget {
       title: 'MediaExplant',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.black,
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          selectedItemColor: Colors.blue,    // Warna ikon saat terpilih.
+          unselectedItemColor: Colors.grey,  // Warna ikon ketika tidak terpilih.
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
         ),
       ),
       initialRoute: '/',
