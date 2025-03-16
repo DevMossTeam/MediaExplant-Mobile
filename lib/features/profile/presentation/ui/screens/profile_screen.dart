@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 /// Main widget untuk tampilan profil dengan data dummy.
 /// Tampilan akan berbeda jika pengguna sudah login atau belum.
@@ -167,17 +168,18 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
     super.dispose();
   }
 
-  /// Widget avatar yang diberi animasi fade in
+  /// Widget avatar yang diberi animasi fade in menggunakan Lottie animation
   Widget _buildAvatar() {
     return FadeTransition(
       opacity: _avatarFadeAnimation,
-      child: CircleAvatar(
-        radius: 50,
-        backgroundColor: Colors.blueGrey.shade200,
-        child: const Icon(
-          Icons.person_outline,
-          size: 50,
-          color: Colors.white,
+      child: ClipOval(
+        child: Container(
+          width: 200,
+          height: 200,
+          child: Lottie.asset(
+            'assets/animations/Animation_1742098657264.json',
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );
@@ -220,40 +222,39 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
   }
 
   /// Widget tombol login yang diberi animasi fade in
-Widget _buildLoginButton(BuildContext context) {
-  return FadeTransition(
-    opacity: _contentFadeAnimation,
-    child: SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton.icon(
-        onPressed: () {
-          // Navigasi ke halaman login saat tombol ditekan
-          Navigator.pushNamed(context, '/login');
-        },
-        icon: const Icon(Icons.login, color: Colors.white), // Pastikan ikon juga putih
-        label: const Text(
-          'Login',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.white, // Warna teks putih
+  Widget _buildLoginButton(BuildContext context) {
+    return FadeTransition(
+      opacity: _contentFadeAnimation,
+      child: SizedBox(
+        width: double.infinity,
+        height: 50,
+        child: ElevatedButton.icon(
+          onPressed: () {
+            // Navigasi ke halaman login saat tombol ditekan
+            Navigator.pushNamed(context, '/login');
+          },
+          icon: const Icon(Icons.login, color: Colors.white),
+          label: const Text(
+            'Login',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
           ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0D47A1), // Warna biru tua
-          foregroundColor: Colors.white, // Pastikan teks tetap putih
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF0D47A1),
+            foregroundColor: Colors.white,
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   /// Widget tambahan berupa tagline yang bersifat motivasional
   Widget _buildTagline() {

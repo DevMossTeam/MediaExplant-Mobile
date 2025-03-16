@@ -124,7 +124,7 @@ class _SplashScreenState extends State<SplashScreen>
       child: SlideTransition(
         position: _textSlideAnimation,
         child: const Text(
-          'Selamat Datang',
+          'Media Explant', // Teks diubah dari "Selamat Datang" menjadi "Explant"
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,

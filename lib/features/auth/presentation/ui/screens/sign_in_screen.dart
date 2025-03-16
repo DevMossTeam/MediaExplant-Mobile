@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart'; // Pastikan dependency lottie sudah ditambahkan
 
 /// Halaman login yang menampilkan form untuk input username/email dan password.
 /// Terdapat tiga tombol: Sign In, Sign Up, dan Forgot Password.
@@ -102,15 +103,17 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: Column(
                       children: [
                         // Gunakan Hero widget untuk transisi yang mulus antar halaman.
+                        // Membungkus Lottie dengan CircleAvatar agar meniru tampilan sebelumnya.
                         Hero(
                           tag: 'app_logo',
                           child: CircleAvatar(
                             radius: 50,
                             backgroundColor: Colors.white,
-                            child: Icon(
-                              Icons.lock_outline,
-                              size: 50,
-                              color: Colors.blue.shade800,
+                            child: Lottie.asset(
+                              'assets/animations/Animation_1742099923119.json',
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),

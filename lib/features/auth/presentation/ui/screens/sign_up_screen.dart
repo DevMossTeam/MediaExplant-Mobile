@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart'; // Pastikan dependency lottie sudah ditambahkan
 
 /// SignUpScreen merupakan halaman pendaftaran akun.
 /// Halaman ini menyediakan tiga input field: Nama Lengkap, Username, dan Email.
@@ -102,10 +103,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           child: CircleAvatar(
                             radius: 50,
                             backgroundColor: Colors.white,
-                            child: Icon(
-                              Icons.person_add,
-                              size: 50,
-                              color: Colors.blue.shade800,
+                            child: Lottie.asset(
+                              'assets/animations/Animation_1742101335442.json',
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),
