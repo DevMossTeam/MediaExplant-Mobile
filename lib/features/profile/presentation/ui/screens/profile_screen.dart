@@ -116,68 +116,209 @@ class LoggedInProfileContent extends StatelessWidget {
   }
 }
 
-/// Widget yang menampilkan tampilan profil ketika pengguna belum login.
-class NotLoggedInProfileContent extends StatelessWidget {
+/// untuk menciptakan pengalaman visual yang lebih menarik.
+class NotLoggedInProfileContent extends StatefulWidget {
   const NotLoggedInProfileContent({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Placeholder avatar.
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.grey[300],
-              child: const Icon(
-                Icons.person_outline,
-                size: 50,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Anda belum login',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0D47A1),
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Silakan login untuk mengakses profil dan artikel tersimpan Anda.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            const SizedBox(height: 30),
-            // Tombol untuk navigasi ke halaman login.
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/login');
-                },
-                icon: const Icon(Icons.login),
-                label: const Text(
-                  'Login',
-                  style: TextStyle(fontSize: 16),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0D47A1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                ),
-              ),
-            ),
-          ],
+  _NotLoggedInProfileContentState createState() =>
+      _NotLoggedInProfileContentState();
+}
+
+class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _avatarFadeAnimation;
+  late Animation<Offset> _headerSlideAnimation;
+  late Animation<double> _contentFadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    // Inisialisasi AnimationController dengan durasi 1200ms
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    // Animasi untuk avatar: fade in secara perlahan
+    _avatarFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    // Animasi untuk teks header: slide dari bawah ke posisi semula
+    _headerSlideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
+
+    // Animasi untuk konten lainnya: fade in secara bersamaan
+    _contentFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    // Memulai animasi secara otomatis ketika widget diinisialisasi
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  /// Widget avatar yang diberi animasi fade in
+  Widget _buildAvatar() {
+    return FadeTransition(
+      opacity: _avatarFadeAnimation,
+      child: CircleAvatar(
+        radius: 50,
+        backgroundColor: Colors.blueGrey.shade200,
+        child: const Icon(
+          Icons.person_outline,
+          size: 50,
+          color: Colors.white,
         ),
       ),
+    );
+  }
+
+  /// Widget teks header yang diberi animasi slide
+  Widget _buildHeaderText() {
+    return SlideTransition(
+      position: _headerSlideAnimation,
+      child: const Text(
+        'Anda belum login',
+        style: TextStyle(
+          fontSize: 26,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF0D47A1),
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+
+  /// Widget teks sub-header dengan keterangan dan ajakan yang lebih informatif
+  Widget _buildSubHeaderText() {
+    return FadeTransition(
+      opacity: _contentFadeAnimation,
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: Text(
+          'Silakan login untuk mengakses profil dan artikel tersimpan Anda. '
+          'Nikmati pengalaman membaca yang lebih personal serta rekomendasi konten sesuai minat Anda!',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey,
+            height: 1.5,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Widget tombol login yang diberi animasi fade in
+Widget _buildLoginButton(BuildContext context) {
+  return FadeTransition(
+    opacity: _contentFadeAnimation,
+    child: SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          // Navigasi ke halaman login saat tombol ditekan
+          Navigator.pushNamed(context, '/login');
+        },
+        icon: const Icon(Icons.login, color: Colors.white), // Pastikan ikon juga putih
+        label: const Text(
+          'Login',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white, // Warna teks putih
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF0D47A1), // Warna biru tua
+          foregroundColor: Colors.white, // Pastikan teks tetap putih
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+        ),
+      ),
+    ),
+  );
+}
+
+
+  /// Widget tambahan berupa tagline yang bersifat motivasional
+  Widget _buildTagline() {
+    return FadeTransition(
+      opacity: _contentFadeAnimation,
+      child: const Padding(
+        padding: EdgeInsets.only(top: 20.0),
+        child: Text(
+          'Bergabunglah dengan komunitas kami sekarang!',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.black45,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Widget untuk menampilkan background dengan efek gradient
+  Widget _buildDecorativeBackground() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.white,
+            Colors.blue.shade50,
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // Background dekoratif
+        _buildDecorativeBackground(),
+        // Konten utama yang dapat discroll jika diperlukan
+        Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildAvatar(),
+                  const SizedBox(height: 30),
+                  _buildHeaderText(),
+                  const SizedBox(height: 15),
+                  _buildSubHeaderText(),
+                  const SizedBox(height: 40),
+                  _buildLoginButton(context),
+                  const SizedBox(height: 20),
+                  _buildTagline(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
