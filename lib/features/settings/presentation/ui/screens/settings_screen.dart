@@ -9,7 +9,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar dengan background gradient yang memberikan kesan modern.
+      // AppBar dengan background gradient biru yang memberikan kesan modern.
       appBar: AppBar(
         centerTitle: true,
         elevation: 4,
@@ -137,16 +137,23 @@ class SettingItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        // Icon ditempatkan dalam CircleAvatar dengan latar transparan.
+        // Icon ditempatkan dalam CircleAvatar dengan latar belakang biru muda.
         leading: CircleAvatar(
-          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-          child: Icon(icon, color: Theme.of(context).primaryColor),
+          backgroundColor: const Color(0xFFE3F2FD),
+          child: Icon(
+            icon,
+            color: const Color(0xFF0D47A1),
+          ),
         ),
         title: Text(
           title,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        trailing: const Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+          color: Colors.grey,
+        ),
         onTap: () {
           Navigator.pushNamed(context, routeName);
         },

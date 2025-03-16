@@ -1,13 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-/// Widget utama aplikasi dengan konfigurasi tema dan routing.
+/// Widget utama aplikasi.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,7 +19,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
-        // Gantikan accentColor dengan properti colorScheme.secondary
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.deepPurple)
             .copyWith(secondary: Colors.amber),
         scaffoldBackgroundColor: Colors.grey[50],
@@ -24,7 +27,6 @@ class MyApp extends StatelessWidget {
           centerTitle: true,
           backgroundColor: Colors.deepPurple,
         ),
-        // Update properti TextTheme sesuai Material 3
         textTheme: const TextTheme(
           titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -36,10 +38,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// Halaman utama Edit Profil (UmumScreen)
+/// Halaman utama Edit Profil.
 class UmumScreen extends StatefulWidget {
   const UmumScreen({super.key});
-
+  
   @override
   State<UmumScreen> createState() => _UmumScreenState();
 }
@@ -48,14 +50,14 @@ class _UmumScreenState extends State<UmumScreen> {
   late TextEditingController _usernameController;
   late TextEditingController _namaLengkapController;
   final String _role = "Pembaca";
-  String? _profileImagePath;
+  File? _profileImage;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
     _usernameController = TextEditingController(text: "username_default");
-    _namaLengkapController =
-        TextEditingController(text: "Nama Lengkap Default");
+    _namaLengkapController = TextEditingController(text: "Nama Lengkap Default");
   }
 
   @override
@@ -65,12 +67,198 @@ class _UmumScreenState extends State<UmumScreen> {
     super.dispose();
   }
 
-  void _pickImage() {
-    setState(() {
-      _profileImagePath = 'assets/profile_sample.png';
-    });
+  /// Fungsi untuk mengambil huruf pertama dari nama lengkap.
+  String _getInitial() {
+    if (_namaLengkapController.text.trim().isEmpty) return "?";
+    return _namaLengkapController.text.trim()[0].toUpperCase();
   }
 
+  /// Fungsi untuk menentukan warna background berdasarkan huruf pertama.
+  Color _getAvatarColor() {
+    if (_namaLengkapController.text.trim().isEmpty) return Colors.grey;
+    int code = _namaLengkapController.text.trim()[0].toUpperCase().codeUnitAt(0);
+    // Daftar warna yang bisa dipilih, bisa disesuaikan.
+    List<Color> colors = [
+      Colors.red,
+      Colors.green,
+      Colors.blue,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+      Colors.indigo,
+      Colors.brown,
+      Colors.cyan,
+      Colors.amber,
+    ];
+    // Misal: 'A' (65) sampai 'Z' (90)
+    int index = (code - 65) % colors.length;
+    if (index < 0) index = 0;
+    return colors[index];
+  }
+
+  /// Fungsi untuk meng-crop gambar menggunakan image_cropper.
+  Future<File?> _cropImage(File imageFile) async {
+    try {
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: imageFile.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+        compressFormat: ImageCompressFormat.png,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Image',
+            toolbarColor: Colors.deepPurple,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
+          ),
+          IOSUiSettings(
+            title: 'Crop Image',
+            aspectRatioLockEnabled: true,
+          ),
+        ],
+      );
+      if (croppedFile == null) return null;
+      return File(croppedFile.path);
+    } catch (e) {
+      debugPrint("Error saat crop image: $e");
+      return null;
+    }
+  }
+
+  /// Fungsi untuk memilih gambar dari kamera atau galeri.
+  Future<void> _pickImage() async {
+    // Simpan referensi ScaffoldMessenger untuk menghindari lookup pada context yang sudah tidak aktif.
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 4,
+                width: 40,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const Text(
+                'Pilih Sumber Gambar',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: Icon(Icons.camera_alt, color: Theme.of(context).primaryColor),
+                title: const Text('Ambil dari Kamera'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  try {
+                    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
+                    if (pickedFile != null) {
+                      File imageFile = File(pickedFile.path);
+                      File? cropped = await _cropImage(imageFile);
+                      if (cropped != null) {
+                        setState(() {
+                          _profileImage = cropped;
+                        });
+                      }
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      scaffoldMessenger.showSnackBar(
+                        SnackBar(content: Text('Gagal mengambil gambar: $e')),
+                      );
+                    }
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_library, color: Theme.of(context).primaryColor),
+                title: const Text('Pilih dari Galeri'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  try {
+                    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                    if (pickedFile != null) {
+                      File imageFile = File(pickedFile.path);
+                      File? cropped = await _cropImage(imageFile);
+                      if (cropped != null) {
+                        setState(() {
+                          _profileImage = cropped;
+                        });
+                      }
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      scaffoldMessenger.showSnackBar(
+                        SnackBar(content: Text('Gagal memilih gambar: $e')),
+                      );
+                    }
+                  }
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Menampilkan header profil.
+  Widget _buildProfileHeader() {
+    return Column(
+      children: [
+        Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            Hero(
+              tag: 'profile-image',
+              child: Material(
+                elevation: 4,
+                shape: const CircleBorder(),
+                child: CircleAvatar(
+                  radius: 60,
+                  // Jika _profileImage ada, tampilkan gambarnya.
+                  // Jika tidak, tampilkan default avatar berdasarkan huruf pertama.
+                  backgroundColor: _profileImage != null ? Colors.transparent : _getAvatarColor(),
+                  backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
+                  child: _profileImage == null
+                      ? Text(
+                          _getInitial(),
+                          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
+                        )
+                      : null,
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: InkWell(
+                onTap: _pickImage,
+                borderRadius: BorderRadius.circular(20),
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Fungsi untuk mengedit username.
   Future<void> _editUsername() async {
     final String? result = await Navigator.push(
       context,
@@ -78,8 +266,7 @@ class _UmumScreenState extends State<UmumScreen> {
         builder: (context) => const EditFieldScreen(
           title: "Ubah Username",
           initialValue: "username_default",
-          description:
-              "Username hanya boleh mengandung huruf, angka, dan underscore.",
+          description: "Username hanya boleh mengandung huruf, angka, dan underscore.",
           fieldLabel: "Username",
         ),
       ),
@@ -88,15 +275,15 @@ class _UmumScreenState extends State<UmumScreen> {
       setState(() {
         _usernameController.text = result;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Perubahan tersimpan'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Perubahan tersimpan'), duration: Duration(seconds: 2)),
+        );
+      }
     }
   }
 
+  // Fungsi untuk mengedit nama lengkap.
   Future<void> _editNamaLengkap() async {
     final String? result = await Navigator.push(
       context,
@@ -113,107 +300,12 @@ class _UmumScreenState extends State<UmumScreen> {
       setState(() {
         _namaLengkapController.text = result;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Perubahan tersimpan'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Perubahan tersimpan'), duration: Duration(seconds: 2)),
+        );
+      }
     }
-  }
-
-  Widget _buildProfileHeader() {
-    return Column(
-      children: [
-        Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            Hero(
-              tag: 'profile-image',
-              child: CircleAvatar(
-                radius: 60,
-                backgroundImage: _profileImagePath != null
-                    ? AssetImage(_profileImagePath!)
-                    : const AssetImage('assets/default_profile.png'),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: InkWell(
-                onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: const Icon(
-                    Icons.camera_alt,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEditableFieldCard({
-    required String label,
-    required String value,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 4,
-      child: ListTile(
-        leading: Icon(icon, color: Theme.of(context).primaryColor),
-        title: Text(
-          label,
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        subtitle: Text(
-          value,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-        onTap: onTap,
-      ),
-    );
-  }
-
-  Widget _buildNonEditableFieldCard({
-    required String label,
-    required String value,
-    required IconData icon,
-  }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 4,
-      child: ListTile(
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Role tidak bisa diubah"),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        },
-        leading: Icon(icon, color: Colors.grey),
-        title: Text(
-          label,
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        subtitle: Text(
-          value,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
   }
 
   @override
@@ -229,25 +321,60 @@ class _UmumScreenState extends State<UmumScreen> {
             const SizedBox(height: 16),
             _buildProfileHeader(),
             const SizedBox(height: 24),
-            _buildEditableFieldCard(
-              label: "Nama Lengkap",
-              value: _namaLengkapController.text,
-              icon: Icons.account_circle,
-              onTap: _editNamaLengkap,
+            // Kartu untuk edit nama lengkap.
+            Card(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 4,
+              child: ListTile(
+                onTap: _editNamaLengkap,
+                leading: Icon(Icons.account_circle, color: Theme.of(context).primaryColor),
+                title: const Text("Nama Lengkap", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                subtitle: Text(
+                  _namaLengkapController.text,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+              ),
             ),
-            _buildEditableFieldCard(
-              label: "Username",
-              value: _usernameController.text,
-              icon: Icons.person,
-              onTap: _editUsername,
+            // Kartu untuk edit username.
+            Card(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 4,
+              child: ListTile(
+                onTap: _editUsername,
+                leading: Icon(Icons.person, color: Theme.of(context).primaryColor),
+                title: const Text("Username", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                subtitle: Text(
+                  _usernameController.text,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+              ),
             ),
-            _buildNonEditableFieldCard(
-              label: "Role",
-              value: _role,
-              icon: Icons.verified_user_outlined,
+            // Kartu field yang tidak dapat diedit (Role).
+            Card(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 4,
+              child: ListTile(
+                onTap: () {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Role tidak bisa diubah"), duration: Duration(seconds: 2)),
+                    );
+                  }
+                },
+                leading: const Icon(Icons.verified_user_outlined, color: Colors.grey),
+                title: const Text("Role", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                subtitle: Text(
+                  _role,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ),
             ),
             const SizedBox(height: 16),
-            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -255,15 +382,13 @@ class _UmumScreenState extends State<UmumScreen> {
   }
 }
 
-typedef FieldValidator = String? Function(String value);
-
-/// Widget generik untuk halaman edit field.
+/// Widget generik untuk halaman edit field (misalnya, Nama Lengkap atau Username).
 class EditFieldScreen extends StatefulWidget {
   final String title;
   final String initialValue;
   final String description;
   final String fieldLabel;
-  final FieldValidator? validator;
+  final String? Function(String)? validator;
 
   const EditFieldScreen({
     Key? key,
@@ -278,8 +403,7 @@ class EditFieldScreen extends StatefulWidget {
   State<EditFieldScreen> createState() => _EditFieldScreenState();
 }
 
-class _EditFieldScreenState extends State<EditFieldScreen>
-    with SingleTickerProviderStateMixin {
+class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProviderStateMixin {
   late TextEditingController _controller;
   final _formKey = GlobalKey<FormState>();
   late AnimationController _animationController;
@@ -288,10 +412,10 @@ class _EditFieldScreenState extends State<EditFieldScreen>
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.initialValue);
-    _controller.addListener(() {
-      setState(() {}); // Untuk mengupdate tampilan ikon clear dan counter
-    });
+    _controller = TextEditingController(text: widget.initialValue)
+      ..addListener(() {
+        setState(() {}); // Update tampilan clear icon dan counter karakter.
+      });
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -310,7 +434,7 @@ class _EditFieldScreenState extends State<EditFieldScreen>
     super.dispose();
   }
 
-  // Fungsi untuk mengubah teks menjadi Title Case.
+  /// Fungsi untuk mengubah teks menjadi Title Case.
   String _toTitleCase(String text) {
     if (text.isEmpty) return text;
     return text.split(' ').map((word) {
@@ -319,23 +443,22 @@ class _EditFieldScreenState extends State<EditFieldScreen>
     }).join(' ');
   }
 
-  // Fungsi untuk menyimpan nilai dengan validasi dan animasi fade out sebelum kembali.
+  /// Menyimpan nilai dengan validasi dan animasi fade out sebelum kembali.
   void _save() {
     if (_formKey.currentState!.validate()) {
       String resultText = _controller.text;
-      // Otomatis mengubah format berdasarkan field yang diedit
       if (widget.fieldLabel == "Nama Lengkap") {
         resultText = _toTitleCase(resultText);
       } else if (widget.fieldLabel == "Username") {
         resultText = resultText.toLowerCase();
       }
-      _animationController.reverse().then((value) {
+      _animationController.reverse().then((_) {
         Navigator.pop(context, resultText);
       });
     }
   }
 
-  // Fungsi untuk membatalkan edit dan kembali ke halaman sebelumnya.
+  /// Membatalkan edit dan kembali ke halaman sebelumnya.
   void _cancel() {
     Navigator.pop(context, null);
   }
@@ -344,37 +467,25 @@ class _EditFieldScreenState extends State<EditFieldScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // AppBar dengan tampilan minimalis dan ukuran tulisan yang pas.
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,
         leading: TextButton(
           onPressed: _cancel,
-          child: const Text(
-            "Batal",
-            style: TextStyle(color: Colors.black, fontSize: 13),
-          ),
+          child: const Text("Batal", style: TextStyle(color: Colors.black, fontSize: 13)),
         ),
         title: Text(
           widget.title,
-          style: const TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         centerTitle: true,
         actions: [
           TextButton(
             onPressed: _save,
-            child: const Text(
-              "Simpan",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold),
-            ),
+            child: const Text("Simpan", style: TextStyle(color: Colors.black, fontSize: 13, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
-      // Menggunakan FadeTransition untuk animasi halaman.
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: Padding(
@@ -383,10 +494,8 @@ class _EditFieldScreenState extends State<EditFieldScreen>
             key: _formKey,
             child: ListView(
               children: [
-                // TextFormField dengan styling modern, clear icon, dan counter karakter
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(12),
@@ -403,30 +512,22 @@ class _EditFieldScreenState extends State<EditFieldScreen>
                   child: TextFormField(
                     controller: _controller,
                     autofocus: true,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                     maxLength: 25,
-                    // Menampilkan counter dengan format "0/25"
-                    buildCounter: (BuildContext context,
-                        {int? currentLength, int? maxLength, bool? isFocused}) {
+                    buildCounter: (BuildContext context, {int? currentLength, int? maxLength, bool? isFocused}) {
                       return Text(
                         '${currentLength ?? 0}/${maxLength ?? 25}',
-                        style:
-                            const TextStyle(fontSize: 12, color: Colors.grey),
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
                       );
                     },
                     decoration: InputDecoration(
                       hintText: widget.fieldLabel,
                       hintStyle: const TextStyle(color: Colors.grey),
                       border: InputBorder.none,
-                      // Clear icon yang muncul saat ada teks
                       suffixIcon: _controller.text.isNotEmpty
                           ? IconButton(
-                              icon:
-                                  const Icon(Icons.clear, color: Colors.grey),
-                              onPressed: () {
-                                _controller.clear();
-                              },
+                              icon: const Icon(Icons.clear, color: Colors.grey),
+                              onPressed: () => _controller.clear(),
                             )
                           : null,
                     ),
@@ -442,7 +543,6 @@ class _EditFieldScreenState extends State<EditFieldScreen>
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Deskripsi field (contoh untuk Nama Lengkap atau Username)
                 Text(
                   widget.description,
                   style: const TextStyle(fontSize: 14, color: Colors.grey),
