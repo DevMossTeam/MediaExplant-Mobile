@@ -9,22 +9,16 @@ MediaExplant/
 ├── lib/
 │   ├── core/
 │   │   ├── constants/
-│   │   │   ├── app_colors.dart           // Warna & design token (menggantikan file XML)
-│   │   │   ├── app_strings.dart          // String/label aplikasi
-│   │   │   └── app_routes.dart           // Definisi route/navigasi
+│   │   │   └── app_config.dart      
 │   │   ├── errors/
 │   │   │   └── exceptions.dart
 │   │   ├── network/
 │   │   │   ├── api_client.dart
-│   │   │   └── network_info.dart
 │   │   ├── theme/
 │   │   │   ├── app_theme.dart            // Tema global aplikasi
 │   │   │   └── text_styles.dart          // Gaya teks khusus
 │   │   ├── utils/
-│   │   │   ├── date_utils.dart           // Adaptasi DateUtils.kt
-│   │   │   └── email_sender.dart         // Adaptasi EmailSender.kt
-│   │   └── widgets/
-│   │       └── common_widgets.dart       // Widget umum (misal: button, card, dsb.)
+│   │   └── email_sender.dart         // Adaptasi EmailSender.kt
 │   │
 │   ├── features/
 │   │   ├── auth/                         // Fitur autentikasi & manajemen akun
