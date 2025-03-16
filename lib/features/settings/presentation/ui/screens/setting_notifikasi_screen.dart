@@ -1,14 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SettingNotifikasiScreen extends StatefulWidget {
-  const SettingNotifikasiScreen({super.key});
+  const SettingNotifikasiScreen({Key? key}) : super(key: key);
 
   @override
-  State<SettingNotifikasiScreen> createState() => _SettingNotifikasiScreenState();
+  State<SettingNotifikasiScreen> createState() =>
+      _SettingNotifikasiScreenState();
 }
 
 class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
   bool _pushNotifications = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotificationPreference();
+  }
+
+  // Ambil nilai notifikasi dari SharedPreferences
+  Future<void> _loadNotificationPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _pushNotifications = prefs.getBool('pushNotifications') ?? true;
+    });
+  }
+
+  // Simpan nilai notifikasi ke SharedPreferences
+  Future<void> _saveNotificationPreference(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('pushNotifications', value);
+  }
+
+  // Meminta izin notifikasi
+  Future<bool> _requestNotificationPermission() async {
+    PermissionStatus status = await Permission.notification.request();
+    return status.isGranted;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,23 +59,48 @@ class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
             style: TextStyle(fontSize: 16),
           ),
           const Divider(height: 32, thickness: 1),
-          // Notifikasi Push dengan snackbar saat perubahan
+          // SwitchListTile dengan permintaan izin saat diaktifkan
           SwitchListTile(
             title: const Text('Notifikasi Push'),
             subtitle: const Text('Terima notifikasi langsung di perangkat Anda'),
             value: _pushNotifications,
-            onChanged: (bool value) {
-              setState(() {
-                _pushNotifications = value;
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Notifikasi ${value ? 'diaktifkan' : 'dinonaktifkan'}',
+            onChanged: (bool value) async {
+              if (value) {
+                // Jika user mengaktifkan, minta izin notifikasi
+                bool granted = await _requestNotificationPermission();
+                if (granted) {
+                  setState(() {
+                    _pushNotifications = true;
+                  });
+                  _saveNotificationPreference(true);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Notifikasi diizinkan'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                } else {
+                  // Jika izin tidak diberikan, tampilkan pesan dan jangan ubah state
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Izin notifikasi ditolak'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                }
+              } else {
+                // Jika user menonaktifkan notifikasi
+                setState(() {
+                  _pushNotifications = false;
+                });
+                _saveNotificationPreference(false);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Notifikasi tidak diizinkan'),
+                    duration: Duration(seconds: 2),
                   ),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
+                );
+              }
             },
             activeColor: Theme.of(context).primaryColor,
           ),
