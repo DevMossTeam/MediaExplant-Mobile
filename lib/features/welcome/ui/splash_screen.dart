@@ -138,25 +138,7 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
   }
-  
-  /// Widget judul (title) dengan animasi fade dan slide
-  Widget _buildTitleText() {
-    return FadeTransition(
-      opacity: _textFadeAnimation,
-      child: SlideTransition(
-        position: _textSlideAnimation,
-        child: const Text(
-          'My Awesome App', // Ganti dengan nama aplikasi Anda
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            letterSpacing: 1.2,
-          ),
-        ),
-      ),
-    );
-  }
+
   
   /// Widget tagline dengan animasi fade dan slide
   Widget _buildTaglineText() {
@@ -205,8 +187,6 @@ class _SplashScreenState extends State<SplashScreen>
             children: [
               _buildLogo(),
               const SizedBox(height: 20),
-              _buildTitleText(),
-              const SizedBox(height: 10),
               _buildTaglineText(),
               const SizedBox(height: 30),
               _buildProgressIndicator(),
