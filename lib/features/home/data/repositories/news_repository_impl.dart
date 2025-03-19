@@ -1,14 +1,20 @@
-import '../../domain/entities/article.dart';
-import '../../domain/repositories/news_repository.dart';
-import '../datasources/news_remote_data_source.dart';
+import 'package:faker/faker.dart';
+import 'package:mediaexplant/features/home/data/models/berita.dart';
 
-class NewsRepositoryImpl implements NewsRepository {
-  final NewsRemoteDataSource remoteDataSource;
+final Faker faker = Faker();
 
-  NewsRepositoryImpl({required this.remoteDataSource});
-
-  @override
-  Future<List<Article>> getPopularNews() {
-    return remoteDataSource.getPopularNews();
-  }
-}
+List<Berita> dummyBerita = List.generate(20, (index) {
+  return Berita(
+    idBerita: (index + 1).toString(),
+    judul: faker.lorem.sentence(),
+    kontenBerita: faker.lorem.sentences(3).join(' '),
+    gambar: "https://picsum.photos/id/${1 + index}/500/300",
+    tanggalDibuat: faker.date.dateTime().toString(),
+    penulis: faker.person.name(),
+    profil: "https://picsum.photos/id/2/500/300",
+    kategori: "Teknologi",
+    jumlahLike: 432,
+    jumlahDislike: 12,
+    jumlahKomentar: 81
+  );
+});

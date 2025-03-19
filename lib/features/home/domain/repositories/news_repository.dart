@@ -1,5 +1,6 @@
-import '../entities/article.dart';
+import 'package:mediaexplant/features/home/data/models/berita.dart';
+
 
 abstract class NewsRepository {
-  Future<List<Article>> getPopularNews();
+  Future<List<Berita>> getPopularNews();
 }

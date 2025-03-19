@@ -9,16 +9,22 @@ MediaExplant/
 ├── lib/
 │   ├── core/
 │   │   ├── constants/
-│   │   │   └── app_config.dart      
+│   │   │   ├── app_colors.dart           // Warna & design token (menggantikan file XML)
+│   │   │   ├── app_strings.dart          // String/label aplikasi
+│   │   │   └── app_routes.dart           // Definisi route/navigasi
 │   │   ├── errors/
 │   │   │   └── exceptions.dart
 │   │   ├── network/
 │   │   │   ├── api_client.dart
+│   │   │   └── network_info.dart
 │   │   ├── theme/
 │   │   │   ├── app_theme.dart            // Tema global aplikasi
 │   │   │   └── text_styles.dart          // Gaya teks khusus
 │   │   ├── utils/
-│   │   └── email_sender.dart         // Adaptasi EmailSender.kt
+│   │   │   ├── date_utils.dart           // Adaptasi DateUtils.kt
+│   │   │   └── email_sender.dart         // Adaptasi EmailSender.kt
+│   │   └── widgets/
+│   │       └── common_widgets.dart       // Widget umum (misal: button, card, dsb.)
 │   │
 │   ├── features/
 │   │   ├── auth/                         // Fitur autentikasi & manajemen akun
@@ -64,13 +70,13 @@ MediaExplant/
 │   │   │   │   ├── datasources/
 │   │   │   │   │   └── news_remote_data_source.dart
 │   │   │   │   ├── models/
-│   │   │   │   │   ├
+│   │   │   │   │   ├── article_model.dart
 │   │   │   │   │   └── berita_model.dart
 │   │   │   │   └── repositories/
 │   │   │   │       └── news_repository_impl.dart
 │   │   │   ├── domain/
 │   │   │   │   ├── entities/
-│   │   │   │   │   └── berita.dart
+│   │   │   │   │   └── article.dart
 │   │   │   │   ├── repositories/
 │   │   │   │   │   └── news_repository.dart
 │   │   │   │   └── usecases/
@@ -86,7 +92,7 @@ MediaExplant/
 │   │   │       │   │   ├── home_screen.dart           // (fragment_home.xml)
 │   │   │       │   │   ├── home_popular_screen.dart    // (fragment_home_populer.xml)
 │   │   │       │   │   ├── home_latest_screen.dart     // (fragment_home_terbaru.xml)
-│   │   │       │   │   └── detail_berita_screen.dart  // (fragment_detail_artikel.xml)
+│   │   │       │   │   └── detail_article_screen.dart  // (fragment_detail_artikel.xml)
 │   │   │       │   └── widgets/
 │   │   │       │       ├── berita_terkait_item.dart    // (item_berita_terkait.xml)
 │   │   │       │       ├── berita_populer_item.dart     // (item_berita_populer.xml)

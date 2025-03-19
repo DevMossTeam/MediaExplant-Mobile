@@ -1,4 +1,5 @@
-import '../entities/article.dart';
+import 'package:mediaexplant/features/home/data/models/berita.dart';
+
 import '../repositories/news_repository.dart';
 
 class GetPopularNews {
@@ -6,7 +7,7 @@ class GetPopularNews {
 
   GetPopularNews(this.repository);
 
-  Future<List<Article>> call() {
+  Future<List<Berita>> call() {
     return repository.getPopularNews();
   }
 }

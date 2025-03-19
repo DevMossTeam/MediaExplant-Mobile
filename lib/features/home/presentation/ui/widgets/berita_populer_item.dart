@@ -1,30 +1,69 @@
 import 'package:flutter/material.dart';
-import '../../../domain/entities/article.dart';
+import 'package:mediaexplant/features/home/data/models/berita.dart';
 
 class BeritaPopulerItem extends StatelessWidget {
-  final Article article;
-  const BeritaPopulerItem({super.key, required this.article});
+  final Berita berita;
+  final VoidCallback onTap; // Callback untuk event klik
+  const BeritaPopulerItem(
+      {super.key, required this.berita, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: ListTile(
-        leading: Image.network(
-          article.imageUrl,
-          width: 50,
-          height: 50,
-          fit: BoxFit.cover,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: InkWell(
+        onTap: onTap, // Memicu aksi klik
+        splashColor: Colors.blue.withAlpha(50), // Warna efek klik
+        highlightColor: Colors.blue.withAlpha(100), // Warna saat ditekan
+        borderRadius: BorderRadius.circular(10), // Efek ripple mengikuti Card
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Gambar Berita
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                berita.gambar,
+                width: 120,
+                height: 90,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 10),
+
+            // Judul & Tanggal
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    berita.judul,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "${berita.tanggalDibuat} yang lalu",
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+
+            // Bookmark Icon
+            IconButton(
+              onPressed: () {
+                // Tambahkan fungsi bookmark
+              },
+              icon: const Icon(Icons.bookmark_border),
+              color: Colors.black54,
+            ),
+          ],
         ),
-        title: Text(article.title),
-        subtitle: Text(
-          article.content,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        onTap: () {
-          Navigator.pushNamed(context, '/detail_article', arguments: article);
-        },
       ),
     );
   }

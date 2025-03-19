@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-
-import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
-import 'package:mediaexplant/features/home/presentation/ui/screens/detail_article_screen.dart';
+import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_in_screen.dart';
+import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_screen.dart';
+import 'package:mediaexplant/features/home/data/models/berita.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
+import 'package:mediaexplant/features/notifications/presentation/ui/screens/notifications_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/settings_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/hubungi_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/keamanan_screen.dart';
@@ -9,86 +11,35 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/pusat_ban
 import 'package:mediaexplant/features/settings/presentation/ui/screens/setting_notifikasi_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/tentang_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_screen.dart';
-import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
-import 'package:mediaexplant/features/notifications/presentation/ui/screens/notifications_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
-import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_in_screen.dart';
-import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_screen.dart';
-// import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_input_screen.dart';
-// import 'package:mediaexplant/features/auth/presentation/ui/screens/reset_password_screen.dart';
+import 'package:mediaexplant/main.dart';
 
-/// Halaman placeholder untuk Search
-class SearchScreen extends StatelessWidget {
-  const SearchScreen({Key? key}) : super(key: key);
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Search")),
-      body: const Center(child: Text("Search Screen")),
-    );
-  }
-}
 
-/// Halaman utama dengan Bottom Navigation Bar
-class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({Key? key}) : super(key: key);
-  
-  @override
-  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
-}
 
-class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _currentIndex = 0;
-  // Widget list tanpa const agar mendukung widget yang tidak memiliki constructor const.
-  final List<Widget> _pages = [
-    HomeScreen(),
-    const SearchScreen(),
-    NotificationsScreen(),
-    ProfileScreen(),
-  ];
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notification'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
-    );
-  }
-}
-
-/// Fungsi untuk menghasilkan route berdasarkan nama route yang diberikan.
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        // Layar awal: SplashScreen
         return MaterialPageRoute(builder: (_) => const SplashScreen());
       case '/welcome':
-        // Setelah SplashScreen, navigasi ke WelcomeScreen
         return MaterialPageRoute(builder: (_) => const WelcomeScreen());
       case '/home':
-        // Setelah WelcomeScreen, masuk ke halaman utama dengan BottomNavigationBar
         return MaterialPageRoute(builder: (_) => const MainNavigationScreen());
       case '/detail_article':
-        return MaterialPageRoute(builder: (_) => const DetailArticleScreen());
+        if (settings.arguments is Berita) {
+          final berita = settings.arguments as Berita;
+          return MaterialPageRoute(
+            builder: (_) => DetailBeritaScreen(berita: berita),
+          );
+        }
+        return _errorRoute(settings.name);
       case '/settings':
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
       case '/settings/hubungi':
         return MaterialPageRoute(builder: (_) => const HubungiScreen());
       case '/settings/keamanan':
         return MaterialPageRoute(builder: (_) => const KeamananScreen());
-      // Route '/settings/pengaturan_akun' dapat disesuaikan jika ada layar pengaturan akun khusus.
       case '/settings/pengaturan_akun':
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
       case '/settings/pusat_bantuan':
@@ -100,23 +51,23 @@ class AppRouter {
       case '/settings/umum':
         return MaterialPageRoute(builder: (_) => const UmumScreen());
       case '/notifications':
-        return MaterialPageRoute(builder: (_) => NotificationsScreen());
+        return MaterialPageRoute(builder: (_) => const NotificationsScreen());
       case '/login':
         return MaterialPageRoute(builder: (_) => const SignInScreen());
       case '/sign_up':
         return MaterialPageRoute(builder: (_) => const SignUpScreen());
-      // case '/sign_up_input':
-      //   return MaterialPageRoute(builder: (_) => const SignUpInputScreen());
-      // case '/reset_password':
-      //   return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
       default:
-        // Route fallback untuk route yang tidak terdefinisi.
-        return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            appBar: AppBar(title: const Text("Not Found")),
-            body: Center(child: Text("No route defined for ${settings.name}")),
-          ),
-        );
+        return _errorRoute(settings.name);
     }
   }
+
+  static Route<dynamic> _errorRoute(String? routeName) {
+    return MaterialPageRoute(
+      builder: (_) => Scaffold(
+        appBar: AppBar(title: const Text("Not Found")),
+        body: Center(child: Text("No route defined for $routeName")),
+      ),
+    );
+  }
 }
+

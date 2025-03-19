@@ -1,29 +1,14 @@
-import '../models/article_model.dart';
+import 'package:mediaexplant/features/home/data/repositories/news_repository_impl.dart';
+import 'package:mediaexplant/features/home/data/models/berita.dart';
 
-abstract class NewsRemoteDataSource {
-  Future<List<ArticleModel>> getPopularNews();
+abstract class LocalDataSource {
+  Future<List<Berita>> getSavedArticles();
 }
 
-class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
+class LocalDataSourceImpl implements LocalDataSource {
   @override
-  Future<List<ArticleModel>> getPopularNews() async {
-    // Simulasi delay API
-    await Future.delayed(const Duration(seconds: 2));
-    // Simulasi data dummy
-    return [
-      ArticleModel(
-        id: "1",
-        title: "Popular News 1",
-        content: "This is the content of popular news 1.",
-        imageUrl: "https://via.placeholder.com/150",
-      ),
-      ArticleModel(
-        id: "2",
-        title: "Popular News 2",
-        content: "This is the content of popular news 2.",
-        imageUrl: "https://via.placeholder.com/150",
-      ),
-      // Tambahkan data dummy lainnya jika diperlukan
-    ];
+  Future<List<Berita>> getSavedArticles() async {
+    // Menggunakan data dummy
+    return Future.value(dummyBerita);
   }
 }
