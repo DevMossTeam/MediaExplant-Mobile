@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
+import 'package:provider/provider.dart';
 
 class BeritaPopulerItem extends StatelessWidget {
-  final Berita berita;
+  // final Berita berita;
   final VoidCallback onTap; // Callback untuk event klik
-  const BeritaPopulerItem(
-      {super.key, required this.berita, required this.onTap});
+  const BeritaPopulerItem({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    final berita = Provider.of<Berita>(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: InkWell(

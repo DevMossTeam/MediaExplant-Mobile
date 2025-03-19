@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
 import 'package:mediaexplant/features/notifications/data/datasources/notification_remote_data_source.dart';
 import 'package:mediaexplant/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:mediaexplant/features/notifications/domain/repositories/notification_repository.dart';
@@ -24,7 +25,8 @@ void main() {
         Provider<NotificationRemoteDataSource>(
           create: (_) => NotificationRemoteDataSourceImpl(
             client: http.Client(),
-            baseUrl: 'https://api.example.com', // Ganti dengan URL dasar yang benar.
+            baseUrl:
+                'https://api.example.com', // Ganti dengan URL dasar yang benar.
           ),
         ),
         // Provider untuk notification repository menggunakan remote data source.
@@ -41,6 +43,8 @@ void main() {
             ),
           ),
         ),
+        // provider untuk berita
+        ChangeNotifierProvider(create: (context) => BeritaProvider())
       ],
       child: const MyApp(),
     ),

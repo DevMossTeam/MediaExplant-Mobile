@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
 import 'package:mediaexplant/features/home/data/repositories/news_repository_impl.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_rekomendasi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/tag_populer_item.dart';
+import 'package:provider/provider.dart';
 
 class HomePopularScreen extends StatelessWidget {
   const HomePopularScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final beritaProvider = Provider.of<BeritaProvider>(context);
+    final beritaList = beritaProvider.allBerita;
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -20,7 +24,7 @@ class HomePopularScreen extends StatelessWidget {
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: dummyBerita.length,
+            itemCount: beritaList.length,
             itemBuilder: (context, index) {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -40,23 +44,26 @@ class HomePopularScreen extends StatelessWidget {
                   ),
                   // Item Berita
                   Expanded(
-                    child: BeritaPopulerItem(
-                      berita: dummyBerita[index],
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                DetailBeritaScreen(berita: dummyBerita[index]),
-                          ),
-                          (route) => route.isFirst,
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              "Anda mengeklik ${dummyBerita[index].judul}"),
-                          duration: const Duration(seconds: 2),
-                        ));
-                      },
+                    child: ChangeNotifierProvider.value(
+                      value: beritaList[index],
+                      child: BeritaPopulerItem(
+                        // berita: beritaList[index],
+                        onTap: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  DetailBeritaScreen(berita: beritaList[index]),
+                            ),
+                            (route) => route.isFirst,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                "Anda mengeklik ${beritaList[index].judul}"),
+                            duration: const Duration(seconds: 2),
+                          ));
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -76,19 +83,21 @@ class HomePopularScreen extends StatelessWidget {
             height: 220,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: dummyBerita.length,
+              itemCount: beritaList.length,
               itemBuilder: (context, index) {
-                return BeritaRekomendasiItem(
-                  berita: dummyBerita[index],
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DetailBeritaScreen(berita: dummyBerita[index]),
-                      ),
-                    );
-                  },
+                return ChangeNotifierProvider.value(
+                  value: beritaList[index],
+                  child: BeritaRekomendasiItem(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DetailBeritaScreen(berita: beritaList[index]),
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             ),

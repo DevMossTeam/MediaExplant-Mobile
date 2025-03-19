@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/core/utils/app_colors.dart';
+import 'package:provider/provider.dart';
 
 class BeritaRekomendasiItem extends StatelessWidget {
-  final Berita berita;
+  // final Berita berita;
   final VoidCallback onTap;
 
   const BeritaRekomendasiItem({
     super.key,
-    required this.berita,
+    // required this.berita,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final berita = Provider.of<Berita>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

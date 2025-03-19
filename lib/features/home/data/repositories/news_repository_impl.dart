@@ -1,20 +1,21 @@
-import 'package:faker/faker.dart';
-import 'package:mediaexplant/features/home/data/models/berita.dart';
+// import 'package:faker/faker.dart';
+// import 'package:mediaexplant/features/home/data/models/berita.dart';
 
-final Faker faker = Faker();
+// final Faker faker = Faker();
 
-List<Berita> dummyBerita = List.generate(20, (index) {
-  return Berita(
-    idBerita: (index + 1).toString(),
-    judul: faker.lorem.sentence(),
-    kontenBerita: faker.lorem.sentences(3).join(' '),
-    gambar: "https://picsum.photos/id/${1 + index}/500/300",
-    tanggalDibuat: faker.date.dateTime().toString(),
-    penulis: faker.person.name(),
-    profil: "https://picsum.photos/id/2/500/300",
-    kategori: "Teknologi",
-    jumlahLike: 432,
-    jumlahDislike: 12,
-    jumlahKomentar: 81
-  );
-});
+// List<Berita> dummyBerita = List.generate(20, (index) {
+//   return Berita(
+//     idBerita: (index + 1).toString(),
+//     judul: faker.lorem.sentence(),
+//     kontenBerita: faker.lorem.sentences(3).join(' '),
+//     gambar: "https://picsum.photos/id/${1 + index}/500/300",
+//     tanggalDibuat: faker.date.dateTime().toString(),
+//     penulis: faker.person.name(),
+//     profil: "https://picsum.photos/id/2/500/300",
+//     kategori: "Teknologi",
+//     jumlahLike: 432,
+//     jumlahDislike: 12,
+//     jumlahKomentar: 81
+    
+//   );
+// });

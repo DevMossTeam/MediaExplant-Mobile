@@ -18,6 +18,7 @@ Berita _$BeritaFromJson(Map<String, dynamic> json) => Berita(
       jumlahLike: (json['jumlahLike'] as num).toInt(),
       jumlahDislike: (json['jumlahDislike'] as num).toInt(),
       jumlahKomentar: (json['jumlahKomentar'] as num).toInt(),
+      isBookmark: json['isBookmark'] as bool?,
     );
 
 Map<String, dynamic> _$BeritaToJson(Berita instance) => <String, dynamic>{
@@ -32,4 +33,5 @@ Map<String, dynamic> _$BeritaToJson(Berita instance) => <String, dynamic>{
       'jumlahLike': instance.jumlahLike,
       'jumlahDislike': instance.jumlahDislike,
       'jumlahKomentar': instance.jumlahKomentar,
+      'isBookmark': instance.isBookmark,
     };

@@ -1,15 +1,16 @@
 // Widget untuk berita terkait
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
+import 'package:provider/provider.dart';
 
 class BeritaTerkaitItem extends StatelessWidget {
-  final Berita berita;
+  // final Berita berita;
   final VoidCallback onTap; // Callback untuk event klik
-  const BeritaTerkaitItem(
-      {super.key, required this.berita, required this.onTap});
+  const BeritaTerkaitItem({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    final berita = Provider.of<Berita>(context);
     return InkWell(
       onTap: onTap,
       splashColor: Colors.blue.withAlpha(50), // Warna efek klik

@@ -1,11 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'berita.g.dart';
 
 @JsonSerializable()
-class Berita {
+class Berita with ChangeNotifier {
   final String idBerita;
   final String judul;
   final String kontenBerita;
@@ -17,6 +18,7 @@ class Berita {
   final int jumlahLike;
   final int jumlahDislike;
   final int jumlahKomentar;
+  bool? isBookmark = false;
   Berita({
     required this.idBerita,
     required this.judul,
@@ -29,7 +31,10 @@ class Berita {
     required this.jumlahLike,
     required this.jumlahDislike,
     required this.jumlahKomentar,
+    this.isBookmark,
   });
+  
+ 
 
   factory Berita.fromJson(Map<String, dynamic> json) => _$BeritaFromJson(json);
 

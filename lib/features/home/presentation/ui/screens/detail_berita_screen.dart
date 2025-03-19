@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
+import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
 import 'package:mediaexplant/features/home/data/repositories/news_repository_impl.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_terkait_item.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart'; // Import dummyBerita
+import 'package:mediaexplant/core/utils/app_colors.dart';
+import 'package:provider/provider.dart'; // Import beritList
 
 class DetailBeritaScreen extends StatelessWidget {
   final Berita berita;
@@ -12,6 +14,8 @@ class DetailBeritaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final beritaProvider = Provider.of<BeritaProvider>(context);
+    final beritList = beritaProvider.allBerita;
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
@@ -172,20 +176,22 @@ class DetailBeritaScreen extends StatelessWidget {
                             height: 130,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              itemCount: dummyBerita.length,
+                              itemCount: beritList.length,
                               itemBuilder: (context, index) {
-                                return BeritaTerkaitItem(
-                                  berita: dummyBerita[index],
-                                  onTap: () {
-                                    Navigator.pushAndRemoveUntil(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              DetailBeritaScreen(
-                                                  berita: dummyBerita[index]),
-                                        ),
-                                        (route) => route.isFirst);
-                                  },
+                                return ChangeNotifierProvider.value(
+                                  value: beritList[index],
+                                  child: BeritaTerkaitItem(
+                                    onTap: () {
+                                      Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                DetailBeritaScreen(
+                                                    berita: beritList[index]),
+                                          ),
+                                          (route) => route.isFirst);
+                                    },
+                                  ),
                                 );
                               },
                             ),
@@ -218,25 +224,28 @@ class DetailBeritaScreen extends StatelessWidget {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: dummyBerita.length,
+                  itemCount: beritList.length,
                   itemBuilder: (context, index) {
-                    return BeritaPopulerItem(
-                      berita: dummyBerita[index],
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                DetailBeritaScreen(berita: dummyBerita[index]),
-                          ),
-                          (route) => route.isFirst,
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              "Anda mengeklik ${dummyBerita[index].judul}"),
-                          duration: const Duration(seconds: 2),
-                        ));
-                      },
+                    return ChangeNotifierProvider.value(
+                      value: beritList[index],
+                      child: BeritaPopulerItem(
+                        // berita: beritList[index],
+                        onTap: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  DetailBeritaScreen(berita: beritList[index]),
+                            ),
+                            (route) => route.isFirst,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                "Anda mengeklik ${beritList[index].judul}"),
+                            duration: const Duration(seconds: 2),
+                          ));
+                        },
+                      ),
                     );
                   },
                 )
