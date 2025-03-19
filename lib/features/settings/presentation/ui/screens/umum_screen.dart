@@ -1,8 +1,29 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:mediaexplant/core/utils/app_colors.dart'; // Ganti dengan path yang sesuai
+
+/// Fungsi utilitas untuk mengonversi Color menjadi MaterialColor,
+/// berguna untuk mengatur primarySwatch dalam ThemeData.
+MaterialColor createMaterialColor(Color color) {
+  List<double> strengths = <double>[.05];
+  Map<int, Color> swatch = {};
+  final int r = color.red, g = color.green, b = color.blue;
+  for (int i = 1; i < 10; i++) {
+    strengths.add(0.1 * i);
+  }
+  for (var strength in strengths) {
+    final double ds = 0.5 - strength;
+    swatch[(strength * 1000).round()] = Color.fromRGBO(
+      r + ((ds < 0 ? r : (255 - r)) * ds).round(),
+      g + ((ds < 0 ? g : (255 - g)) * ds).round(),
+      b + ((ds < 0 ? b : (255 - b)) * ds).round(),
+      1,
+    );
+  }
+  return MaterialColor(color.value, swatch);
+}
 
 void main() {
   runApp(const MyApp());
@@ -18,19 +39,20 @@ class MyApp extends StatelessWidget {
       title: 'Edit Profil Modern',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.deepPurple)
-            .copyWith(secondary: Colors.amber),
-        scaffoldBackgroundColor: Colors.grey[50],
+        primaryColor: AppColors.primary,
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: createMaterialColor(AppColors.primary),
+        ).copyWith(secondary: AppColors.text),
+        scaffoldBackgroundColor: AppColors.background,
         appBarTheme: const AppBarTheme(
           elevation: 4,
           centerTitle: true,
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: AppColors.primary,
         ),
         textTheme: const TextTheme(
-          titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          bodyMedium: TextStyle(fontSize: 14, color: Colors.grey),
+          titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.text),
+          titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.text),
+          bodyMedium: TextStyle(fontSize: 14, color: AppColors.text),
         ),
       ),
       home: const UmumScreen(),
@@ -67,17 +89,16 @@ class _UmumScreenState extends State<UmumScreen> {
     super.dispose();
   }
 
-  /// Fungsi untuk mengambil huruf pertama dari nama lengkap.
+  /// Mengambil huruf pertama dari nama lengkap.
   String _getInitial() {
     if (_namaLengkapController.text.trim().isEmpty) return "?";
     return _namaLengkapController.text.trim()[0].toUpperCase();
   }
 
-  /// Fungsi untuk menentukan warna background berdasarkan huruf pertama.
+  /// Menentukan warna avatar berdasarkan huruf pertama nama.
   Color _getAvatarColor() {
     if (_namaLengkapController.text.trim().isEmpty) return Colors.grey;
     int code = _namaLengkapController.text.trim()[0].toUpperCase().codeUnitAt(0);
-    // Daftar warna yang bisa dipilih, bisa disesuaikan.
     List<Color> colors = [
       Colors.red,
       Colors.green,
@@ -90,13 +111,12 @@ class _UmumScreenState extends State<UmumScreen> {
       Colors.cyan,
       Colors.amber,
     ];
-    // Misal: 'A' (65) sampai 'Z' (90)
     int index = (code - 65) % colors.length;
     if (index < 0) index = 0;
     return colors[index];
   }
 
-  /// Fungsi untuk meng-crop gambar menggunakan image_cropper.
+  /// Meng-crop gambar menggunakan image_cropper.
   Future<File?> _cropImage(File imageFile) async {
     try {
       final croppedFile = await ImageCropper().cropImage(
@@ -106,7 +126,7 @@ class _UmumScreenState extends State<UmumScreen> {
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: 'Crop Image',
-            toolbarColor: Colors.deepPurple,
+            toolbarColor: AppColors.primary,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.square,
             lockAspectRatio: true,
@@ -125,9 +145,8 @@ class _UmumScreenState extends State<UmumScreen> {
     }
   }
 
-  /// Fungsi untuk memilih gambar dari kamera atau galeri.
+  /// Memilih gambar dari kamera atau galeri.
   Future<void> _pickImage() async {
-    // Simpan referensi ScaffoldMessenger untuk menghindari lookup pada context yang sudah tidak aktif.
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     showModalBottomSheet(
       context: context,
@@ -155,7 +174,7 @@ class _UmumScreenState extends State<UmumScreen> {
               ),
               const SizedBox(height: 8),
               ListTile(
-                leading: Icon(Icons.camera_alt, color: Theme.of(context).primaryColor),
+                leading: Icon(Icons.camera_alt, color: AppColors.primary),
                 title: const Text('Ambil dari Kamera'),
                 onTap: () async {
                   Navigator.of(context).pop();
@@ -180,7 +199,7 @@ class _UmumScreenState extends State<UmumScreen> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.photo_library, color: Theme.of(context).primaryColor),
+                leading: Icon(Icons.photo_library, color: AppColors.primary),
                 title: const Text('Pilih dari Galeri'),
                 onTap: () async {
                   Navigator.of(context).pop();
@@ -212,7 +231,7 @@ class _UmumScreenState extends State<UmumScreen> {
     );
   }
 
-  /// Menampilkan header profil.
+  /// Menampilkan header profil dengan avatar dan tombol edit gambar.
   Widget _buildProfileHeader() {
     return Column(
       children: [
@@ -226,8 +245,6 @@ class _UmumScreenState extends State<UmumScreen> {
                 shape: const CircleBorder(),
                 child: CircleAvatar(
                   radius: 60,
-                  // Jika _profileImage ada, tampilkan gambarnya.
-                  // Jika tidak, tampilkan default avatar berdasarkan huruf pertama.
                   backgroundColor: _profileImage != null ? Colors.transparent : _getAvatarColor(),
                   backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
                   child: _profileImage == null
@@ -247,7 +264,7 @@ class _UmumScreenState extends State<UmumScreen> {
                 borderRadius: BorderRadius.circular(20),
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: AppColors.primary,
                   child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
                 ),
               ),
@@ -328,7 +345,7 @@ class _UmumScreenState extends State<UmumScreen> {
               elevation: 4,
               child: ListTile(
                 onTap: _editNamaLengkap,
-                leading: Icon(Icons.account_circle, color: Theme.of(context).primaryColor),
+                leading: Icon(Icons.account_circle, color: AppColors.primary),
                 title: const Text("Nama Lengkap", style: TextStyle(fontSize: 14, color: Colors.grey)),
                 subtitle: Text(
                   _namaLengkapController.text,
@@ -344,7 +361,7 @@ class _UmumScreenState extends State<UmumScreen> {
               elevation: 4,
               child: ListTile(
                 onTap: _editUsername,
-                leading: Icon(Icons.person, color: Theme.of(context).primaryColor),
+                leading: Icon(Icons.person, color: AppColors.primary),
                 title: const Text("Username", style: TextStyle(fontSize: 14, color: Colors.grey)),
                 subtitle: Text(
                   _usernameController.text,
@@ -353,7 +370,7 @@ class _UmumScreenState extends State<UmumScreen> {
                 trailing: const Icon(Icons.chevron_right, color: Colors.grey),
               ),
             ),
-            // Kartu field yang tidak dapat diedit (Role).
+            // Kartu untuk field yang tidak bisa diedit (Role).
             Card(
               margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -414,7 +431,7 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
     super.initState();
     _controller = TextEditingController(text: widget.initialValue)
       ..addListener(() {
-        setState(() {}); // Update tampilan clear icon dan counter karakter.
+        setState(() {});
       });
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -434,7 +451,7 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
     super.dispose();
   }
 
-  /// Fungsi untuk mengubah teks menjadi Title Case.
+  /// Mengubah teks menjadi Title Case.
   String _toTitleCase(String text) {
     if (text.isEmpty) return text;
     return text.split(' ').map((word) {
@@ -466,23 +483,23 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0.5,
         leading: TextButton(
           onPressed: _cancel,
-          child: const Text("Batal", style: TextStyle(color: Colors.black, fontSize: 13)),
+          child: const Text("Batal", style: TextStyle(color: AppColors.text, fontSize: 13)),
         ),
         title: Text(
           widget.title,
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         centerTitle: true,
         actions: [
           TextButton(
             onPressed: _save,
-            child: const Text("Simpan", style: TextStyle(color: Colors.black, fontSize: 13, fontWeight: FontWeight.bold)),
+            child: const Text("Simpan", style: TextStyle(color: AppColors.text, fontSize: 13, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -497,7 +514,7 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: AppColors.background,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey[300]!),
                     boxShadow: [
@@ -512,7 +529,7 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
                   child: TextFormField(
                     controller: _controller,
                     autofocus: true,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.text),
                     maxLength: 25,
                     buildCounter: (BuildContext context, {int? currentLength, int? maxLength, bool? isFocused}) {
                       return Text(

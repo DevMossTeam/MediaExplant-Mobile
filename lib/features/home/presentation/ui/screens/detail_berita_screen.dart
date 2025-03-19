@@ -4,7 +4,7 @@ import 'package:mediaexplant/features/home/data/repositories/news_repository_imp
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_terkait_item.dart';
-import 'package:mediaexplant/utils/app_colors.dart'; // Import dummyBerita
+import 'package:mediaexplant/core/utils/app_colors.dart'; // Import dummyBerita
 
 class DetailBeritaScreen extends StatelessWidget {
   final Berita berita;

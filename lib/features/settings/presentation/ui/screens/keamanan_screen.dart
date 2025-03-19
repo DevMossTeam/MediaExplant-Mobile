@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/utils/app_colors.dart'; // Ganti dengan path yang sesuai
 
 class KeamananScreen extends StatelessWidget {
   const KeamananScreen({super.key});
@@ -6,21 +7,31 @@ class KeamananScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Keamanan')),
+      appBar: AppBar(
+        title: const Text('Keamanan'),
+        backgroundColor: AppColors.primary,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Judul Halaman
-            const Text(
+            Text(
               'Keamanan Akun Anda',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.text,
+              ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Kelola pengaturan keamanan untuk melindungi akun Anda.',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.text,
+              ),
             ),
             const SizedBox(height: 16),
             // Daftar opsi keamanan
@@ -28,7 +39,8 @@ class KeamananScreen extends StatelessWidget {
               context,
               icon: Icons.lock_outline,
               title: 'Ganti Password',
-              description: 'Ubah password untuk meningkatkan keamanan akun Anda.',
+              description:
+                  'Ubah password untuk meningkatkan keamanan akun Anda.',
               onTap: () {
                 // Aksi ganti password, misalnya navigasi ke halaman change password
               },
@@ -37,7 +49,8 @@ class KeamananScreen extends StatelessWidget {
               context,
               icon: Icons.email_outlined,
               title: 'Ganti Email',
-              description: 'Ubah alamat email yang terkait dengan akun Anda.',
+              description:
+                  'Ubah alamat email yang terkait dengan akun Anda.',
               onTap: () {
                 // Aksi ganti email
               },
@@ -46,23 +59,32 @@ class KeamananScreen extends StatelessWidget {
               context,
               icon: Icons.help_outline,
               title: 'Lupa Password',
-              description: 'Reset password jika Anda lupa password akun Anda.',
+              description:
+                  'Reset password jika Anda lupa password akun Anda.',
               onTap: () {
                 // Aksi lupa password
               },
             ),
             const SizedBox(height: 24),
             // Tips Keamanan
-            const Text(
+            Text(
               'Tips Keamanan',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.text,
+              ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '• Jangan bagikan informasi login Anda kepada siapa pun.\n'
               '• Gunakan password yang kuat dan unik untuk setiap akun.\n'
               '• Perbarui pengaturan keamanan secara berkala.',
-              style: TextStyle(fontSize: 16, height: 1.5),
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.5,
+                color: AppColors.text,
+              ),
             ),
           ],
         ),
@@ -79,21 +101,36 @@ class KeamananScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Card(
-      elevation: 2,
+      elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         onTap: onTap,
-        leading: Icon(icon, color: Theme.of(context).primaryColor, size: 28),
+        leading: Icon(
+          icon,
+          color: AppColors.primary,
+          size: 28,
+        ),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: AppColors.text,
+          ),
         ),
         subtitle: Text(
           description,
-          style: const TextStyle(fontSize: 14),
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.text.withOpacity(0.8),
+          ),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+          color: AppColors.text.withOpacity(0.6),
+        ),
       ),
     );
   }

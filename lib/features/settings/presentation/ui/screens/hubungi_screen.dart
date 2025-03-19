@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:mediaexplant/core/utils/app_colors.dart'; // Pastikan path sudah sesuai
 
 /// Entry point of the application.
 void main() {
@@ -13,12 +14,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Hubungi Kami',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HubungiScreen(),
-    );
+  title: 'Hubungi Kami',
+  theme: ThemeData(
+    primaryColor: AppColors.primary,
+    appBarTheme: AppBarTheme(
+      backgroundColor: AppColors.primary,
+      iconTheme: const IconThemeData(color: Colors.white), // Ubah warna ikon di AppBar
+    ),
+  ),
+  home: const HubungiScreen(),
+);
   }
 }
 
@@ -45,19 +50,24 @@ class HubungiScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Hubungi Kami'),
+          backgroundColor: AppColors.primary,
           // TabBar added at the bottom of the AppBar.
-          bottom: const TabBar(
-            tabs: [
-              Tab(
-                icon: Icon(Icons.message),
-                text: 'Kirim Pesan',
-              ),
-              Tab(
-                icon: Icon(Icons.info),
-                text: 'Informasi Kontak',
-              ),
-            ],
-          ),
+bottom: TabBar(
+  labelColor: Colors.white,
+  unselectedLabelColor: Colors.white70,
+  indicatorColor: Colors.white,
+  tabs: const [
+    Tab(
+      icon: Icon(Icons.message),
+      text: 'Kirim Pesan',
+    ),
+    Tab(
+      icon: Icon(Icons.info),
+      text: 'Informasi Kontak',
+    ),
+  ],
+),
+
         ),
         body: TabBarView(
           children: [
@@ -89,7 +99,7 @@ class ContactFormTab extends StatelessWidget {
             child: Icon(
               Icons.contact_mail,
               size: 120,
-              color: Theme.of(context).primaryColor,
+              color: AppColors.primary,
             ),
           ),
           // The contact form is now displayed directly without a Card.
@@ -97,9 +107,12 @@ class ContactFormTab extends StatelessWidget {
           // Additional spacing for aesthetics.
           const SizedBox(height: 16),
           // A small footer note (optional).
-          const Text(
+          Text(
             'Kami akan segera merespons pesan Anda.',
-            style: TextStyle(fontStyle: FontStyle.italic),
+            style: TextStyle(
+              fontStyle: FontStyle.italic,
+              color: AppColors.text,
+            ),
           ),
         ],
       ),
@@ -135,9 +148,17 @@ class ContactInfoTab extends StatelessWidget {
         leading: Icon(icon, color: iconColor, size: 30),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.text,
+          ),
         ),
-        subtitle: Text(subtitle),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(
+            color: AppColors.text.withOpacity(0.8),
+          ),
+        ),
         onTap: onTap,
       ),
     );
@@ -155,14 +176,14 @@ class ContactInfoTab extends StatelessWidget {
             child: Icon(
               Icons.info_outline,
               size: 120,
-              color: Theme.of(context).primaryColor,
+              color: AppColors.primary,
             ),
           ),
           // Phone card: tapping launches the phone dialer.
           _buildContactCard(
             context: context,
             icon: Icons.phone,
-            iconColor: Colors.blue,
+            iconColor: AppColors.primary,
             title: 'Telepon',
             subtitle: '+62 812 3456 7890',
             onTap: () async {
@@ -207,9 +228,12 @@ class ContactInfoTab extends StatelessWidget {
           // Extra spacing for a polished look.
           const SizedBox(height: 16),
           // Optional footer text.
-          const Text(
+          Text(
             'Kami tersedia selama 08:00 - 17:00 WIB',
-            style: TextStyle(fontStyle: FontStyle.italic),
+            style: TextStyle(
+              fontStyle: FontStyle.italic,
+              color: AppColors.text,
+            ),
           ),
         ],
       ),
@@ -270,11 +294,12 @@ class _ContactFormState extends State<_ContactForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Form header text.
-          const Text(
+          Text(
             'Kirim Pesan',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
+              color: AppColors.text,
             ),
           ),
           const SizedBox(height: 16),
@@ -338,7 +363,7 @@ class _ContactFormState extends State<_ContactForm> {
             child: ElevatedButton(
               onPressed: _sendMessage,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: AppColors.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mediaexplant/core/utils/app_colors.dart';
 
 /// Main widget untuk tampilan profil dengan data dummy.
 /// Tampilan akan berbeda jika pengguna sudah login atau belum.
@@ -53,11 +54,10 @@ class ProfileScreen extends StatelessWidget {
     };
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      // Tombol Floating Action untuk navigasi ke halaman Settings,
-      // selalu tampil dan ditempatkan secara eksplisit di pojok kanan bawah.
+      backgroundColor: AppColors.background,
+      // Tombol Floating Action untuk navigasi ke halaman Settings.
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: const Color(0xFF0D47A1),
+        backgroundColor: AppColors.primary,
         elevation: 6,
         onPressed: () {
           Navigator.pushNamed(context, '/settings');
@@ -117,7 +117,7 @@ class LoggedInProfileContent extends StatelessWidget {
   }
 }
 
-/// untuk menciptakan pengalaman visual yang lebih menarik.
+/// Widget untuk menampilkan konten ketika pengguna belum login.
 class NotLoggedInProfileContent extends StatefulWidget {
   const NotLoggedInProfileContent({Key? key}) : super(key: key);
 
@@ -168,12 +168,12 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
     super.dispose();
   }
 
-  /// Widget avatar yang diberi animasi fade in menggunakan Lottie animation
+  /// Widget avatar dengan animasi fade in menggunakan Lottie animation
   Widget _buildAvatar() {
     return FadeTransition(
       opacity: _avatarFadeAnimation,
       child: ClipOval(
-        child: Container(
+        child: SizedBox(
           width: 200,
           height: 200,
           child: Lottie.asset(
@@ -185,23 +185,23 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
     );
   }
 
-  /// Widget teks header yang diberi animasi slide
+  /// Widget teks header dengan animasi slide
   Widget _buildHeaderText() {
     return SlideTransition(
       position: _headerSlideAnimation,
-      child: const Text(
+      child: Text(
         'Anda belum login',
         style: TextStyle(
           fontSize: 26,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF0D47A1),
+          color: AppColors.primary,
           letterSpacing: 1.2,
         ),
       ),
     );
   }
 
-  /// Widget teks sub-header dengan keterangan dan ajakan yang lebih informatif
+  /// Widget teks sub-header dengan animasi fade
   Widget _buildSubHeaderText() {
     return FadeTransition(
       opacity: _contentFadeAnimation,
@@ -221,7 +221,7 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
     );
   }
 
-  /// Widget tombol login yang diberi animasi fade in
+  /// Widget tombol login dengan animasi fade
   Widget _buildLoginButton(BuildContext context) {
     return FadeTransition(
       opacity: _contentFadeAnimation,
@@ -243,20 +243,20 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
             ),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0D47A1),
-            foregroundColor: Colors.white,
+            backgroundColor: AppColors.primary,
             elevation: 5,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.0),
             ),
-            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
           ),
         ),
       ),
     );
   }
 
-  /// Widget tambahan berupa tagline yang bersifat motivasional
+  /// Widget tagline dengan animasi fade
   Widget _buildTagline() {
     return FadeTransition(
       opacity: _contentFadeAnimation,
@@ -275,13 +275,13 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
     );
   }
 
-  /// Widget untuk menampilkan background dengan efek gradient
+  /// Widget background dekoratif dengan efek gradient
   Widget _buildDecorativeBackground() {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white,
+            AppColors.background,
             Colors.blue.shade50,
           ],
           begin: Alignment.topCenter,
@@ -297,7 +297,7 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
       children: [
         // Background dekoratif
         _buildDecorativeBackground(),
-        // Konten utama yang dapat discroll jika diperlukan
+        // Konten utama yang dapat discroll
         Center(
           child: SingleChildScrollView(
             child: Padding(
@@ -342,7 +342,7 @@ class ProfileHeader extends StatelessWidget {
 
           return FlexibleSpaceBar(
             centerTitle: true,
-            title: null, // Jangan tampilkan judul saat collapse.
+            title: null, // Tidak tampilkan judul saat collapse.
             background: isCollapsed
                 ? const SizedBox.shrink() // Sembunyikan isi saat collapse.
                 : Stack(
@@ -351,7 +351,7 @@ class ProfileHeader extends StatelessWidget {
                       Container(
                         decoration: const BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+                            colors: [AppColors.primary, AppColors.secondary],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                           ),
@@ -413,7 +413,7 @@ class SectionTitle extends StatelessWidget {
       title,
       style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF0D47A1),
+            color: AppColors.primary,
           ),
     );
   }
@@ -444,7 +444,6 @@ class SavedArticlesSection extends StatelessWidget {
 }
 
 /// SavedArticleCard merepresentasikan satu artikel tersimpan dengan thumbnail, judul, dan deskripsi singkat.
-/// Menggunakan animasi Hero untuk transisi yang halus.
 class SavedArticleCard extends StatelessWidget {
   final String title;
   final String thumbnailUrl;
@@ -529,7 +528,7 @@ class SavedArticleCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF0D47A1),
+                        color: AppColors.primary,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -537,9 +536,9 @@ class SavedArticleCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       description,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey,
+                        color: AppColors.text.withOpacity(0.7),
                         height: 1.4,
                       ),
                       maxLines: 2,
@@ -557,7 +556,6 @@ class SavedArticleCard extends StatelessWidget {
 }
 
 /// Halaman detail artikel untuk menampilkan konten lengkap artikel yang dipilih.
-/// Menggunakan animasi Hero untuk transisi gambar.
 class ArticleDetailScreen extends StatelessWidget {
   final String title;
   final String thumbnailUrl;
@@ -572,10 +570,10 @@ class ArticleDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(title),
-        backgroundColor: const Color(0xFF0D47A1),
+        backgroundColor: AppColors.primary,
       ),
       body: ListView(
         children: [
@@ -605,7 +603,7 @@ class ArticleDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               description,
-              style: const TextStyle(fontSize: 16, height: 1.5),
+              style: const TextStyle(fontSize: 16, height: 1.5, color: AppColors.text),
             ),
           ),
         ],

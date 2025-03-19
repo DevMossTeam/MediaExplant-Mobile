@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/utils/app_colors.dart'; // Ganti dengan path yang sesuai
 
 /// Tampilan halaman Settings dengan desain modern dan terstruktur.
 /// Terdapat dua bagian utama: "Pengaturan" dan "Pusat Informasi", ditambah
@@ -9,26 +10,33 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar dengan background gradient biru yang memberikan kesan modern.
+      // AppBar dengan background gradient yang menggunakan AppColors.primary.
       appBar: AppBar(
         centerTitle: true,
         elevation: 4,
         title: const Text("Settings"),
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+              colors: [
+                AppColors.primary,
+                // Variasi warna dengan sedikit gradasi ke hitam untuk kesan dinamis.
+                Color.lerp(AppColors.primary, Colors.black, 0.1) ?? AppColors.primary,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
         ),
       ),
-      // Body menggunakan background gradient ringan agar tampilan tidak datar.
+      // Body menggunakan background gradient berbasis AppColors.background.
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.white, Color(0xFFF2F2F2)],
+            colors: [
+              AppColors.background,
+              Color.lerp(AppColors.background, Colors.grey, 0.05) ?? AppColors.background,
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -84,10 +92,10 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             // Footer: Versi Aplikasi
-            const Center(
+            Center(
               child: Text(
                 "Versi 1.0.0",
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: TextStyle(fontSize: 14, color: AppColors.text.withOpacity(0.6)),
               ),
             ),
             const SizedBox(height: 16),
@@ -109,7 +117,7 @@ class SectionHeader extends StatelessWidget {
       title,
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF0D47A1),
+            color: AppColors.primary,
           ),
     );
   }
@@ -137,22 +145,27 @@ class SettingItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        // Icon ditempatkan dalam CircleAvatar dengan latar belakang biru muda.
+        // Icon ditempatkan dalam CircleAvatar dengan background yang merupakan
+        // turunan warna utama (AppColors.primary) agar konsisten.
         leading: CircleAvatar(
-          backgroundColor: const Color(0xFFE3F2FD),
+          backgroundColor: Color.lerp(AppColors.primary, Colors.white, 0.8) ?? AppColors.background,
           child: Icon(
             icon,
-            color: const Color(0xFF0D47A1),
+            color: AppColors.primary,
           ),
         ),
         title: Text(
           title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColors.text,
+          ),
         ),
-        trailing: const Icon(
+        trailing: Icon(
           Icons.arrow_forward_ios,
           size: 16,
-          color: Colors.grey,
+          color: AppColors.text.withOpacity(0.6),
         ),
         onTap: () {
           Navigator.pushNamed(context, routeName);

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:mediaexplant/core/utils/app_colors.dart'; // Sesuaikan path jika diperlukan
 
 class SettingNotifikasiScreen extends StatefulWidget {
   const SettingNotifikasiScreen({Key? key}) : super(key: key);
 
   @override
-  State<SettingNotifikasiScreen> createState() =>
-      _SettingNotifikasiScreenState();
+  State<SettingNotifikasiScreen> createState() => _SettingNotifikasiScreenState();
 }
 
 class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
@@ -44,26 +44,45 @@ class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Setting Notifikasi'),
+        backgroundColor: AppColors.primary,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           // Judul Halaman
-          const Text(
+          Text(
             'Pengaturan Notifikasi',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.text,
+            ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Atur preferensi notifikasi Anda di bawah ini:',
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(
+              fontSize: 16,
+              color: AppColors.text,
+            ),
           ),
           const Divider(height: 32, thickness: 1),
           // SwitchListTile dengan permintaan izin saat diaktifkan
           SwitchListTile(
-            title: const Text('Notifikasi Push'),
-            subtitle: const Text('Terima notifikasi langsung di perangkat Anda'),
+            title: Text(
+              'Notifikasi Push',
+              style: TextStyle(
+                color: AppColors.text,
+              ),
+            ),
+            subtitle: Text(
+              'Terima notifikasi langsung di perangkat Anda',
+              style: TextStyle(
+                color: AppColors.text.withOpacity(0.8),
+              ),
+            ),
             value: _pushNotifications,
+            activeColor: AppColors.primary,
             onChanged: (bool value) async {
               if (value) {
                 // Jika user mengaktifkan, minta izin notifikasi
@@ -102,7 +121,6 @@ class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
                 );
               }
             },
-            activeColor: Theme.of(context).primaryColor,
           ),
         ],
       ),

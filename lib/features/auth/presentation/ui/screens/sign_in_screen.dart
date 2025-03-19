@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart'; // Pastikan dependency lottie sudah ditambahkan
+import 'package:lottie/lottie.dart';
+import 'package:mediaexplant/core/utils/app_colors.dart'; // Pastikan path sudah benar
 
-/// Halaman login yang menampilkan form untuk input username/email dan password.
-/// Terdapat tiga tombol: Sign In, Sign Up, dan Forgot Password.
-/// "Forgot Password?" diletakkan di kanan atas tombol Sign In.
+/// Halaman Sign In dengan background gradient gelap dan card login terang.
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
 
@@ -12,36 +11,27 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  // Global key untuk mengidentifikasi form dan melakukan validasi.
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Controller untuk mengelola input username/email dan password.
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Variabel untuk mengontrol apakah password ditampilkan atau disembunyikan.
   bool _obscurePassword = true;
 
   @override
   void dispose() {
-    // Pastikan controller di-dispose untuk menghindari memory leak.
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  /// Fungsi untuk memproses login.
-  /// Fungsi ini melakukan validasi form dan mensimulasikan proses login.
+  /// Fungsi untuk memproses sign in.
   void _signIn() {
     if (_formKey.currentState!.validate()) {
-      // Tampilkan SnackBar untuk memberi umpan balik bahwa proses login sedang berjalan.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Signing in...")),
       );
-      // Simulasikan delay (misalnya, pemanggilan API) selama 2 detik.
       Future.delayed(const Duration(seconds: 2), () {
-        // Di sini bisa ditambahkan logika autentikasi sebenarnya.
-        // Misalnya, jika berhasil maka navigasi ke halaman utama.
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Sign in successful!")),
         );
@@ -50,44 +40,38 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  /// Fungsi untuk navigasi ke halaman Sign Up.
+  /// Navigasi ke halaman Sign Up.
   void _goToSignUp() {
     Navigator.pushNamed(context, '/sign_up');
   }
 
-  /// Fungsi untuk navigasi ke halaman Forgot Password.
+  /// Navigasi ke halaman Forgot Password.
   void _goToForgotPassword() {
     Navigator.pushNamed(context, '/reset_password');
   }
 
   @override
   Widget build(BuildContext context) {
-    // Ambil ukuran layar untuk penyesuaian responsif.
     final size = MediaQuery.of(context).size;
-
     return Scaffold(
-      // Gunakan Stack agar background gradient dan konten dapat diletakkan secara berlapis.
       body: Stack(
         children: [
-          // Latar belakang dengan gradient yang menarik.
+          // Background gradient gelap
           Container(
-            height: size.height,
-            width: size.width,
-            decoration: const BoxDecoration(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+                colors: [
+                  AppColors.primary, // Contoh: merah gelap yang didefinisikan di AppColors
+                  Colors.red.shade900,
+                ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
             ),
           ),
-          // Overlay semi-transparan untuk menambah kesan depth.
-          Container(
-            height: size.height,
-            width: size.width,
-            color: Colors.black.withOpacity(0.2),
-          ),
-          // Konten utama menggunakan SingleChildScrollView agar tidak terpotong saat keyboard muncul.
+          // Konten utama
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Padding(
@@ -96,197 +80,284 @@ class _SignInScreenState extends State<SignInScreen> {
                 vertical: size.height * 0.1,
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Bagian logo atau identitas aplikasi.
-                  Center(
-                    child: Column(
-                      children: [
-                        // Gunakan Hero widget untuk transisi yang mulus antar halaman.
-                        // Membungkus Lottie dengan CircleAvatar agar meniru tampilan sebelumnya.
-                        Hero(
-                          tag: 'app_logo',
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Colors.white,
-                            child: Lottie.asset(
-                              'assets/animations/Animation_1742099923119.json',
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          "Welcome Back",
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          "Sign in to continue",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const _HeaderWidget(),
                   const SizedBox(height: 40),
-                  // Container untuk form login dengan latar belakang putih, sudut membulat, dan bayangan.
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          // Input field untuk Username atau Email.
-                          TextFormField(
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.person),
-                              labelText: "Username or Email",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return "Please enter your username or email";
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          // Input field untuk Password.
-                          TextFormField(
-                            controller: _passwordController,
-                            obscureText: _obscurePassword,
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.lock),
-                              labelText: "Password",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              // Tombol untuk mengubah visibilitas password.
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return "Please enter your password";
-                              }
-                              if (value.length < 6) {
-                                return "Password must be at least 6 characters";
-                              }
-                              return null;
-                            },
-                          ),
-                          // Row untuk tombol "Forgot Password?" yang diletakkan di kanan atas tombol Sign In.
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextButton(
-                                onPressed: _goToForgotPassword,
-                                child: const Text(
-                                  "Forgot Password?",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.redAccent,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          // Tombol Sign In.
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: _signIn,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF0D47A1),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: const Text(
-                                "Sign In",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  _LoginCard(
+                    formKey: _formKey,
+                    emailController: _emailController,
+                    passwordController: _passwordController,
+                    obscurePassword: _obscurePassword,
+                    onTogglePassword: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                    onSignIn: _signIn,
+                    onForgotPassword: _goToForgotPassword,
+                    onSignUp: _goToSignUp,
                   ),
-                  const SizedBox(height: 20),
-                  // Row untuk "Belum punya akun? Sign Up" di bawah card.
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Belum punya akun? ",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: _goToSignUp,
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 40),
-                  // Area tambahan (misalnya social login atau informasi lain) dapat ditambahkan di sini.
+                  const SizedBox(height: 30),
+                  const _FooterWidget(),
                 ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Widget header dengan logo dan pesan sambutan.
+class _HeaderWidget extends StatelessWidget {
+  const _HeaderWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Logo menggunakan Hero untuk transisi halus
+        Hero(
+          tag: 'app_logo',
+          child: CircleAvatar(
+            radius: 50,
+            backgroundColor: Colors.white,
+            child: Lottie.asset(
+              'assets/animations/Animation_1742099923119.json',
+              width: 80,
+              height: 80,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          "Welcome Back",
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          "Sign in to continue",
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white70,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Widget card login dengan latar belakang terang.
+class _LoginCard extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final bool obscurePassword;
+  final VoidCallback onTogglePassword;
+  final VoidCallback onSignIn;
+  final VoidCallback onForgotPassword;
+  final VoidCallback onSignUp;
+
+  const _LoginCard({
+    Key? key,
+    required this.formKey,
+    required this.emailController,
+    required this.passwordController,
+    required this.obscurePassword,
+    required this.onTogglePassword,
+    required this.onSignIn,
+    required this.onForgotPassword,
+    required this.onSignUp,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Form(
+          key: formKey,
+          child: Column(
+            children: [
+              // Field untuk username atau email
+          TextFormField(
+            controller: emailController,
+            keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(color: Colors.black87),
+            decoration: InputDecoration(
+              prefixIcon: Icon(Icons.person, color: AppColors.primary),
+              labelText: "Username or Email",
+              labelStyle: const TextStyle(color: Colors.black54),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black38),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppColors.primary, width: 2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            validator: (value) =>
+                (value == null || value.trim().isEmpty) ? "Please enter your username or email" : null,
+          ),
+              const SizedBox(height: 20),
+              // Field untuk password
+            TextFormField(
+              controller: passwordController,
+              obscureText: obscurePassword,
+              style: const TextStyle(color: Colors.black87),
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.lock, color: AppColors.primary),
+                labelText: "Password",
+                labelStyle: const TextStyle(color: Colors.black54),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black38), // Warna border saat tidak fokus
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.primary, width: 2), // Warna border saat fokus
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    obscurePassword ? Icons.visibility : Icons.visibility_off,
+                    color: AppColors.primary,
+                  ),
+                  onPressed: onTogglePassword,
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return "Please enter your password";
+                }
+                if (value.length < 6) {
+                  return "Password must be at least 6 characters";
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 10),
+            // Tombol Forgot Password
+            Align(
+              alignment: Alignment.centerRight,
+              child: InkWell(
+                onTap: onForgotPassword,
+                borderRadius: BorderRadius.circular(8),
+                splashColor: AppColors.primary.withOpacity(0.2), // Efek klik halus
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  child: Text(
+                    "Forgot Password?",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                      decoration: TextDecoration.underline,
+                      decorationColor: AppColors.primary, // Garis bawah mengikuti warna teks
+                    ),
+                  ),
+                ),
+              ),
+            ),
+              const SizedBox(height: 10),
+              // Tombol Sign In
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: onSignIn,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    "Sign In",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            // Navigasi ke halaman Sign Up
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "Belum punya akun? ",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87, // Warna lebih kontras agar mudah terbaca
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: onSignUp,
+                  child: Text(
+                    "Sign Up",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                      decoration: TextDecoration.underline,
+                      decorationThickness: 2, // Garis bawah lebih tegas
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget footer dengan informasi hak cipta.
+class _FooterWidget extends StatelessWidget {
+  const _FooterWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: const [
+        SizedBox(height: 10),
+        Text(
+          "© 2025 MediaExPlant. All rights reserved.",
+          style: TextStyle(color: Colors.white70, fontSize: 12),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: 5),
+        Text(
+          "Privacy Policy | Terms of Service",
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: 12,
+            decoration: TextDecoration.underline,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }
