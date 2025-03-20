@@ -2,9 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lottie/lottie.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:mediaexplant/core/utils/app_colors.dart';
 
 /// WelcomeScreen dengan 3 halaman onboarding menggunakan auto-slide dan Lottie animasi.
+/// Jika welcome screen sudah pernah dilihat, langsung diarahkan ke home.
+/// Saat tombol "Get Started" ditekan, akan diminta izin notifikasi menggunakan permission_handler.
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
 
@@ -17,6 +20,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   int _currentPage = 0;
   Timer? _autoSlideTimer;
   final int _numPages = 3;
+  bool _isLoading = true;
 
   final List<Map<String, String>> _pages = [
     {
@@ -39,12 +43,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
+    _checkWelcomeStatus();
     _pageController = PageController(initialPage: 0);
     _startAutoSlide();
   }
 
+  Future<void> _checkWelcomeStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool hasSeen = prefs.getBool("hasSeenWelcome") ?? false;
+    if (hasSeen) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   void _startAutoSlide() {
-    _autoSlideTimer?.cancel(); // Hentikan timer sebelumnya jika ada
+    _autoSlideTimer?.cancel();
     _autoSlideTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (_pageController.hasClients) {
         int nextPage = (_currentPage + 1) % _numPages;
@@ -69,8 +86,31 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     await prefs.setBool('hasSeenWelcome', true);
   }
 
+  /// Minta izin notifikasi menggunakan permission_handler.
+  Future<bool> _requestNotificationPermission() async {
+    PermissionStatus status = await Permission.notification.request();
+    return status.isGranted;
+  }
+
+  /// Saat Get Started ditekan: simpan shared preference, minta izin notifikasi, lalu navigasi ke home.
   void _onGetStarted() async {
     await _markWelcomeSeen();
+    bool granted = await _requestNotificationPermission();
+    if (granted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Notification permission granted"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Notification permission denied"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
     Navigator.pushReplacementNamed(context, '/home');
   }
 
@@ -132,6 +172,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Jika masih loading, tampilkan container kosong dengan background yang sama.
+    if (_isLoading) {
+      return Scaffold(
+        body: Container(
+          color: AppColors.primary,
+        ),
+      );
+    }
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(

@@ -168,7 +168,12 @@ class SettingItem extends StatelessWidget {
           color: AppColors.text.withOpacity(0.6),
         ),
         onTap: () {
-          Navigator.pushNamed(context, routeName);
+          // Jika item logout, navigasikan ke SplashScreen (atau halaman Sign In)
+          if (routeName == '/settings/logout') {
+            Navigator.pushReplacementNamed(context, '/');
+          } else {
+            Navigator.pushNamed(context, routeName);
+          }
         },
       ),
     );
