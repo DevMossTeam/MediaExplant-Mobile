@@ -194,18 +194,23 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
 
   void _sendOtp() {
     if (_forgotFormKey.currentState!.validate()) {
+      // Tutup bottom sheet
       Navigator.pop(context);
+      // Tampilkan SnackBar sebagai feedback bahwa OTP telah dikirim
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("OTP sent to ${_forgotEmailController.text}"),
         ),
       );
+      // Arahkan ke route verifikasi OTP (pastikan route ini sudah didefinisikan di AppRouter)
+      Navigator.pushNamed(context, '/forgot_password_verify_email');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
+      // Menggunakan MediaQuery untuk menghindari overlay keyboard
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
         top: 16,
@@ -289,17 +294,20 @@ class ChangeEmailSheet extends StatelessWidget {
   const ChangeEmailSheet({Key? key}) : super(key: key);
 
   void _sendVerification(BuildContext context) {
+    // Tutup bottom sheet terlebih dahulu
     Navigator.pop(context);
+    // Tampilkan SnackBar sebagai feedback bahwa kode verifikasi telah dikirim
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Kode verifikasi telah dikirim ke email Anda.")),
     );
-    // TODO: Implementasikan logika pengiriman kode verifikasi email.
+    // Navigasikan ke halaman verifikasi OTP untuk ganti email.
+    Navigator.pushNamed(context, '/change_email_verify_email');
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      // Gunakan MediaQuery agar konten tidak tertutup oleh keyboard (meskipun tidak ada input di sini)
+      // Gunakan MediaQuery agar konten tidak tertutup oleh keyboard
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
         top: 16,

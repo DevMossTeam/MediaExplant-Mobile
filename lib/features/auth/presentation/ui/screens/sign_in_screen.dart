@@ -66,7 +66,7 @@ class _SignInScreenState extends State<SignInScreen> {
     final size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
-        // Ganti '/profile' dengan rute halaman profile yang diinginkan
+        // Ganti '/home' dengan rute halaman profile atau home yang diinginkan
         Navigator.pushReplacementNamed(context, '/home');
         return false;
       },
@@ -413,6 +413,8 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
   void _sendOtp() {
     if (_forgotFormKey.currentState!.validate()) {
       Navigator.pop(context);
+      // Setelah OTP terkirim, navigasikan ke halaman verifikasi OTP untuk reset password.
+      Navigator.pushNamed(context, '/forgot_password_verify_email');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("OTP sent to ${_forgotEmailController.text}"),

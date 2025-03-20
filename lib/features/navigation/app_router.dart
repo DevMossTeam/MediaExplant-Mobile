@@ -3,7 +3,8 @@ import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_in_scree
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_screen.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/otp/sign_up_verify_email.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_input_screen.dart';
-import 'package:mediaexplant/main.dart';
+import 'package:mediaexplant/features/auth/presentation/ui/otp/forgot_password_verify_email.dart';
+import 'package:mediaexplant/features/auth/presentation/ui/otp/change_email_verify_email.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:mediaexplant/features/notifications/presentation/ui/screens/notifications_screen.dart';
@@ -16,6 +17,7 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/tentang_s
 import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
+import 'package:mediaexplant/main.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -61,6 +63,10 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SignUpVerifyEmailScreen());
       case '/sign_up_input_screen':
         return MaterialPageRoute(builder: (_) => const SignUpInputScreen());
+      case '/forgot_password_verify_email':
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordVerifyEmailScreen());
+      case '/change_email_verify_email':
+        return MaterialPageRoute(builder: (_) => const ChangeEmailVerifyEmailScreen());
       default:
         return _errorRoute(settings.name);
     }
