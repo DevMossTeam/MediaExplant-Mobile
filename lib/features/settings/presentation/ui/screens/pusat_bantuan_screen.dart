@@ -327,20 +327,27 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
     );
   }
 
-  /// Dropdown filter kategori.
-  Widget _buildCategoryDropdown() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+Widget _buildCategoryDropdown() {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: DropdownButtonHideUnderline( // Sembunyikan garis bawah dropdown
       child: DropdownButtonFormField<String>(
         value: _selectedCategory,
         decoration: InputDecoration(
           labelText: 'Kategori',
           filled: true,
           fillColor: Colors.grey.shade100,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColors.primary),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColors.primary),
           ),
         ),
         items: _categories.map((cat) {
@@ -358,8 +365,10 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
           }
         },
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   /// Daftar FAQ dalam bentuk kartu dengan ExpansionTile.
   Widget _buildFAQList() {
