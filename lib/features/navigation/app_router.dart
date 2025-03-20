@@ -51,7 +51,7 @@ class AppRouter {
       case '/settings/umum':
         return MaterialPageRoute(builder: (_) => const UmumScreen());
       case '/notifications':
-        return MaterialPageRoute(builder: (_) => const NotificationsScreen());
+        return MaterialPageRoute(builder: (_) => NotificationsScreen());
       case '/login':
         return MaterialPageRoute(builder: (_) => const SignInScreen());
       case '/sign_up':
