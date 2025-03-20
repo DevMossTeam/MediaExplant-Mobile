@@ -18,6 +18,7 @@ class Berita with ChangeNotifier {
   final int jumlahLike;
   final int jumlahDislike;
   final int jumlahKomentar;
+  final List<String> tags;
   bool? isBookmark;
   Berita({
     required this.idBerita,
@@ -31,7 +32,8 @@ class Berita with ChangeNotifier {
     required this.jumlahLike,
     required this.jumlahDislike,
     required this.jumlahKomentar,
-    this.isBookmark = false,
+    required this.tags,
+    this.isBookmark,
   });
 
   void statusBookmark() {

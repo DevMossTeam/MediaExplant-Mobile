@@ -16,7 +16,7 @@ class BeritaTerkiniItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: InkWell(
-        onTap: onTap, // Memicu aksi klik
+        onTap: onTap,
         splashColor: Colors.blue.withAlpha(50), // Warna efek klik
         highlightColor: Colors.blue.withAlpha(100), // Warna saat ditekan
         borderRadius: BorderRadius.circular(10), // Efek ripple mengikuti Card
