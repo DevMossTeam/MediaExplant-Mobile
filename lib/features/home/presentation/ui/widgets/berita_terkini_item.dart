@@ -51,9 +51,11 @@ class BeritaTerkiniItem extends StatelessWidget {
                     ),
                     child: IconButton(
                       onPressed: () {
-                        // Tambahkan fungsi bookmark
+                        berita.statusBookmark();
                       },
-                      icon: const Icon(Icons.bookmark),
+                      icon: (berita.isBookmark ?? false)
+                          ? const Icon(Icons.bookmark)
+                          : const Icon(Icons.bookmark_outline),
                       color: Colors.white,
                     ),
                   ),

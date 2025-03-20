@@ -85,9 +85,11 @@ class BeritaRekomendasiItem extends StatelessWidget {
                   ),
                   child: IconButton(
                     onPressed: () {
-                      // TODO: Tambahkan fungsi bookmark
+                      berita.statusBookmark();
                     },
-                    icon: const Icon(Icons.bookmark_border),
+                    icon: (berita.isBookmark ?? false)
+                        ? const Icon(Icons.bookmark)
+                        : const Icon(Icons.bookmark_outline),
                     color: Colors.white,
                     iconSize: 24,
                   ),

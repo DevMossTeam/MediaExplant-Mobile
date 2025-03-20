@@ -57,11 +57,13 @@ class BeritaPopulerItem extends StatelessWidget {
 
             // Bookmark Icon
             IconButton(
-              onPressed: () {
-                // Tambahkan fungsi bookmark
-              },
-              icon: const Icon(Icons.bookmark_border),
+              icon: (berita.isBookmark ?? false)
+                  ? const Icon(Icons.bookmark)
+                  : const Icon(Icons.bookmark_outline),
               color: Colors.black54,
+              onPressed: () {
+                berita.statusBookmark();
+              },
             ),
           ],
         ),

@@ -18,7 +18,7 @@ class Berita with ChangeNotifier {
   final int jumlahLike;
   final int jumlahDislike;
   final int jumlahKomentar;
-  bool? isBookmark = false;
+  bool? isBookmark;
   Berita({
     required this.idBerita,
     required this.judul,
@@ -31,10 +31,13 @@ class Berita with ChangeNotifier {
     required this.jumlahLike,
     required this.jumlahDislike,
     required this.jumlahKomentar,
-    this.isBookmark,
+    this.isBookmark = false,
   });
-  
- 
+
+  void statusBookmark() {
+    isBookmark = !(isBookmark ?? false);
+    notifyListeners();
+  }
 
   factory Berita.fromJson(Map<String, dynamic> json) => _$BeritaFromJson(json);
 
