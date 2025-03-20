@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_in_screen.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_screen.dart';
+import 'package:mediaexplant/features/auth/presentation/ui/otp/sign_up_verify_email.dart';
+import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_input_screen.dart';
+import 'package:mediaexplant/main.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:mediaexplant/features/notifications/presentation/ui/screens/notifications_screen.dart';
@@ -13,9 +16,6 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/tentang_s
 import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
-import 'package:mediaexplant/main.dart';
-
-
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -25,6 +25,7 @@ class AppRouter {
       case '/welcome':
         return MaterialPageRoute(builder: (_) => const WelcomeScreen());
       case '/home':
+        // Pastikan widget ini menampilkan navbar (misalnya MainNavigationScreen)
         return MaterialPageRoute(builder: (_) => const MainNavigationScreen());
       case '/detail_article':
         if (settings.arguments is Berita) {
@@ -56,6 +57,10 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SignInScreen());
       case '/sign_up':
         return MaterialPageRoute(builder: (_) => const SignUpScreen());
+      case '/sign_up_verify_email':
+        return MaterialPageRoute(builder: (_) => const SignUpVerifyEmailScreen());
+      case '/sign_up_input_screen':
+        return MaterialPageRoute(builder: (_) => const SignUpInputScreen());
       default:
         return _errorRoute(settings.name);
     }
@@ -70,4 +75,3 @@ class AppRouter {
     );
   }
 }
-

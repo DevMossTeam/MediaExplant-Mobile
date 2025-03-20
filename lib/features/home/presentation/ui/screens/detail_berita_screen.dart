@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
-import 'package:mediaexplant/features/home/data/repositories/news_repository_impl.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_terkait_item.dart';

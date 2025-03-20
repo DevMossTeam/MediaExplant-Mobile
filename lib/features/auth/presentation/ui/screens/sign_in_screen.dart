@@ -3,6 +3,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mediaexplant/core/utils/app_colors.dart'; // Pastikan path sudah benar
 
 /// Halaman Sign In dengan background gradient gelap dan card login terang.
+/// Jika tombol back ditekan, akan langsung menuju halaman profile.
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
 
@@ -63,57 +64,64 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Background gradient gelap
-          Container(
-            height: double.infinity,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary,
-                  Colors.red.shade900,
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+    return WillPopScope(
+      onWillPop: () async {
+        // Ganti '/profile' dengan rute halaman profile yang diinginkan
+        Navigator.pushReplacementNamed(context, '/home');
+        return false;
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            // Background gradient gelap
+            Container(
+              height: double.infinity,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    Colors.red.shade900,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
             ),
-          ),
-          // Konten utama
-          SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: size.width * 0.08,
-                vertical: size.height * 0.1,
-              ),
-              child: Column(
-                children: [
-                  const _HeaderWidget(),
-                  const SizedBox(height: 40),
-                  _LoginCard(
-                    formKey: _formKey,
-                    emailController: _emailController,
-                    passwordController: _passwordController,
-                    obscurePassword: _obscurePassword,
-                    onTogglePassword: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                    onSignIn: _signIn,
-                    onForgotPassword: _showForgotPasswordBottomSheet,
-                    onSignUp: _goToSignUp,
-                  ),
-                  const SizedBox(height: 30),
-                  const _FooterWidget(),
-                ],
+            // Konten utama
+            SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: size.width * 0.08,
+                  vertical: size.height * 0.1,
+                ),
+                child: Column(
+                  children: [
+                    const _HeaderWidget(),
+                    const SizedBox(height: 40),
+                    _LoginCard(
+                      formKey: _formKey,
+                      emailController: _emailController,
+                      passwordController: _passwordController,
+                      obscurePassword: _obscurePassword,
+                      onTogglePassword: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                      onSignIn: _signIn,
+                      onForgotPassword: _showForgotPasswordBottomSheet,
+                      onSignUp: _goToSignUp,
+                    ),
+                    const SizedBox(height: 30),
+                    const _FooterWidget(),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -309,7 +317,7 @@ class _LoginCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              // Navigasi ke halaman Sign Up
+              // Navigasi ke halaman Sign Up (bagian ini berada di dalam card)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
