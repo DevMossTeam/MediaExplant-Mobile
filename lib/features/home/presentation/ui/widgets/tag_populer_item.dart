@@ -10,8 +10,8 @@ class TagPopulerItem extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: InkWell(
         onTap: onTap, // Memicu aksi klik
-        splashColor: Colors.blue.withAlpha(50), // Warna efek klik
-        highlightColor: Colors.blue.withAlpha(100), // Warna saat ditekan
+        splashColor: Colors.black.withAlpha(50),
+        highlightColor: Colors.white.withAlpha(100),
         child: Row(
           children: [
             const Text(

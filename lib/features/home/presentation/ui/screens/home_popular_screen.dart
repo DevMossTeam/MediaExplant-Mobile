@@ -48,14 +48,14 @@ class HomePopularScreen extends StatelessWidget {
                       child: BeritaPopulerItem(
                         // berita: beritaList[index],
                         onTap: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  DetailBeritaScreen(berita: beritaList[index]),
-                            ),
-                            (route) => route.isFirst,
-                          );
+                          // Navigator.pushAndRemoveUntil(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) =>
+                          //         DetailBeritaScreen(berita: beritaList[index]),
+                          //   ),
+                          //   (route) => route.isFirst,
+                          // );
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text(
                                 "Anda mengeklik ${beritaList[index].judul}"),
