@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 
 /// Main widget untuk tampilan profil dengan data dummy.
 /// Tampilan akan berbeda jika pengguna sudah login atau belum.

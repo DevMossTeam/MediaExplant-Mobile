@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart'; // Ganti dengan path yang sesuai
+import 'package:mediaexplant/core/constants/app_colors.dart'; // Ganti dengan path yang sesuai
 
 /// Fungsi utilitas untuk mengonversi Color menjadi MaterialColor,
 /// berguna untuk mengatur primarySwatch dalam ThemeData.

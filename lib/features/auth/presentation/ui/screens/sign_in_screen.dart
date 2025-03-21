@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart'; // Pastikan path sudah benar
+import 'package:mediaexplant/core/constants/app_colors.dart'; // Pastikan path sudah benar
 
 /// Halaman Sign In dengan background gradient gelap dan card login terang.
 /// Jika tombol back ditekan, akan langsung menuju halaman profile.

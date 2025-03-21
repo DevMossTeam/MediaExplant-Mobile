@@ -8,24 +8,21 @@ class SignInViewModel extends ChangeNotifier {
   SignInViewModel({required this.signInUseCase});
 
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
+  String? _errorMessage;
   User? _user;
+
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
   User? get user => _user;
 
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
-
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      _user = await signInUseCase(email: email, password: password);
+      final result = await signInUseCase(email: email, password: password);
+      _user = result;
     } catch (e) {
       _errorMessage = e.toString();
     } finally {

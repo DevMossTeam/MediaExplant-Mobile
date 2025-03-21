@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'home_popular_screen.dart';
 import 'home_latest_screen.dart';
 

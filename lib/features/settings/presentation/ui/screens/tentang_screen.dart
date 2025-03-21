@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart'; // Sesuaikan path jika diperlukan
+import 'package:mediaexplant/core/constants/app_colors.dart'; // Sesuaikan path jika diperlukan
 
 class TentangScreen extends StatelessWidget {
   const TentangScreen({super.key});

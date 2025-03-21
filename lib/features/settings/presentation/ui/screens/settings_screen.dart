@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart'; // Ganti dengan path yang sesuai
+import 'package:mediaexplant/core/constants/app_colors.dart'; // Ganti dengan path yang sesuai
 
 /// Tampilan halaman Settings dengan desain modern dan terstruktur.
 /// Terdapat dua bagian utama: "Pengaturan" dan "Pusat Informasi", ditambah

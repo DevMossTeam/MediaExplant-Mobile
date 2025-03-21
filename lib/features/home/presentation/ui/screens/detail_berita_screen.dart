@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';

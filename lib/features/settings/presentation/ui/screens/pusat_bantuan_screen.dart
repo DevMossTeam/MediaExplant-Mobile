@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart'; // Sesuaikan path jika diperlukan
+import 'package:mediaexplant/core/constants/app_colors.dart'; // Sesuaikan path jika diperlukan
 
 void main() {
   runApp(const MyApp());

@@ -6,7 +6,7 @@ import 'package:mediaexplant/features/notifications/data/repositories/notificati
 import 'package:mediaexplant/features/notifications/domain/repositories/notification_repository.dart';
 import 'package:mediaexplant/features/notifications/domain/usecases/get_notifications.dart';
 import 'package:mediaexplant/features/notifications/presentation/logic/notifications_viewmodel.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/features/navigation/app_router.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';

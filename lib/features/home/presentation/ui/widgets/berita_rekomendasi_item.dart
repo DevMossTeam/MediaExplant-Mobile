@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart';
 import 'package:provider/provider.dart';
 
 class BeritaRekomendasiItem extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 
 /// Layar verifikasi OTP untuk reset password.
 /// Setelah OTP berhasil diverifikasi, pengguna akan dinavigasikan ke halaman reset password.

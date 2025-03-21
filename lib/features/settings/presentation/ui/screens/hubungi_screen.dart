@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart'; // Pastikan path sudah sesuai
+import 'package:mediaexplant/core/constants/app_colors.dart'; // Pastikan path sudah sesuai
 
 /// Entry point of the application.
 void main() {

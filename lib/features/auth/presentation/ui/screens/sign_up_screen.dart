@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart'; // Pastikan path sudah benar
+import 'package:mediaexplant/core/constants/app_colors.dart'; // Pastikan path sudah benar
 
 /// Halaman Sign Up dengan background gradient gelap dan card form pendaftaran yang terang.
 /// Jika tombol back ditekan, akan langsung menuju halaman profile.

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart'; // Ganti dengan path yang sesuai
+import 'package:mediaexplant/core/constants/app_colors.dart'; // Ganti dengan path yang sesuai
 
 class KeamananScreen extends StatelessWidget {
   const KeamananScreen({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 
 /// Layar verifikasi OTP untuk Sign Up.
 /// Setelah OTP diverifikasi dengan benar, pengguna akan dinavigasikan ke halaman Sign Up Input.

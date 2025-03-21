@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:mediaexplant/core/utils/app_colors.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 
 /// WelcomeScreen dengan 3 halaman onboarding menggunakan auto-slide dan Lottie animasi.
 /// Jika welcome screen sudah pernah dilihat, langsung diarahkan ke home.

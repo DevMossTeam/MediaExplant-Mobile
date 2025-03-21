@@ -1,39 +1,32 @@
+import 'package:mediaexplant/core/network/api_client.dart';
+import '../../domain/entities/user.dart';
 import '../models/user_model.dart';
 
-abstract class AuthRemoteDataSource {
-  Future<UserModel> signIn({required String email, required String password});
-  Future<UserModel> signUp({required String username, required String email, required String password});
-  Future<void> forgotPassword({required String email});
-}
+class AuthRemoteDataSource {
+  final ApiClient apiClient;
 
-class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  @override
-  Future<UserModel> signIn({required String email, required String password}) async {
-    await Future.delayed(const Duration(seconds: 2));
-    if (email == "test@example.com" && password == "password") {
-      return UserModel(id: "112", name: "Test User", email: email);
-    } else {
-      throw Exception("Invalid credentials");
-    }
+  AuthRemoteDataSource({required this.apiClient});
+
+  Future<User> signIn({required String email, required String password}) async {
+    final response = await apiClient.postData('login', {
+      'email': email,
+      'password': password,
+    });
+    return UserModel.fromJson(response);
   }
 
-  @override
-  Future<UserModel> signUp({required String username, required String email, required String password}) async {
-    await Future.delayed(const Duration(seconds: 2));
-    if (email != "existing@example.com") {
-      return UserModel(id: "5", name: username, email: email);
-    } else {
-      throw Exception("Email already in use");
-    }
+  Future<User> signUp({required String username, required String email, required String password}) async {
+    final response = await apiClient.postData('register', {
+      'username': username,
+      'email': email,
+      'password': password,
+    });
+    return UserModel.fromJson(response);
   }
 
-  @override
   Future<void> forgotPassword({required String email}) async {
-    await Future.delayed(const Duration(seconds: 2));
-    // Simulasi: jika email tidak ditemukan, lempar error
-    if (email == "unknown@example.com") {
-      throw Exception("Email not found");
-    }
-    return;
+    await apiClient.postData('forgot-password', {
+      'email': email,
+    });
   }
 }
