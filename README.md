@@ -9,22 +9,14 @@ MediaExplant/
 ├── lib/
 │   ├── core/
 │   │   ├── constants/
-│   │   │   ├── app_colors.dart           // Warna & design token (menggantikan file XML)
-│   │   │   ├── app_strings.dart          // String/label aplikasi
-│   │   │   └── app_routes.dart           // Definisi route/navigasi
+│   │   │   └── app_config.dart           // Definisi route/navigasi
 │   │   ├── errors/
 │   │   │   └── exceptions.dart
 │   │   ├── network/
 │   │   │   ├── api_client.dart
-│   │   │   └── network_info.dart
-│   │   ├── theme/
-│   │   │   ├── app_theme.dart            // Tema global aplikasi
-│   │   │   └── text_styles.dart          // Gaya teks khusus
 │   │   ├── utils/
 │   │   │   ├── date_utils.dart           // Adaptasi DateUtils.kt
 │   │   │   └── email_sender.dart         // Adaptasi EmailSender.kt
-│   │   └── widgets/
-│   │       └── common_widgets.dart       // Widget umum (misal: button, card, dsb.)
 │   │
 │   ├── features/
 │   │   ├── auth/                         // Fitur autentikasi & manajemen akun
@@ -133,11 +125,6 @@ MediaExplant/
 │   │   │       │       └── comment_item.dart           // Item tampilan komentar
 │   │   │       └── logic/
 │   │   │           └── komentar_viewmodel.dart        // (KomentarViewModel.kt)
-│   │   │
-│   │   ├── license/                      // Fitur Lisensi
-│   │   │   └── presentation/
-│   │   │       └── ui/
-│   │   │           └── license_screen.dart           // (fragment_license.xml)
 │   │   │
 │   │   ├── notifications/                // Fitur Notifikasi
 │   │   │   ├── data/
@@ -268,9 +255,6 @@ MediaExplant/
 │   │   │       │   ├── screens/
 │   │   │       │   │   ├── splash_screen.dart        // Splash screen (baru)
 │   │   │       │   │   ├── welcome_screen.dart         // (fragment_welcome.xml)
-│   │   │       │   │   ├── welcome_page1.dart          // (fragment_welcome_page_1.xml)
-│   │   │       │   │   ├── welcome_page2.dart          // (fragment_welcome_page_2.xml)
-│   │   │       │   │   └── welcome_page3.dart          // (fragment_welcome_page_3.xml)
 │   │   │       └── logic/
 │   │   │           ├── splash_viewmodel.dart         // ViewModel untuk Splash Screen
 │   │   │           └── welcome_viewmodel.dart
