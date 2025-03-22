@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:provider/provider.dart';
@@ -16,52 +17,54 @@ class BeritaPopulerItem extends StatelessWidget {
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Gambar Berita
               ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  berita.gambar,
+                borderRadius: BorderRadius.circular(15),
+                child: CachedNetworkImage(
+                  imageUrl: berita.gambar,
                   width: 120,
-                  height: 90,
+                  height: 100,
                   fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(), // Indikator loading
+                  ),
+                  errorWidget: (context, url, error) => const Center(
+                    child:
+                        Icon(Icons.broken_image, size: 50, color: Colors.red),
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
 
               // Judul & Tanggal
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      berita.judul,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                child: SizedBox(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        berita.judul,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${berita.tanggalDibuat} yang lalu",
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        "${berita.tanggalDibuat} yang lalu",
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-
-              // Bookmark Icon
-              IconButton(
-                icon: (berita.isBookmark ?? false)
-                    ? const Icon(Icons.bookmark)
-                    : const Icon(Icons.bookmark_outline),
-                color: Colors.black54,
-                onPressed: () {
-                  berita.statusBookmark();
-                },
-              ),
+              const SizedBox(width: 50,)
             ],
           ),
 
@@ -78,6 +81,19 @@ class BeritaPopulerItem extends StatelessWidget {
               ),
             ),
           ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child:IconButton(
+              icon: (berita.isBookmark ?? false)
+                  ? const Icon(Icons.bookmark)
+                  : const Icon(Icons.bookmark_outline),
+              color: Colors.black54,
+              onPressed: () {
+                berita.statusBookmark();
+              },
+            ),
+          )
         ],
       ),
     );

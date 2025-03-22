@@ -5,13 +5,13 @@ import 'package:mediaexplant/features/home/data/models/berita.dart';
 final Faker faker = Faker();
 
 class BeritaProvider with ChangeNotifier {
-  final List<Berita> _allBerita = List.generate(20, (index) {
+  final List<Berita> _allBerita = List.generate(10, (index) {
     return Berita(
       idBerita: (index + 1).toString(),
       judul: faker.lorem.sentence(),
       kontenBerita: faker.lorem.sentences(3).join(' '),
       gambar: "https://picsum.photos/id/${1 + index}/500/300",
-      tanggalDibuat: faker.date.dateTime().toString(),
+      tanggalDibuat: "Sabtu,22 Maret 2025 13:15 WIB",
       penulis: faker.person.name(),
       profil: "https://picsum.photos/id/2/500/300",
       kategori: "Teknologi",
