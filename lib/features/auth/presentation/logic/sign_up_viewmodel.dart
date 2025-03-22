@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/user.dart';
+import '../../domain/entities/auth_response.dart';
 import '../../domain/usecases/sign_up.dart';
 
 class SignUpViewModel extends ChangeNotifier {
@@ -10,8 +10,8 @@ class SignUpViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  User? _user;
-  User? get user => _user;
+  AuthResponse? _authResponse;
+  AuthResponse? get authResponse => _authResponse;
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
@@ -26,7 +26,11 @@ class SignUpViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _user = await signUpUseCase(username: username, email: email, password: password);
+      _authResponse = await signUpUseCase(
+        username: username,
+        email: email,
+        password: password,
+      );
     } catch (e) {
       _errorMessage = e.toString();
     } finally {

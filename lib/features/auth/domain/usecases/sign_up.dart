@@ -1,4 +1,4 @@
-import '../entities/user.dart';
+import '../entities/auth_response.dart';
 import '../repositories/auth_repository.dart';
 
 class SignUp {
@@ -6,7 +6,7 @@ class SignUp {
 
   SignUp(this.repository);
 
-  Future<User> call({
+  Future<AuthResponse> call({
     required String username,
     required String email,
     required String password,

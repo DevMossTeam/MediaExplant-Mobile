@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mediaexplant/core/constants/app_colors.dart'; // Pastikan path sudah benar
+import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:provider/provider.dart';
+import '../../logic/sign_in_viewmodel.dart';
 
 /// Halaman Sign In dengan background gradient gelap dan card login terang.
 /// Jika tombol back ditekan, akan langsung menuju halaman profile.
@@ -26,18 +28,29 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  /// Fungsi untuk memproses sign in.
-  void _signIn() {
+  /// Fungsi untuk memproses sign in menggunakan SignInViewModel.
+  Future<void> _signIn() async {
     if (_formKey.currentState!.validate()) {
+      // Dapatkan instance dari SignInViewModel
+      final signInViewModel = Provider.of<SignInViewModel>(context, listen: false);
+      // Tampilkan loading indicator
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Signing in...")),
       );
-      Future.delayed(const Duration(seconds: 2), () {
+      // Panggil usecase sign in dari viewmodel
+      await signInViewModel.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      // Cek jika terjadi error
+      if (signInViewModel.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Sign in successful!")),
+          SnackBar(content: Text(signInViewModel.errorMessage!)),
         );
-        // Navigator.pushReplacementNamed(context, '/home');
-      });
+      } else if (signInViewModel.authResponse != null) {
+        // Login berhasil, navigasi ke halaman home
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     }
   }
 
