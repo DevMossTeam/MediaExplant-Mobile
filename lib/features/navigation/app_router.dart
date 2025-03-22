@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/network/api_client.dart';
+import 'package:mediaexplant/features/auth/domain/usecases/sign_in.dart';
+import 'package:mediaexplant/features/auth/presentation/logic/sign_in_viewmodel.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_in_screen.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_screen.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/otp/sign_up_verify_email.dart';
@@ -18,6 +21,9 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_scre
 import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
 import 'package:mediaexplant/main.dart';
+import 'package:provider/provider.dart';
+import 'package:mediaexplant/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:mediaexplant/features/auth/data/repositories/auth_repository_impl.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -56,7 +62,20 @@ class AppRouter {
       case '/notifications':
         return MaterialPageRoute(builder: (_) => NotificationsScreen());
       case '/login':
-        return MaterialPageRoute(builder: (_) => const SignInScreen());
+        return MaterialPageRoute(
+          builder: (context) {
+            return ChangeNotifierProvider<SignInViewModel>(
+              create: (context) {
+                // Ambil ApiClient dari context, pastikan sudah disediakan di main.dart
+                final apiClient = Provider.of<ApiClient>(context, listen: false);
+                final authRemoteDataSource = AuthRemoteDataSource(apiClient: apiClient);
+                final authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
+                return SignInViewModel(signInUseCase: SignIn(authRepository));
+              },
+              child: const SignInScreen(),
+            );
+          },
+        );
       case '/sign_up':
         return MaterialPageRoute(builder: (_) => const SignUpScreen());
       case '/sign_up_verify_email':
