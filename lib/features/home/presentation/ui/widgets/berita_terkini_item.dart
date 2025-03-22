@@ -19,7 +19,7 @@ class BeritaTerkiniItem extends StatelessWidget {
           Card(
             margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -27,8 +27,7 @@ class BeritaTerkiniItem extends StatelessWidget {
                 Stack(
                   children: [
                     ClipRRect(
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(10)),
+                      borderRadius:const BorderRadius.vertical(top: Radius.circular(15)),
                       child: Container(
                         width: double.infinity,
                         constraints: const BoxConstraints(maxWidth: 600),
@@ -64,9 +63,10 @@ class BeritaTerkiniItem extends StatelessWidget {
                 ),
                 Expanded(
                   child: Container(
+                    width: double.infinity,
                     decoration: const BoxDecoration(
                       borderRadius:
-                          BorderRadius.vertical(bottom: Radius.circular(10)),
+                          BorderRadius.vertical(bottom: Radius.circular(15)),
                       gradient: LinearGradient(
                         colors: [AppColors.primary, Colors.red],
                         begin: Alignment.topLeft,
@@ -77,13 +77,8 @@ class BeritaTerkiniItem extends StatelessWidget {
                       padding: EdgeInsets.all(12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            berita.tanggalDibuat,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12),
-                          ),
-                          const SizedBox(height: 5),
                           Text(
                             berita.judul,
                             style: const TextStyle(
@@ -93,6 +88,11 @@ class BeritaTerkiniItem extends StatelessWidget {
                             ),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 5),
+                          Text("MediaExplan - ${berita.tanggalDibuat} yang lalu",
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 12),
                           ),
                         ],
                       ),
@@ -109,14 +109,14 @@ class BeritaTerkiniItem extends StatelessWidget {
                 color: Colors.transparent, // Hindari warna latar belakang
                 child: InkWell(
                   onTap: onTap,
-                  splashColor:Colors.black.withAlpha(50), 
+                  splashColor: Colors.black.withAlpha(50),
                   highlightColor: Colors.white.withAlpha(100),
-                  borderRadius: BorderRadius.circular(10), // Warna highlight
+                  borderRadius: BorderRadius.circular(15), // Warna highlight
                 ),
               ),
             ),
           ),
-        ],  
+        ],
       ),
     );
   }

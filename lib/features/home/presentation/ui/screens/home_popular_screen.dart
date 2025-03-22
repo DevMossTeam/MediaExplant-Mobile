@@ -79,7 +79,7 @@ class HomePopularScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           SizedBox(
-            height: 220,
+            height: 230,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: beritaList.length,

@@ -21,94 +21,81 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
   Widget build(BuildContext context) {
     // Mengubah warna status bar
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor:
-            Colors.grey.withAlpha(100), // Warna background status bar
-        statusBarIconBrightness:
-            Brightness.light, // Warna ikon status bar (terang)
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
       ),
     );
 
     final beritaProvider = Provider.of<BeritaProvider>(context);
-    final beritList = beritaProvider.allBerita;
+    final beritaList = beritaProvider.allBerita;
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      // appBar: AppBar(
-      //   iconTheme: const IconThemeData(color: Colors.white),
-      //   title: Text(
-      //     berita.kategori,
-      //     style: const TextStyle(color: Colors.white),
-      //   ),
-      //   backgroundColor: AppColors.primary,
-      // ),
       body: SafeArea(
-        // supaya ui tidak tertutup oleh status
-        child: Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                //gambar utama
-                Stack(
-                  children: [
-                    Image.network(
-                      widget.berita.gambar,
-                      height: 200,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                    // Tombol Back di kiri atas gambar utama
-                    Positioned(
-                      top: 10,
-                      left: 10,
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(100),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 10,
-                      right: 10,
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(100),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              widget.berita.statusBookmark();
-                            });
-                          },
-                          icon: (widget.berita.isBookmark ?? false)
-                              ? const Icon(Icons.bookmark)
-                              : const Icon(Icons.bookmark_outline),
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
+        child: CustomScrollView(
+          slivers: [
+            // Gambar utama dengan efek SliverAppBar
+            SliverAppBar(
+              expandedHeight: 200,
+              floating: false,
+              pinned: true,
+              backgroundColor: Colors.black.withAlpha(100),
+              elevation: 0,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Image.network(
+                  widget.berita.gambar,
+                  fit: BoxFit.cover,
                 ),
+              ),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              actions: [
+                Container(
+                  margin: EdgeInsets.only(right: 20),
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(100),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        widget.berita.statusBookmark();
+                      });
+                    },
+                    icon: (widget.berita.isBookmark ?? false)
+                        ? const Icon(Icons.bookmark, color: Colors.white)
+                        : const Icon(Icons.bookmark_outline,
+                            color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
 
+            // Konten Berita
+            SliverList(
+              delegate: SliverChildListDelegate([
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const Text(
+                            "mediaExplant",
+                            style: TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 10),
                           Text(
                             widget.berita.judul,
                             style: const TextStyle(
@@ -117,14 +104,16 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                               color: Colors.black,
                             ),
                           ),
-                          const SizedBox(height: 5),
-                          Text(
-                            widget.berita.tanggalDibuat,
-                            style: const TextStyle(color: Colors.grey),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 5),
+                        ],
+                      ),
+                    ),
+                    const Divider(color: Colors.grey, thickness: 0.5),
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Konten berita
                           Row(
                             children: [
                               CircleAvatar(
@@ -133,35 +122,31 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                                     NetworkImage(widget.berita.penulis),
                               ),
                               const SizedBox(width: 10),
-                              Text(
-                                widget.berita.penulis,
-                                style: const TextStyle(color: Colors.grey),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                              Expanded(
+                                child: Text(
+                                  widget.berita.penulis,
+                                  style: const TextStyle(color: Colors.grey),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              const SizedBox(width: 5),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
+                          const SizedBox(height: 10),
+                          Text(
+                            widget.berita.tanggalDibuat,
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                          const SizedBox(height: 10),
 
-                    const Divider(),
-
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // konten berita
                           Text(
                             widget.berita.kontenBerita,
                             style: const TextStyle(
                                 fontSize: 16, color: Colors.black87),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 20),
 
-                          // like dislike
+                          // Tombol interaksi
                           Row(
                             children: [
                               IconButton(
@@ -181,12 +166,6 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                                   style: TextStyle(color: Colors.red)),
                               const SizedBox(width: 10),
                               IconButton(
-                                icon:
-                                    const Icon(Icons.share, color: Colors.blue),
-                                onPressed: () {},
-                              ),
-                              const SizedBox(width: 10),
-                              IconButton(
                                 icon: const Icon(Icons.comment,
                                     color: Colors.blue),
                                 onPressed: () {
@@ -196,141 +175,140 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                               const SizedBox(width: 10),
                               IconButton(
                                 icon:
+                                    const Icon(Icons.share, color: Colors.blue),
+                                onPressed: () {},
+                              ),
+                              const SizedBox(width: 10),
+                              IconButton(
+                                icon:
                                     const Icon(Icons.report, color: Colors.red),
                                 onPressed: () {},
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding:const EdgeInsets.all(10),
-                      child: Wrap(
-                        spacing: 8.0, // Jarak antar tag secara horizontal
-                        runSpacing: 8.0, // Jarak antar baris tag
-                        children: widget.berita.tags.map((tag) {
-                          return ActionChip(
-                            onPressed: () {},
-                            label: Text(
-                              tag,
-                              style: const TextStyle(color: AppColors.primary),
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              side: const BorderSide(color: AppColors.primary),
-                            ),
-                            backgroundColor: AppColors.background,
-                          );
-                        }).toList(), // Pastikan hasil map dikonversi ke List
-                      ),
-                    ),
 
-                    const Divider(),
-
-                    //berita terkait
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Berita Terkait',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            height: 130,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: beritList.length,
-                              itemBuilder: (context, index) {
-                                return ChangeNotifierProvider.value(
-                                  value: beritList[index],
-                                  child: BeritaTerkaitItem(
-                                    onTap: () {
-                                      Navigator.pushAndRemoveUntil(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                DetailBeritaScreen(
-                                                    berita: beritList[index]),
-                                          ),
-                                          (route) => route.isFirst);
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
+                          // Tag berita
+                          Wrap(
+                            spacing: 8.0,
+                            runSpacing: 8.0,
+                            children: widget.berita.tags.map((tag) {
+                              return ActionChip(
+                                onPressed: () {},
+                                label: Text(
+                                  tag,
+                                  style:
+                                      const TextStyle(color: AppColors.primary),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  side: const BorderSide(
+                                      color: AppColors.primary),
+                                ),
+                                backgroundColor: AppColors.background,
+                              );
+                            }).toList(),
                           ),
                         ],
                       ),
                     ),
-
-                    // berita lainnya
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const Divider(color: Colors.grey, thickness: 0.5),
                   ],
                 ),
+              ]),
+            ),
 
-                const Divider(),
-
-                const Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: const Text(
-                      "Berita Lainnya",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
+            // Berita Terkait
+            SliverList(
+              delegate: SliverChildListDelegate([
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Berita Terkait',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        height: 150,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: beritaList.length,
+                          itemBuilder: (context, index) {
+                            return ChangeNotifierProvider.value(
+                              value: beritaList[index],
+                              child: BeritaTerkaitItem(
+                                onTap: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DetailBeritaScreen(
+                                          berita: beritaList[index]),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: beritList.length,
-                  itemBuilder: (context, index) {
-                    return ChangeNotifierProvider.value(
-                      value: beritList[index],
-                      child: BeritaPopulerItem(
-                        // berita: beritList[index],
-                        onTap: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  DetailBeritaScreen(berita: beritList[index]),
-                            ),
-                            (route) => route.isFirst,
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                                "Anda mengeklik ${beritList[index].judul}"),
-                            duration: const Duration(seconds: 2),
-                          ));
-                        },
-                      ),
-                    );
-                  },
-                )
-              ],
+                const Divider(color: Colors.grey, thickness: 0.5),
+              ]),
             ),
-          ),
+
+            // Berita Lainnya
+            SliverPadding(
+              padding: const EdgeInsets.all(10),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  const Text(
+                    'Berita Lainnya',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(height: 10),
+                ]),
+              ),
+            ),
+
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return ChangeNotifierProvider.value(
+                    value: beritaList[index],
+                    child: BeritaPopulerItem(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DetailBeritaScreen(berita: beritaList[index]),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+                childCount: beritaList.length,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
+// Fungsi untuk menampilkan komentar
 void showKomentarScreen(BuildContext context) {
   showModalBottomSheet(
     context: context,
-    isScrollControlled: true, // Agar tinggi modal bisa menyesuaikan
-    backgroundColor: Colors.transparent, // Buat background transparan
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
     builder: (context) {
       return const KomentarScreen();
     },
