@@ -5,7 +5,7 @@ import 'package:mediaexplant/features/home/data/models/berita.dart';
 final Faker faker = Faker();
 
 class BeritaProvider with ChangeNotifier {
-  final List<Berita> _allBerita = List.generate(20, (index) {
+  final List<Berita> _allBerita = List.generate(10, (index) {
     return Berita(
       idBerita: (index + 1).toString(),
       judul: faker.lorem.sentence(),

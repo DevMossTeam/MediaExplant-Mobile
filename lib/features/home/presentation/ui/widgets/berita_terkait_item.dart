@@ -1,4 +1,5 @@
 // Widget untuk berita terkait
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:provider/provider.dart';
@@ -25,19 +26,28 @@ class BeritaTerkaitItem extends StatelessWidget {
               Column(
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(15)),
                     child: Container(
                       width: double.infinity,
                       height: 70,
-                      child: Image.network(
-                        berita.gambar,
+                      child: CachedNetworkImage(
+                        imageUrl: berita.gambar,
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => const Center(
+                          child:
+                              CircularProgressIndicator(), // Indikator loading
+                        ),
+                        errorWidget: (context, url, error) => const Center(
+                          child: Icon(Icons.broken_image,
+                              size: 50, color: Colors.red),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 5),
                   Padding(
-                    padding:const EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
                       berita.judul,
                       maxLines: 3,

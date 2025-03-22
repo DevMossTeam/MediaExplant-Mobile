@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:provider/provider.dart';
@@ -26,11 +27,17 @@ class BeritaRekomendasiItem extends StatelessWidget {
           child: Stack(
             children: [
               // Gambar Berita
-              Image.network(
-                berita.gambar,
+              CachedNetworkImage(
+                imageUrl: berita.gambar,
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(), // Indikator loading
+                ),
+                errorWidget: (context, url, error) => const Center(
+                  child: Icon(Icons.broken_image, size: 50, color: Colors.red),
+                ),
               ),
 
               // Overlay Gradasi untuk Teks
@@ -71,6 +78,18 @@ class BeritaRekomendasiItem extends StatelessWidget {
                 ),
               ),
 
+              Positioned.fill(
+                  child: InkWell(
+                child: Material(
+                  color: Colors.transparent, // Hindari warna latar belakang
+                  child: InkWell(
+                    onTap: onTap,
+                    splashColor: Colors.black.withAlpha(50),
+                    highlightColor: Colors.white.withAlpha(100),
+                    borderRadius: BorderRadius.circular(15), // Warna highlight
+                  ),
+                ),
+              )),
               // Ikon Bookmark
               Positioned(
                 top: 10,
@@ -94,18 +113,6 @@ class BeritaRekomendasiItem extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned.fill(
-                  child: InkWell(
-                child: Material(
-                  color: Colors.transparent, // Hindari warna latar belakang
-                  child: InkWell(
-                    onTap: onTap,
-                    splashColor: Colors.black.withAlpha(50),
-                    highlightColor: Colors.white.withAlpha(100),
-                    borderRadius: BorderRadius.circular(15), // Warna highlight
-                  ),
-                ),
-              ))
             ],
           ),
         ),

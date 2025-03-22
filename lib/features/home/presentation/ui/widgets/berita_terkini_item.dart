@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
@@ -24,42 +25,25 @@ class BeritaTerkiniItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Gambar dan Bookmark
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius:const BorderRadius.vertical(top: Radius.circular(15)),
-                      child: Container(
-                        width: double.infinity,
-                        constraints: const BoxConstraints(maxWidth: 600),
-                        child: Image.network(
-                          berita.gambar,
-                          height: 150,
-                          fit: BoxFit.cover,
-                        ),
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(15)),
+                  child: Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    child: CachedNetworkImage(
+                      imageUrl: berita.gambar,
+                      height: 150,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(), // Indikator loading
+                      ),
+                      errorWidget: (context, url, error) => const Center(
+                        child: Icon(Icons.broken_image,
+                            size: 50, color: Colors.red),
                       ),
                     ),
-                    Positioned(
-                      top: 10,
-                      right: 10,
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(100),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            berita.statusBookmark();
-                          },
-                          icon: (berita.isBookmark ?? false)
-                              ? const Icon(Icons.bookmark)
-                              : const Icon(Icons.bookmark_outline),
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
                 Expanded(
                   child: Container(
@@ -90,7 +74,8 @@ class BeritaTerkiniItem extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 5),
-                          Text("MediaExplant - ${berita.tanggalDibuat} yang lalu",
+                          Text(
+                            "MediaExplant - ${berita.tanggalDibuat} yang lalu",
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 12),
                           ),
@@ -113,6 +98,27 @@ class BeritaTerkiniItem extends StatelessWidget {
                   highlightColor: Colors.white.withAlpha(100),
                   borderRadius: BorderRadius.circular(15), // Warna highlight
                 ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 10,
+            right: 10,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(100),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                onPressed: () {
+                  berita.statusBookmark();
+                },
+                icon: (berita.isBookmark ?? false)
+                    ? const Icon(Icons.bookmark)
+                    : const Icon(Icons.bookmark_outline),
+                color: Colors.white,
               ),
             ),
           ),

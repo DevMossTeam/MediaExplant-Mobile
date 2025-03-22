@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
@@ -43,9 +44,16 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
               backgroundColor: Colors.black.withAlpha(100),
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
-                background: Image.network(
-                  widget.berita.gambar,
+                background: CachedNetworkImage(
+                  imageUrl: widget.berita.gambar,
                   fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(), // Indikator loading
+                  ),
+                  errorWidget: (context, url, error) => const Center(
+                    child:
+                        Icon(Icons.broken_image, size: 50, color: Colors.red),
+                  ),
                 ),
               ),
               leading: IconButton(
