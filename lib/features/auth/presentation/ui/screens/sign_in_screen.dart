@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
@@ -28,31 +30,46 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  /// Fungsi untuk memproses sign in menggunakan SignInViewModel.
   Future<void> _signIn() async {
-    if (_formKey.currentState!.validate()) {
-      // Dapatkan instance dari SignInViewModel
-      final signInViewModel = Provider.of<SignInViewModel>(context, listen: false);
-      // Tampilkan loading indicator
+  if (_formKey.currentState!.validate()) {
+    final signInViewModel =
+        Provider.of<SignInViewModel>(context, listen: false);
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Signing in..."),
+        duration: Duration(seconds: 1),
+      ),
+    );
+
+    await signInViewModel.signIn(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+    if (signInViewModel.errorMessage != null) {
+      // Tampilkan pesan statis jika terjadi error (misal: username atau password salah)
+      const errorText = "Password yang Anda masukkan salah.";
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Signing in...")),
+        const SnackBar(
+          content: Text(errorText),
+          duration: Duration(seconds: 2),
+        ),
       );
-      // Panggil usecase sign in dari viewmodel
-      await signInViewModel.signIn(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+    } else if (signInViewModel.authResponse != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Login berhasil!"),
+          duration: Duration(seconds: 1),
+        ),
       );
-      // Cek jika terjadi error
-      if (signInViewModel.errorMessage != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(signInViewModel.errorMessage!)),
-        );
-      } else if (signInViewModel.authResponse != null) {
-        // Login berhasil, navigasi ke halaman home
-        Navigator.pushReplacementNamed(context, '/home');
-      }
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
+}
+
 
   /// Navigasi ke halaman Sign Up.
   void _goToSignUp() {
@@ -428,9 +445,11 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
       Navigator.pop(context);
       // Setelah OTP terkirim, navigasikan ke halaman verifikasi OTP untuk reset password.
       Navigator.pushNamed(context, '/forgot_password_verify_email');
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("OTP sent to ${_forgotEmailController.text}"),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
