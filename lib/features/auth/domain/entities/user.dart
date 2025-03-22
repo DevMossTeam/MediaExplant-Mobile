@@ -2,12 +2,12 @@ class User {
   final String uid;
   final String namaPengguna;
   final String email;
-  final String? role; // Tambahkan role opsional jika API menyediakannya
+  final String? role; // Role opsional jika tidak tersedia dari API
 
-  User({
+  const User({
     required this.uid,
     required this.namaPengguna,
     required this.email,
-    this.role, // Role bisa null jika tidak tersedia
+    this.role,
   });
 }

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/auth/domain/usecases/sign_in.dart';
+import 'package:mediaexplant/features/auth/domain/usecases/register_step1.dart';
+import 'package:mediaexplant/features/auth/domain/usecases/verify_otp.dart';
+import 'package:mediaexplant/features/auth/domain/usecases/register_step3.dart';
 import 'package:mediaexplant/features/auth/presentation/logic/sign_in_viewmodel.dart';
+import 'package:mediaexplant/features/auth/presentation/logic/sign_up_viewmodel.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_in_screen.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_screen.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/otp/sign_up_verify_email.dart';
@@ -77,7 +81,21 @@ class AppRouter {
           },
         );
       case '/sign_up':
-        return MaterialPageRoute(builder: (_) => const SignUpScreen());
+        return MaterialPageRoute(
+          builder: (context) => ChangeNotifierProvider<SignUpViewModel>(
+            create: (context) {
+              final apiClient = Provider.of<ApiClient>(context, listen: false);
+              final authRemoteDataSource = AuthRemoteDataSource(apiClient: apiClient);
+              final authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
+              return SignUpViewModel(
+                registerStep1UseCase: RegisterStep1(authRepository),
+                verifyOtpUseCase: VerifyOtp(authRepository),
+                registerStep3UseCase: RegisterStep3(authRepository),
+              );
+            },
+            child: const SignUpScreen(),
+          ),
+        );
       case '/sign_up_verify_email':
         return MaterialPageRoute(builder: (_) => const SignUpVerifyEmailScreen());
       case '/sign_up_input_screen':

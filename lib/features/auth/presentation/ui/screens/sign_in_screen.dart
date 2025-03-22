@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
@@ -31,45 +29,44 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _signIn() async {
-  if (_formKey.currentState!.validate()) {
-    final signInViewModel =
-        Provider.of<SignInViewModel>(context, listen: false);
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Signing in..."),
-        duration: Duration(seconds: 1),
-      ),
-    );
-
-    await signInViewModel.signIn(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-    if (signInViewModel.errorMessage != null) {
-      // Tampilkan pesan statis jika terjadi error (misal: username atau password salah)
-      const errorText = "Password yang Anda masukkan salah.";
+    if (_formKey.currentState!.validate()) {
+      final signInViewModel =
+          Provider.of<SignInViewModel>(context, listen: false);
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(errorText),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    } else if (signInViewModel.authResponse != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Login berhasil!"),
+          content: Text("Signing in..."),
           duration: Duration(seconds: 1),
         ),
       );
+
+      await signInViewModel.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      Navigator.pushReplacementNamed(context, '/home');
+
+      if (signInViewModel.errorMessage != null) {
+        // Tampilkan pesan statis jika terjadi error (misal: username atau password salah)
+        const errorText = "Password yang Anda masukkan salah.";
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(errorText),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else if (signInViewModel.authResponse != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Login berhasil!"),
+            duration: Duration(seconds: 1),
+          ),
+        );
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     }
   }
-}
-
 
   /// Navigasi ke halaman Sign Up.
   void _goToSignUp() {
@@ -309,7 +306,8 @@ class _LoginCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   splashColor: AppColors.primary.withOpacity(0.2),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                     child: Text(
                       "Forgot Password?",
                       style: TextStyle(

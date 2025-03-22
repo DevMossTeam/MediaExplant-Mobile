@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:provider/provider.dart';
+import '../../logic/sign_up_viewmodel.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mediaexplant/core/constants/app_colors.dart'; // Pastikan path sudah benar
 
 /// Halaman Sign Up dengan background gradient gelap dan card form pendaftaran yang terang.
 /// Jika tombol back ditekan, akan langsung menuju halaman profile.
@@ -29,18 +31,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   /// Fungsi untuk mengirim OTP (One-Time Password) sebagai langkah verifikasi.
-  void _sendOTP() {
+  Future<void> _sendOTP() async {
     if (_formKey.currentState!.validate()) {
+      // Dapatkan instance SignUpViewModel dari Provider
+      final signUpViewModel = Provider.of<SignUpViewModel>(context, listen: false);
+
+      // Tampilkan indikator loading atau snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Mengirim OTP...")),
       );
-      Future.delayed(const Duration(seconds: 2), () {
+
+      // Panggil use case registerStep1 melalui view model
+      final response = await signUpViewModel.registerStep1(
+        namaLengkap: _namaLengkapController.text.trim(),
+        namaPengguna: _usernameController.text.trim(),
+        email: _emailController.text.trim(),
+      );
+
+      if (response['success'] == true) {
+        // Jika berhasil, tampilkan pesan dan navigasi ke halaman verifikasi OTP,
+        // misalnya dengan mengirim email sebagai argumen.
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("OTP berhasil dikirim!")),
         );
-        // Navigasi ke halaman verifikasi OTP setelah OTP dikirim
-        Navigator.pushNamed(context, '/sign_up_verify_email');
-      });
+        Navigator.pushNamed(
+          context,
+          '/sign_up_verify_email',
+          arguments: _emailController.text.trim(),
+        );
+      } else {
+        // Jika gagal, tampilkan error message.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response['message'] ?? "Gagal mengirim OTP")),
+        );
+      }
     }
   }
 
@@ -54,21 +78,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
-        // Ganti '/profile' dengan route halaman profile yang diinginkan
+        // Ganti '/home' dengan route halaman profile yang diinginkan
         Navigator.pushReplacementNamed(context, '/home');
         return false;
       },
       child: Scaffold(
         body: Stack(
           children: [
-            // Background gradient gelap (sama seperti di halaman Sign In)
+            // Background gradient gelap
             Container(
               height: double.infinity,
               width: double.infinity,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.primary, // Misalnya merah gelap
+                    AppColors.primary,
                     Colors.red.shade900,
                   ],
                   begin: Alignment.topCenter,
@@ -160,7 +184,6 @@ class _SignUpHeaderWidget extends StatelessWidget {
 }
 
 /// Widget card form pendaftaran dengan latar belakang putih.
-/// Termasuk juga bagian navigasi "Sudah punya akun? Sign In" di dalam card.
 class _SignUpCard extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController namaLengkapController;
