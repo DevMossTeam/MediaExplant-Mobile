@@ -90,7 +90,7 @@ class BeritaTerkiniItem extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 5),
-                          Text("MediaExplan - ${berita.tanggalDibuat} yang lalu",
+                          Text("MediaExplant - ${berita.tanggalDibuat} yang lalu",
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 12),
                           ),
