@@ -23,7 +23,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
     // Mengubah warna status bar
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.grey,
         statusBarIconBrightness: Brightness.light,
       ),
     );
@@ -36,25 +36,32 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Gambar utama dengan efek SliverAppBar
             SliverAppBar(
-              expandedHeight: 200,
+              expandedHeight: 250, // Tinggi awal sebelum di-scroll
+              collapsedHeight: 60, // Tinggi minimum saat di-scroll
               floating: false,
-              pinned: true,
-              backgroundColor: Colors.black.withAlpha(100),
+              pinned: true, // Agar tetap terlihat saat di-scroll
               elevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                background: CachedNetworkImage(
-                  imageUrl: widget.berita.gambar,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(), // Indikator loading
-                  ),
-                  errorWidget: (context, url, error) => const Center(
-                    child:
-                        Icon(Icons.broken_image, size: 50, color: Colors.red),
-                  ),
-                ),
+              backgroundColor: Colors.transparent,
+              flexibleSpace: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: widget.berita.gambar,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        errorWidget: (context, url, error) => const Center(
+                          child: Icon(Icons.broken_image,
+                              size: 50, color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -77,7 +84,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                         widget.berita.statusBookmark();
                       });
                     },
-                    icon: (widget.berita.isBookmark ?? false)
+                    icon: (widget.berita.isBookmark)
                         ? const Icon(Icons.bookmark, color: Colors.white)
                         : const Icon(Icons.bookmark_outline,
                             color: Colors.white),
@@ -158,35 +165,52 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                           Row(
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.thumb_up,
-                                    color: Colors.blue),
-                                onPressed: () {},
-                              ),
-                              const Text('0',
-                                  style: TextStyle(color: Colors.blue)),
-                              const SizedBox(width: 10),
-                              IconButton(
-                                icon: const Icon(Icons.thumb_down,
-                                    color: Colors.red),
-                                onPressed: () {},
-                              ),
-                              const Text('2',
-                                  style: TextStyle(color: Colors.red)),
-                              const SizedBox(width: 10),
-                              IconButton(
-                                icon: const Icon(Icons.comment,
-                                    color: Colors.blue),
+                                icon: Icon(
+                                  Icons.thumb_up,
+                                  color: widget.berita.isLike
+                                      ? Colors.blue
+                                      : Colors.grey,
+                                ),
                                 onPressed: () {
-                                  showKomentarScreen(context);
+                                  setState(() {
+                                    widget.berita.statusLike();
+                                  });
                                 },
                               ),
+                              Text(
+                                '${widget.berita.jumlahLike}',
+                                style: const TextStyle(color: Colors.blue),
+                              ),
                               const SizedBox(width: 10),
+
+                              // Tombol Dislike
+                              IconButton(
+                                icon: Icon(
+                                  Icons.thumb_down,
+                                  color: widget.berita.isDislike
+                                      ? Colors.red
+                                      : Colors.grey,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    widget.berita.statusDislike();
+                                  });
+                                },
+                              ),
+                              Text(
+                                '${widget.berita.jumlahDislike}',
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                              const SizedBox(width: 10),
+
                               IconButton(
                                 icon:
                                     const Icon(Icons.share, color: Colors.blue),
                                 onPressed: () {},
                               ),
                               const SizedBox(width: 10),
+
+                              // Tombol Report
                               IconButton(
                                 icon:
                                     const Icon(Icons.report, color: Colors.red),
@@ -209,8 +233,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
-                                  side: const BorderSide(
-                                      color: AppColors.primary),
+                                  side: const BorderSide(color: Colors.grey),
                                 ),
                                 backgroundColor: AppColors.background,
                               );
@@ -247,17 +270,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                           itemBuilder: (context, index) {
                             return ChangeNotifierProvider.value(
                               value: beritaList[index],
-                              child: BeritaTerkaitItem(
-                                onTap: () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DetailBeritaScreen(
-                                          berita: beritaList[index]),
-                                    ),
-                                  );
-                                },
-                              ),
+                              child: BeritaTerkaitItem(),
                             );
                           },
                         ),
@@ -288,17 +301,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                 (context, index) {
                   return ChangeNotifierProvider.value(
                     value: beritaList[index],
-                    child: BeritaPopulerItem(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                DetailBeritaScreen(berita: beritaList[index]),
-                          ),
-                        );
-                      },
-                    ),
+                    child: BeritaPopulerItem(),
                   );
                 },
                 childCount: beritaList.length,
@@ -306,6 +309,16 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
             ),
           ],
         ),
+      ),
+
+      // FAB untuk membuka komentar
+      floatingActionButton: FloatingActionButton(
+        shape: const CircleBorder(),
+        backgroundColor: AppColors.primary,
+        onPressed: () {
+          showKomentarScreen(context);
+        },
+        child: const Icon(Icons.comment, color: Colors.white),
       ),
     );
   }

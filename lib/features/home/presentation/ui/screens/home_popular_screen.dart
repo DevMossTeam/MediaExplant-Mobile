@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
-import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_rekomendasi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/tag_populer_item.dart';
@@ -45,24 +44,7 @@ class HomePopularScreen extends StatelessWidget {
                   Expanded(
                     child: ChangeNotifierProvider.value(
                       value: beritaList[index],
-                      child: BeritaPopulerItem(
-                        // berita: beritaList[index],
-                        onTap: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  DetailBeritaScreen(berita: beritaList[index]),
-                            ),
-                            (route) => route.isFirst,
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                                "Anda mengeklik ${beritaList[index].judul}"),
-                            duration: const Duration(seconds: 2),
-                          ));
-                        },
-                      ),
+                      child: BeritaPopulerItem(),
                     ),
                   ),
                 ],
@@ -86,17 +68,7 @@ class HomePopularScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 return ChangeNotifierProvider.value(
                   value: beritaList[index],
-                  child: BeritaRekomendasiItem(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              DetailBeritaScreen(berita: beritaList[index]),
-                        ),
-                      );
-                    },
-                  ),
+                  child: BeritaRekomendasiItem(),
                 );
               },
             ),

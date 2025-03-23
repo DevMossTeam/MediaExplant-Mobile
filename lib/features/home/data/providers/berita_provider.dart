@@ -15,14 +15,16 @@ class BeritaProvider with ChangeNotifier {
       penulis: faker.person.name(),
       profil: "https://picsum.photos/id/2/500/300",
       kategori: "Teknologi",
-      jumlahLike: 432,
-      jumlahDislike: 12,
+      jumlahLike: 0,
+      jumlahDislike: 0,
       jumlahKomentar: 81,
       tags: List.generate(
         faker.randomGenerator
             .integer(8, min: 4), // Jumlah tag antara 2 sampai 5
         (i) => faker.lorem.word(), // Generate random kata sebagai tag
       ),
+      isLike: false,
+      isDislike: false,
     );
   });
 

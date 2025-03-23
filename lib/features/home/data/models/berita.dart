@@ -15,11 +15,13 @@ class Berita with ChangeNotifier {
   final String penulis;
   final String profil;
   final String kategori;
-  final int jumlahLike;
-  final int jumlahDislike;
+  int jumlahLike;
+  int jumlahDislike;
   final int jumlahKomentar;
   final List<String> tags;
-  bool? isBookmark;
+  bool isBookmark;
+  bool isLike;
+  bool isDislike;
   Berita({
     required this.idBerita,
     required this.judul,
@@ -33,11 +35,45 @@ class Berita with ChangeNotifier {
     required this.jumlahDislike,
     required this.jumlahKomentar,
     required this.tags,
-    this.isBookmark,
+    this.isBookmark = false,
+    this.isLike = false,
+    this.isDislike = false,
   });
-
+  
   void statusBookmark() {
-    isBookmark = !(isBookmark ?? false);
+    isBookmark = !isBookmark;
+    notifyListeners();
+  }
+
+  void statusLike() {
+    if (isLike) {
+      jumlahLike--;
+      isLike = false;
+    } else {
+      jumlahLike++;
+      isLike = true;
+
+      if (isDislike) {
+        jumlahDislike--;
+        isDislike = false;
+      }
+    }
+    notifyListeners();
+  }
+
+  void statusDislike() {
+    if (isDislike) {
+      jumlahDislike--;
+      isDislike = false;
+    } else {
+      jumlahDislike++;
+      isDislike = true;
+
+      if (isLike) {
+        jumlahLike--;
+        isLike = false;
+      }
+    }
     notifyListeners();
   }
 

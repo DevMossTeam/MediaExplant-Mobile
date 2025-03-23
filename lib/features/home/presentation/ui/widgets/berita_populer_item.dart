@@ -1,18 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:provider/provider.dart';
 
 class BeritaPopulerItem extends StatelessWidget {
-  // final Berita berita;
-  final VoidCallback onTap; // Callback untuk event klik
-  const BeritaPopulerItem({super.key, required this.onTap});
+  const BeritaPopulerItem({super.key});
 
   @override
   Widget build(BuildContext context) {
     final berita = Provider.of<Berita>(context);
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Stack(
         children: [
           Row(
@@ -64,7 +63,9 @@ class BeritaPopulerItem extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 50,)
+              const SizedBox(
+                width: 50,
+              )
             ],
           ),
 
@@ -74,18 +75,51 @@ class BeritaPopulerItem extends StatelessWidget {
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(10),
               child: InkWell(
-                onTap: onTap,
+                onTap: () {
+                  Future.delayed(const Duration(milliseconds: 200), () {
+                    // Delay efek splash
+                    Navigator.of(context).pushAndRemoveUntil(
+                      PageRouteBuilder(
+                        transitionDuration: const Duration(
+                            milliseconds: 1000), // Durasi animasi masuk
+                        reverseTransitionDuration: const Duration(
+                            milliseconds: 500), // Durasi animasi balik
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            DetailBeritaScreen(berita: berita),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          // Animasi geser + fade
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(1.0, 0.0), // Mulai dari kanan
+                              end: Offset.zero, // Berhenti di tengah
+                            ).animate(CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.easeInOutCubic, // Lebih smooth
+                            )),
+                            child: FadeTransition(
+                              opacity:
+                                  animation, // Efek fade kecil agar lebih lembut
+                              child: child,
+                            ),
+                          );
+                        },
+                      ),
+                      (route) => route.isFirst,
+                    );
+                  });
+                },
                 splashColor: Colors.black.withAlpha(50),
                 highlightColor: Colors.white.withAlpha(100),
-                borderRadius: BorderRadius.circular(10), // Warna highlight
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
           ),
           Positioned(
             right: 0,
             top: 0,
-            child:IconButton(
-              icon: (berita.isBookmark ?? false)
+            child: IconButton(
+              icon: (berita.isBookmark)
                   ? const Icon(Icons.bookmark)
                   : const Icon(Icons.bookmark_outline),
               color: Colors.black54,

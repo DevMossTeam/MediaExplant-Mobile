@@ -34,25 +34,7 @@ class HomeLatestScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               return ChangeNotifierProvider.value(
                 value: beritaList[index],
-                child: BeritaTerkiniItem(
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailBeritaScreen(
-                            berita: beritaList[index]), // Pakai named argument
-                      ),
-                      (route) =>
-                          route.isFirst, // HomeLatestScreen tetap ada di stack
-                    );
-
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content:
-                          Text("Anda mengeklik ${beritaList[index].judul}"),
-                      duration: const Duration(seconds: 2),
-                    ));
-                  },
-                ),
+                child: const BeritaTerkiniItem(),
               );
             },
           ),
@@ -65,25 +47,7 @@ class HomeLatestScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               return ChangeNotifierProvider.value(
                 value: beritaList[index],
-                child: BeritaPopulerItem(
-                  // berita: beritaList[index],
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailBeritaScreen(
-                            berita: beritaList[index]), // Pakai named argument
-                      ),
-                      (route) =>
-                          route.isFirst, // HomeLatestScreen tetap ada di stack
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content:
-                          Text("Anda mengeklik ${beritaList[index].judul}"),
-                      duration: const Duration(seconds: 2),
-                    ));
-                  },
-                ),
+                child: BeritaPopulerItem(),
               );
             },
           ),

@@ -26,7 +26,7 @@ class TagPopulerItem extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                "Kategori",
+                "Xiao yan",
                 style: TextStyle(
                     color: Colors.black.withAlpha(150),
                     fontWeight: FontWeight.bold,
