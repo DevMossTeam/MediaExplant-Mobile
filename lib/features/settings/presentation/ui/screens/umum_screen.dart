@@ -145,8 +145,8 @@ class _UmumScreenState extends State<UmumScreen> {
     }
   }
 
-  /// Memilih gambar dari kamera atau galeri.
-  Future<void> _pickImage() async {
+  /// Menampilkan opsi pemilihan gambar, termasuk hapus foto.
+  Future<void> _showImageOptions() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     showModalBottomSheet(
       context: context,
@@ -169,10 +169,26 @@ class _UmumScreenState extends State<UmumScreen> {
                 ),
               ),
               const Text(
-                'Pilih Sumber Gambar',
+                'Pilih Opsi',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const SizedBox(height: 8),
+              // Opsi hapus foto jika sudah ada gambar
+              if (_profileImage != null)
+                ListTile(
+                  leading: const Icon(Icons.delete, color: AppColors.primary),
+                  title: const Text('Hapus Foto'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      _profileImage = null;
+                    });
+                    scaffoldMessenger.showSnackBar(
+                      const SnackBar(content: Text("Foto profil dihapus")),
+                    );
+                  },
+                ),
+              // Opsi mengambil gambar dari kamera
               ListTile(
                 leading: const Icon(Icons.camera_alt, color: AppColors.primary),
                 title: const Text('Ambil dari Kamera'),
@@ -198,6 +214,7 @@ class _UmumScreenState extends State<UmumScreen> {
                   }
                 },
               ),
+              // Opsi memilih gambar dari galeri
               ListTile(
                 leading: const Icon(Icons.photo_library, color: AppColors.primary),
                 title: const Text('Pilih dari Galeri'),
@@ -272,12 +289,15 @@ class _UmumScreenState extends State<UmumScreen> {
         Stack(
           alignment: Alignment.bottomRight,
           children: [
-            avatar,
+            InkWell(
+              onTap: _showImageOptions,
+              child: avatar,
+            ),
             Positioned(
               bottom: 0,
               right: 0,
               child: InkWell(
-                onTap: _pickImage,
+                onTap: _showImageOptions,
                 borderRadius: BorderRadius.circular(20),
                 child: const CircleAvatar(
                   radius: 20,
