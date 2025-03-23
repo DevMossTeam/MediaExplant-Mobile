@@ -70,7 +70,6 @@ class AppRouter {
           builder: (context) {
             return ChangeNotifierProvider<SignInViewModel>(
               create: (context) {
-                // Ambil ApiClient dari context, pastikan sudah disediakan di main.dart
                 final apiClient = Provider.of<ApiClient>(context, listen: false);
                 final authRemoteDataSource = AuthRemoteDataSource(apiClient: apiClient);
                 final authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
@@ -117,7 +116,25 @@ class AppRouter {
         }
         return _errorRoute(settings.name);
       case '/sign_up_input_screen':
-        return MaterialPageRoute(builder: (_) => const SignUpInputScreen());
+        if (settings.arguments is String) {
+          final email = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => ChangeNotifierProvider<SignUpViewModel>(
+              create: (context) {
+                final apiClient = Provider.of<ApiClient>(context, listen: false);
+                final authRemoteDataSource = AuthRemoteDataSource(apiClient: apiClient);
+                final authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
+                return SignUpViewModel(
+                  registerStep1UseCase: RegisterStep1(authRepository),
+                  verifyOtpUseCase: VerifyOtp(authRepository),
+                  registerStep3UseCase: RegisterStep3(authRepository),
+                );
+              },
+              child: SignUpInputScreen(email: email),
+            ),
+          );
+        }
+        return _errorRoute(settings.name);
       case '/forgot_password_verify_email':
         return MaterialPageRoute(builder: (_) => const ForgotPasswordVerifyEmailScreen());
       case '/change_email_verify_email':

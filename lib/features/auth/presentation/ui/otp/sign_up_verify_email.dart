@@ -32,7 +32,7 @@ class _SignUpVerifyEmailScreenState extends State<SignUpVerifyEmailScreen> {
 
       if (response['success'] == true) {
         // Navigasi ke halaman Sign Up Input setelah OTP berhasil diverifikasi.
-        Navigator.pushReplacementNamed(context, '/sign_up_input_screen');
+        Navigator.pushNamed(context, '/sign_up_input_screen', arguments: widget.email);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(response['message'] ?? "Invalid OTP, please try again.")),
