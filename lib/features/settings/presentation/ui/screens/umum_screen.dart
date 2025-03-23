@@ -233,29 +233,46 @@ class _UmumScreenState extends State<UmumScreen> {
 
   /// Menampilkan header profil dengan avatar dan tombol edit gambar.
   Widget _buildProfileHeader() {
+    Widget avatar = Hero(
+      tag: 'profile-image',
+      child: Material(
+        elevation: 4,
+        shape: const CircleBorder(),
+        child: CircleAvatar(
+          radius: 60,
+          backgroundColor: _profileImage != null ? Colors.transparent : _getAvatarColor(),
+          backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
+          child: _profileImage == null
+              ? Text(
+                  _getInitial(),
+                  style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
+                )
+              : null,
+        ),
+      ),
+    );
+
+    // Jika foto profil sudah ada, tambahkan GestureDetector untuk preview
+    if (_profileImage != null) {
+      avatar = GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ProfileImagePreviewScreen(imageFile: _profileImage!),
+            ),
+          );
+        },
+        child: avatar,
+      );
+    }
+
     return Column(
       children: [
         Stack(
           alignment: Alignment.bottomRight,
           children: [
-            Hero(
-              tag: 'profile-image',
-              child: Material(
-                elevation: 4,
-                shape: const CircleBorder(),
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundColor: _profileImage != null ? Colors.transparent : _getAvatarColor(),
-                  backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                  child: _profileImage == null
-                      ? Text(
-                          _getInitial(),
-                          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
-                        )
-                      : null,
-                ),
-              ),
-            ),
+            avatar,
             Positioned(
               bottom: 0,
               right: 0,
@@ -393,6 +410,30 @@ class _UmumScreenState extends State<UmumScreen> {
             ),
             const SizedBox(height: 16),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget untuk preview foto profil secara fullscreen.
+class ProfileImagePreviewScreen extends StatelessWidget {
+  final File imageFile;
+  const ProfileImagePreviewScreen({Key? key, required this.imageFile}) : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Center(
+        child: Hero(
+          tag: 'profile-image',
+          child: Image.file(imageFile),
         ),
       ),
     );
