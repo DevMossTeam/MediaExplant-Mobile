@@ -2,7 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
+import 'package:mediaexplant/features/settings/presentation/ui/screens/settings_screen.dart';
 import 'package:lottie/lottie.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+/// Custom Route untuk transisi slide left
+class SlideLeftRoute extends PageRouteBuilder {
+  final Widget page;
+  SlideLeftRoute({required this.page})
+      : super(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder:
+              (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            final tween = Tween(begin: begin, end: end)
+                .chain(CurveTween(curve: Curves.easeInOut));
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        );
+}
 
 /// ProfileScreen yang menggunakan ProfileViewModel untuk mengecek status login
 /// dan menampilkan konten profil yang sesuai.
@@ -45,29 +67,22 @@ class ProfileScreen extends StatelessWidget {
       create: (_) => ProfileViewModel(),
       child: Consumer<ProfileViewModel>(
         builder: (context, profileVM, child) {
-          // Jika data belum siap (misalnya, masih loading), tampilkan indikator
           if (profileVM.userData.isEmpty) {
             return Scaffold(
               backgroundColor: AppColors.background,
               body: const Center(child: CircularProgressIndicator()),
             );
           }
-          // Jika tidak ada token, berarti pengguna belum login.
-          if (!profileVM.isLoggedIn) {
-            return const Scaffold(
-              backgroundColor: AppColors.background,
-              body: NotLoggedInProfileContent(),
-            );
-          }
 
+          bool isLoggedIn = profileVM.isLoggedIn;
           // Mapping data profile dari AuthStorage ke format yang dibutuhkan UI.
           final profile = {
             "name": profileVM.userData['nama_lengkap'] ??
                 profileVM.userData['nama_pengguna'] ??
                 "User",
             "avatarUrl": profileVM.userData['profile_pic'] ??
-                "https://via.placeholder.com/150", // fallback jika tidak ada foto
-            "joinedDate": "N/A", // Ubah jika data tanggal bergabung tersedia
+                "https://via.placeholder.com/150",
+            "joinedDate": "N/A",
           };
 
           return Scaffold(
@@ -76,7 +91,10 @@ class ProfileScreen extends StatelessWidget {
               backgroundColor: AppColors.primary,
               elevation: 6,
               onPressed: () {
-                Navigator.pushNamed(context, '/settings');
+                Navigator.push(
+                  context,
+                  SlideLeftRoute(page: const SettingsScreen()),
+                );
               },
               icon: const Icon(Icons.settings, color: Colors.white),
               label: const Text(
@@ -84,11 +102,12 @@ class ProfileScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.white),
               ),
             ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-            body: LoggedInProfileContent(
-              profile: profile,
-              articles: dummySavedArticles,
-            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.endFloat,
+            body: isLoggedIn
+                ? LoggedInProfileContent(
+                    profile: profile, articles: dummySavedArticles)
+                : const NotLoggedInProfileContent(),
           );
         },
       ),
@@ -117,7 +136,8 @@ class LoggedInProfileContent extends StatelessWidget {
           // Konten utama berisi judul dan daftar artikel tersimpan.
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -140,7 +160,8 @@ class NotLoggedInProfileContent extends StatefulWidget {
   const NotLoggedInProfileContent({Key? key}) : super(key: key);
 
   @override
-  _NotLoggedInProfileContentState createState() => _NotLoggedInProfileContentState();
+  _NotLoggedInProfileContentState createState() =>
+      _NotLoggedInProfileContentState();
 }
 
 class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
@@ -162,8 +183,10 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
-    _headerSlideAnimation = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+    _headerSlideAnimation = Tween<Offset>(
+            begin: const Offset(0, 0.5), end: Offset.zero)
+        .animate(
+            CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _contentFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
@@ -241,13 +264,16 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
           icon: const Icon(Icons.login, color: Colors.white),
           label: const Text(
             'Login',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+            style:
+                TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             elevation: 5,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0)),
+            padding:
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
           ),
         ),
       ),
@@ -364,9 +390,9 @@ class ProfileHeader extends StatelessWidget {
                               Hero(
                                 tag: 'avatar_${profile["avatarUrl"]}',
                                 child: CircleAvatar(
-                                  radius: 70, // Ukuran foto profil diperbesar
+                                  radius: 70,
                                   backgroundColor: Colors.white,
-                                  backgroundImage: NetworkImage(
+                                  backgroundImage: CachedNetworkImageProvider(
                                     profile["avatarUrl"]!,
                                   ),
                                 ),
@@ -399,7 +425,6 @@ class ProfileHeader extends StatelessWidget {
     );
   }
 }
-
 
 /// Widget untuk menampilkan judul section.
 class SectionTitle extends StatelessWidget {
@@ -505,7 +530,8 @@ class SavedArticleCard extends StatelessWidget {
                         height: 140,
                         width: double.infinity,
                         color: Colors.grey.shade300,
-                        child: const Icon(Icons.broken_image, color: Colors.grey),
+                        child: const Icon(Icons.broken_image,
+                            color: Colors.grey),
                       );
                     },
                   ),
@@ -581,7 +607,8 @@ class ArticleDetailScreen extends StatelessWidget {
                 return Container(
                   height: 250,
                   color: Colors.grey.shade300,
-                  child: const Icon(Icons.broken_image, color: Colors.grey, size: 50),
+                  child: const Icon(Icons.broken_image,
+                      color: Colors.grey, size: 50),
                 );
               },
             ),
@@ -590,7 +617,8 @@ class ArticleDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               description,
-              style: const TextStyle(fontSize: 16, height: 1.5, color: AppColors.text),
+              style: const TextStyle(
+                  fontSize: 16, height: 1.5, color: AppColors.text),
             ),
           ),
         ],

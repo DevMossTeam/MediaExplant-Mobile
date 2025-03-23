@@ -47,35 +47,48 @@ class AppRouter {
           );
         }
         return _errorRoute(settings.name);
+      // Halaman Settings dan turunannya menggunakan transisi slide left
       case '/settings':
-        return MaterialPageRoute(builder: (_) => const SettingsScreen());
+        return _slideLeftRoute(const SettingsScreen());
       case '/settings/hubungi':
-        return MaterialPageRoute(builder: (_) => const HubungiScreen());
+        return _slideLeftRoute(const HubungiScreen());
       case '/settings/keamanan':
-        return MaterialPageRoute(builder: (_) => const KeamananScreen());
+        return _slideLeftRoute(const KeamananScreen());
       case '/settings/pengaturan_akun':
-        return MaterialPageRoute(builder: (_) => const SettingsScreen());
+        return _slideLeftRoute(const SettingsScreen());
       case '/settings/pusat_bantuan':
-        return MaterialPageRoute(builder: (_) => const PusatBantuanScreen());
+        return _slideLeftRoute(const PusatBantuanScreen());
       case '/settings/setting_notifikasi':
-        return MaterialPageRoute(builder: (_) => const SettingNotifikasiScreen());
+        return _slideLeftRoute(const SettingNotifikasiScreen());
       case '/settings/tentang':
-        return MaterialPageRoute(builder: (_) => const TentangScreen());
+        return _slideLeftRoute(const TentangScreen());
       case '/settings/umum':
-        return MaterialPageRoute(builder: (_) => const UmumScreen());
+        return _slideLeftRoute(const UmumScreen());
       case '/notifications':
         return MaterialPageRoute(builder: (_) => const NotificationsScreen());
       case '/login':
-        return MaterialPageRoute(
-          builder: (context) {
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
             return ChangeNotifierProvider<SignInViewModel>(
               create: (context) {
                 final apiClient = Provider.of<ApiClient>(context, listen: false);
-                final authRemoteDataSource = AuthRemoteDataSource(apiClient: apiClient);
-                final authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
+                final authRemoteDataSource =
+                    AuthRemoteDataSource(apiClient: apiClient);
+                final authRepository =
+                    AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
                 return SignInViewModel(signInUseCase: SignIn(authRepository));
               },
               child: const SignInScreen(),
+            );
+          },
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(0, 1); // Mulai dari bawah layar
+            const end = Offset.zero;    // Berakhir di posisi semula
+            final tween = Tween(begin: begin, end: end)
+                .chain(CurveTween(curve: Curves.easeInOut));
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
             );
           },
         );
@@ -84,8 +97,10 @@ class AppRouter {
           builder: (context) => ChangeNotifierProvider<SignUpViewModel>(
             create: (context) {
               final apiClient = Provider.of<ApiClient>(context, listen: false);
-              final authRemoteDataSource = AuthRemoteDataSource(apiClient: apiClient);
-              final authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
+              final authRemoteDataSource =
+                  AuthRemoteDataSource(apiClient: apiClient);
+              final authRepository =
+                  AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
               return SignUpViewModel(
                 registerStep1UseCase: RegisterStep1(authRepository),
                 verifyOtpUseCase: VerifyOtp(authRepository),
@@ -102,8 +117,10 @@ class AppRouter {
             builder: (context) => ChangeNotifierProvider<SignUpViewModel>(
               create: (context) {
                 final apiClient = Provider.of<ApiClient>(context, listen: false);
-                final authRemoteDataSource = AuthRemoteDataSource(apiClient: apiClient);
-                final authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
+                final authRemoteDataSource =
+                    AuthRemoteDataSource(apiClient: apiClient);
+                final authRepository =
+                    AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
                 return SignUpViewModel(
                   registerStep1UseCase: RegisterStep1(authRepository),
                   verifyOtpUseCase: VerifyOtp(authRepository),
@@ -122,8 +139,10 @@ class AppRouter {
             builder: (context) => ChangeNotifierProvider<SignUpViewModel>(
               create: (context) {
                 final apiClient = Provider.of<ApiClient>(context, listen: false);
-                final authRemoteDataSource = AuthRemoteDataSource(apiClient: apiClient);
-                final authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
+                final authRemoteDataSource =
+                    AuthRemoteDataSource(apiClient: apiClient);
+                final authRepository =
+                    AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
                 return SignUpViewModel(
                   registerStep1UseCase: RegisterStep1(authRepository),
                   verifyOtpUseCase: VerifyOtp(authRepository),
@@ -136,12 +155,31 @@ class AppRouter {
         }
         return _errorRoute(settings.name);
       case '/forgot_password_verify_email':
-        return MaterialPageRoute(builder: (_) => const ForgotPasswordVerifyEmailScreen());
+        return MaterialPageRoute(
+            builder: (_) => const ForgotPasswordVerifyEmailScreen());
       case '/change_email_verify_email':
-        return MaterialPageRoute(builder: (_) => const ChangeEmailVerifyEmailScreen());
+        return MaterialPageRoute(
+            builder: (_) => const ChangeEmailVerifyEmailScreen());
       default:
         return _errorRoute(settings.name);
     }
+  }
+
+  /// Fungsi helper untuk mengembalikan route dengan transisi slide left.
+  static PageRouteBuilder _slideLeftRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1, 0); // Mulai dari kanan layar
+        const end = Offset.zero;
+        final tween = Tween(begin: begin, end: end)
+            .chain(CurveTween(curve: Curves.easeInOut));
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
   }
 
   static Route<dynamic> _errorRoute(String? routeName) {

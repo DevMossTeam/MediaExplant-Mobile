@@ -40,13 +40,12 @@ class AuthStorage {
   static Future<Map<String, String?>> getUserData() async {
     final prefs = await SharedPreferences.getInstance();
     return {
-      'token': prefs.getString(_keyToken),
-      'uid': prefs.getString(_keyUID),
-      'nama_pengguna': prefs.getString(_keyUsername),
-      'email': prefs.getString(_keyEmail),
-      'profile_pic': prefs.getString(_keyProfilePic),
-      'role': prefs.getString(_keyRole),
-      'nama_lengkap': prefs.getString(_keyFullName),
+      'token': prefs.getString('token') ?? '',
+      'nama_lengkap': prefs.getString('nama_lengkap') ?? 'John Doe',
+      'profile_pic': prefs.getString('profile_pic') ??
+          'https://via.placeholder.com/150', // URL foto default
+      // Jika ada nama_pengguna, misal:
+      'nama_pengguna': prefs.getString('nama_pengguna') ?? '',
     };
   }
 
