@@ -3,6 +3,7 @@ import '../../domain/entities/auth_response.dart';
 import '../../domain/usecases/register_step1.dart';
 import '../../domain/usecases/verify_otp.dart';
 import '../../domain/usecases/register_step3.dart';
+import 'package:mediaexplant/core/utils/auth_storage.dart';
 
 class SignUpViewModel extends ChangeNotifier {
   final RegisterStep1 registerStep1UseCase;
@@ -32,9 +33,7 @@ class SignUpViewModel extends ChangeNotifier {
     required String namaPengguna,
     required String email,
   }) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    _setLoading(true);
 
     try {
       final response = await registerStep1UseCase(
@@ -42,16 +41,17 @@ class SignUpViewModel extends ChangeNotifier {
         namaPengguna: namaPengguna,
         email: email,
       );
+      
       if (response['success'] != true) {
-        _errorMessage = response['message'];
+        _setError(response['message']);
       }
+      
       return response;
     } catch (e) {
-      _errorMessage = e.toString();
+      _setError(e.toString());
       return {'success': false, 'message': _errorMessage};
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
@@ -59,24 +59,21 @@ class SignUpViewModel extends ChangeNotifier {
     required String email,
     required String otp,
   }) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    _setLoading(true);
 
     try {
       final response = await verifyOtpUseCase(email: email, otp: otp);
       if (response['success'] == true) {
         _otpVerified = true;
       } else {
-        _errorMessage = response['message'];
+        _setError(response['message']);
       }
       return response;
     } catch (e) {
-      _errorMessage = e.toString();
+      _setError(e.toString());
       return {'success': false, 'message': _errorMessage};
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
@@ -85,9 +82,7 @@ class SignUpViewModel extends ChangeNotifier {
     required String password,
     required String passwordConfirmation,
   }) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    _setLoading(true);
 
     try {
       final authRes = await registerStep3UseCase(
@@ -96,11 +91,32 @@ class SignUpViewModel extends ChangeNotifier {
         passwordConfirmation: passwordConfirmation,
       );
       _authResponse = authRes;
+
+      // Simpan data pengguna ke AuthStorage.
+      // Pastikan properti di authRes.user sesuai dengan definisi (misalnya: uid, namaPengguna, email, profilePic, role, namaLengkap).
+      await AuthStorage.saveUserData(
+        token: authRes.token,
+        uid: authRes.user.uid,
+        namaPengguna: authRes.user.namaPengguna,
+        email: authRes.user.email,
+        profilePic: authRes.user.profilePic,
+        role: authRes.user.role,
+        namaLengkap: authRes.user.namaLengkap,
+      );
     } catch (e) {
-      _errorMessage = e.toString();
+      _setError(e.toString());
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
+  }
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  void _setError(String? message) {
+    _errorMessage = message;
+    notifyListeners();
   }
 }

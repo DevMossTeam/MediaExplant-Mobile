@@ -1,41 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
+import 'package:lottie/lottie.dart';
 
-/// Main widget untuk tampilan profil dengan data dummy.
-/// Tampilan akan berbeda jika pengguna sudah login atau belum.
+/// ProfileScreen yang menggunakan ProfileViewModel untuk mengecek status login
+/// dan menampilkan konten profil yang sesuai.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
-  /// Dummy state login.
-  /// Ubah nilai isLoggedIn ke true untuk mensimulasikan pengguna yang sudah login.
-  final bool isLoggedIn = false;
-
-  /// Data dummy untuk artikel tersimpan (hanya sebagai contoh).
+  // Data dummy untuk artikel tersimpan (bisa digantikan dengan data dari API atau ViewModel lain)
   static const List<Map<String, String>> dummySavedArticles = [
     {
       "title": "Artikel Tersimpan 1",
       "thumbnailUrl": "https://via.placeholder.com/300x200",
-      "description":
-          "Deskripsi singkat artikel tersimpan 1 yang sangat menarik dan informatif.",
+      "description": "Deskripsi singkat artikel tersimpan 1 yang sangat menarik dan informatif.",
     },
     {
       "title": "Artikel Tersimpan 2",
       "thumbnailUrl": "https://via.placeholder.com/300x200",
-      "description":
-          "Deskripsi singkat artikel tersimpan 2 yang memberikan wawasan mendalam.",
+      "description": "Deskripsi singkat artikel tersimpan 2 yang memberikan wawasan mendalam.",
     },
     {
       "title": "Artikel Tersimpan 3",
       "thumbnailUrl": "https://via.placeholder.com/300x200",
-      "description":
-          "Deskripsi singkat artikel tersimpan 3 dengan konten yang relevan.",
+      "description": "Deskripsi singkat artikel tersimpan 3 dengan konten yang relevan.",
     },
     {
       "title": "Artikel Tersimpan 4",
       "thumbnailUrl": "https://via.placeholder.com/300x200",
-      "description":
-          "Deskripsi singkat artikel tersimpan 4 dengan informasi terkini.",
+      "description": "Deskripsi singkat artikel tersimpan 4 dengan informasi terkini.",
     },
     {
       "title": "Artikel Tersimpan 5",
@@ -46,33 +40,58 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Data profil dummy.
-    final dummyProfile = {
-      "name": "John Doe",
-      "avatarUrl": "https://via.placeholder.com/150",
-      "joinedDate": "Januari 2024",
-    };
+    // Menggunakan ChangeNotifierProvider untuk menyediakan ProfileViewModel
+    return ChangeNotifierProvider(
+      create: (_) => ProfileViewModel(),
+      child: Consumer<ProfileViewModel>(
+        builder: (context, profileVM, child) {
+          // Jika data belum siap (misalnya, masih loading), tampilkan indikator
+          if (profileVM.userData.isEmpty) {
+            return Scaffold(
+              backgroundColor: AppColors.background,
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          }
+          // Jika tidak ada token, berarti pengguna belum login.
+          if (!profileVM.isLoggedIn) {
+            return const Scaffold(
+              backgroundColor: AppColors.background,
+              body: NotLoggedInProfileContent(),
+            );
+          }
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      // Tombol Floating Action untuk navigasi ke halaman Settings.
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppColors.primary,
-        elevation: 6,
-        onPressed: () {
-          Navigator.pushNamed(context, '/settings');
+          // Mapping data profile dari AuthStorage ke format yang dibutuhkan UI.
+          final profile = {
+            "name": profileVM.userData['nama_lengkap'] ??
+                profileVM.userData['nama_pengguna'] ??
+                "User",
+            "avatarUrl": profileVM.userData['profile_pic'] ??
+                "https://via.placeholder.com/150", // fallback jika tidak ada foto
+            "joinedDate": "N/A", // Ubah jika data tanggal bergabung tersedia
+          };
+
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            floatingActionButton: FloatingActionButton.extended(
+              backgroundColor: AppColors.primary,
+              elevation: 6,
+              onPressed: () {
+                Navigator.pushNamed(context, '/settings');
+              },
+              icon: const Icon(Icons.settings, color: Colors.white),
+              label: const Text(
+                'Settings',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            body: LoggedInProfileContent(
+              profile: profile,
+              articles: dummySavedArticles,
+            ),
+          );
         },
-        icon: const Icon(Icons.settings, color: Colors.white),
-        label: const Text(
-          'Settings',
-          style: TextStyle(color: Colors.white),
-        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: isLoggedIn
-          ? LoggedInProfileContent(
-              profile: dummyProfile, articles: dummySavedArticles)
-          : const NotLoggedInProfileContent(),
     );
   }
 }
@@ -98,8 +117,7 @@ class LoggedInProfileContent extends StatelessWidget {
           // Konten utama berisi judul dan daftar artikel tersimpan.
           SliverToBoxAdapter(
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -117,13 +135,12 @@ class LoggedInProfileContent extends StatelessWidget {
   }
 }
 
-/// Widget untuk menampilkan konten ketika pengguna belum login.
+/// Widget yang menampilkan konten ketika pengguna belum login.
 class NotLoggedInProfileContent extends StatefulWidget {
   const NotLoggedInProfileContent({Key? key}) : super(key: key);
 
   @override
-  _NotLoggedInProfileContentState createState() =>
-      _NotLoggedInProfileContentState();
+  _NotLoggedInProfileContentState createState() => _NotLoggedInProfileContentState();
 }
 
 class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
@@ -136,29 +153,22 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
   @override
   void initState() {
     super.initState();
-    // Inisialisasi AnimationController dengan durasi 1200ms
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
-    // Animasi untuk avatar: fade in secara perlahan
     _avatarFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
-    // Animasi untuk teks header: slide dari bawah ke posisi semula
-    _headerSlideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _headerSlideAnimation = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
-    // Animasi untuk konten lainnya: fade in secara bersamaan
     _contentFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
-    // Memulai animasi secara otomatis ketika widget diinisialisasi
     _controller.forward();
   }
 
@@ -168,7 +178,6 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
     super.dispose();
   }
 
-  /// Widget avatar dengan animasi fade in menggunakan Lottie animation
   Widget _buildAvatar() {
     return FadeTransition(
       opacity: _avatarFadeAnimation,
@@ -185,7 +194,6 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
     );
   }
 
-  /// Widget teks header dengan animasi slide
   Widget _buildHeaderText() {
     return SlideTransition(
       position: _headerSlideAnimation,
@@ -201,7 +209,6 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
     );
   }
 
-  /// Widget teks sub-header dengan animasi fade
   Widget _buildSubHeaderText() {
     return FadeTransition(
       opacity: _contentFadeAnimation,
@@ -221,7 +228,6 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
     );
   }
 
-  /// Widget tombol login dengan animasi fade
   Widget _buildLoginButton(BuildContext context) {
     return FadeTransition(
       opacity: _contentFadeAnimation,
@@ -230,33 +236,24 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
         height: 50,
         child: ElevatedButton.icon(
           onPressed: () {
-            // Navigasi ke halaman login saat tombol ditekan
             Navigator.pushNamed(context, '/login');
           },
           icon: const Icon(Icons.login, color: Colors.white),
           label: const Text(
             'Login',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             elevation: 5,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0),
-            ),
-            padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
           ),
         ),
       ),
     );
   }
 
-  /// Widget tagline dengan animasi fade
   Widget _buildTagline() {
     return FadeTransition(
       opacity: _contentFadeAnimation,
@@ -275,15 +272,11 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
     );
   }
 
-  /// Widget background dekoratif dengan efek gradient
   Widget _buildDecorativeBackground() {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.background,
-            Colors.blue.shade50,
-          ],
+          colors: [AppColors.background, Colors.blue.shade50],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -295,9 +288,7 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Background dekoratif
         _buildDecorativeBackground(),
-        // Konten utama yang dapat discroll
         Center(
           child: SingleChildScrollView(
             child: Padding(
@@ -324,7 +315,7 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
   }
 }
 
-/// ProfileHeader membuat header profil yang menampilkan background gradient dan avatar.
+/// Widget header untuk profil yang sudah login.
 class ProfileHeader extends StatelessWidget {
   final Map<String, String> profile;
   const ProfileHeader({Key? key, required this.profile}) : super(key: key);
@@ -342,20 +333,26 @@ class ProfileHeader extends StatelessWidget {
 
           return FlexibleSpaceBar(
             centerTitle: true,
-            title: null, // Tidak tampilkan judul saat collapse.
+            title: null,
             background: isCollapsed
-                ? const SizedBox.shrink() // Sembunyikan isi saat collapse.
+                ? const SizedBox.shrink()
                 : Stack(
                     fit: StackFit.expand,
                     children: [
                       Container(
                         decoration: const BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [AppColors.primary, AppColors.secondary],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
+                            colors: [
+                              Color(0xFF9A0605),
+                              Color(0xFFBF1E1C),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
                         ),
+                      ),
+                      Container(
+                        color: Colors.black.withOpacity(0.2),
                       ),
                       Align(
                         alignment: Alignment.bottomCenter,
@@ -367,24 +364,25 @@ class ProfileHeader extends StatelessWidget {
                               Hero(
                                 tag: 'avatar_${profile["avatarUrl"]}',
                                 child: CircleAvatar(
-                                  radius: 50,
+                                  radius: 70, // Ukuran foto profil diperbesar
                                   backgroundColor: Colors.white,
-                                  backgroundImage:
-                                      NetworkImage(profile["avatarUrl"]!),
+                                  backgroundImage: NetworkImage(
+                                    profile["avatarUrl"]!,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 10),
                               Text(
                                 profile["name"]!,
                                 style: const TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                   shadows: [
                                     Shadow(
-                                      blurRadius: 2,
-                                      color: Colors.black45,
-                                      offset: Offset(0, 1),
+                                      blurRadius: 3,
+                                      color: Colors.black54,
+                                      offset: Offset(0, 2),
                                     )
                                   ],
                                 ),
@@ -402,7 +400,8 @@ class ProfileHeader extends StatelessWidget {
   }
 }
 
-/// SectionTitle memberikan konsistensi tampilan judul antar bagian.
+
+/// Widget untuk menampilkan judul section.
 class SectionTitle extends StatelessWidget {
   final String title;
   const SectionTitle({Key? key, required this.title}) : super(key: key);
@@ -419,7 +418,7 @@ class SectionTitle extends StatelessWidget {
   }
 }
 
-/// SavedArticlesSection menampilkan daftar artikel tersimpan.
+/// Widget untuk menampilkan daftar artikel tersimpan.
 class SavedArticlesSection extends StatelessWidget {
   final List<Map<String, String>> articles;
   const SavedArticlesSection({Key? key, required this.articles}) : super(key: key);
@@ -443,7 +442,7 @@ class SavedArticlesSection extends StatelessWidget {
   }
 }
 
-/// SavedArticleCard merepresentasikan satu artikel tersimpan dengan thumbnail, judul, dan deskripsi singkat.
+/// Widget untuk menampilkan satu artikel tersimpan.
 class SavedArticleCard extends StatelessWidget {
   final String title;
   final String thumbnailUrl;
@@ -462,7 +461,6 @@ class SavedArticleCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: () {
-          // Navigasi ke halaman detail artikel ketika kartu ditekan.
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -490,7 +488,6 @@ class SavedArticleCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Gambar artikel dengan animasi Hero.
               Hero(
                 tag: thumbnailUrl,
                 child: ClipRRect(
@@ -508,16 +505,12 @@ class SavedArticleCard extends StatelessWidget {
                         height: 140,
                         width: double.infinity,
                         color: Colors.grey.shade300,
-                        child: const Icon(
-                          Icons.broken_image,
-                          color: Colors.grey,
-                        ),
+                        child: const Icon(Icons.broken_image, color: Colors.grey),
                       );
                     },
                   ),
                 ),
               ),
-              // Detail artikel: judul dan deskripsi singkat.
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
@@ -555,7 +548,7 @@ class SavedArticleCard extends StatelessWidget {
   }
 }
 
-/// Halaman detail artikel untuk menampilkan konten lengkap artikel yang dipilih.
+/// Halaman detail artikel.
 class ArticleDetailScreen extends StatelessWidget {
   final String title;
   final String thumbnailUrl;
@@ -577,7 +570,6 @@ class ArticleDetailScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          // Gambar artikel dengan transisi Hero.
           Hero(
             tag: thumbnailUrl,
             child: Image.network(
@@ -589,16 +581,11 @@ class ArticleDetailScreen extends StatelessWidget {
                 return Container(
                   height: 250,
                   color: Colors.grey.shade300,
-                  child: const Icon(
-                    Icons.broken_image,
-                    color: Colors.grey,
-                    size: 50,
-                  ),
+                  child: const Icon(Icons.broken_image, color: Colors.grey, size: 50),
                 );
               },
             ),
           ),
-          // Konten deskripsi artikel.
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(

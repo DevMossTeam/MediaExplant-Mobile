@@ -1,41 +1,28 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/profile.dart';
+import 'package:mediaexplant/core/utils/auth_storage.dart';
 
 class ProfileViewModel extends ChangeNotifier {
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  bool _isLoggedIn = false;
+  bool get isLoggedIn => _isLoggedIn;
 
-  Profile? _profile;
-  Profile? get profile => _profile;
-
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
+  // Menyimpan data user (jika diperlukan untuk tampilan profil)
+  Map<String, String?> _userData = {};
+  Map<String, String?> get userData => _userData;
 
   ProfileViewModel() {
-    fetchProfile();
+    // Secara otomatis periksa status login ketika viewmodel dibuat.
+    checkLoginStatus();
   }
 
-  Future<void> fetchProfile() async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try {
-      // Simulasi delay seperti memanggil API
-      await Future.delayed(const Duration(seconds: 2));
-
-      // Simulasi data profile yang berhasil diambil
-      _profile = Profile(
-        id: '123',
-        name: 'John Doe',
-        email: 'johndoe@example.com',
-        avatarUrl: 'https://via.placeholder.com/150',
-      );
-    } catch (e) {
-      _errorMessage = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+  /// Memeriksa status login dengan mengambil data dari AuthStorage.
+  Future<void> checkLoginStatus() async {
+    _userData = await AuthStorage.getUserData();
+    final token = _userData['token'];
+    if (token != null && token.isNotEmpty) {
+      _isLoggedIn = true;
+    } else {
+      _isLoggedIn = false;
     }
+    notifyListeners();
   }
 }
