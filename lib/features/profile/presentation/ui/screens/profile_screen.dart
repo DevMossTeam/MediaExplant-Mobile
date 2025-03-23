@@ -189,7 +189,7 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
   Widget _buildHeaderText() {
     return SlideTransition(
       position: _headerSlideAnimation,
-      child: Text(
+      child: const Text(
         'Anda belum login',
         style: TextStyle(
           fontSize: 26,

@@ -64,7 +64,7 @@ class AppRouter {
       case '/settings/umum':
         return MaterialPageRoute(builder: (_) => const UmumScreen());
       case '/notifications':
-        return MaterialPageRoute(builder: (_) => NotificationsScreen());
+        return MaterialPageRoute(builder: (_) => const NotificationsScreen());
       case '/login':
         return MaterialPageRoute(
           builder: (context) {
@@ -97,7 +97,25 @@ class AppRouter {
           ),
         );
       case '/sign_up_verify_email':
-        return MaterialPageRoute(builder: (_) => const SignUpVerifyEmailScreen());
+        if (settings.arguments is String) {
+          final email = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => ChangeNotifierProvider<SignUpViewModel>(
+              create: (context) {
+                final apiClient = Provider.of<ApiClient>(context, listen: false);
+                final authRemoteDataSource = AuthRemoteDataSource(apiClient: apiClient);
+                final authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
+                return SignUpViewModel(
+                  registerStep1UseCase: RegisterStep1(authRepository),
+                  verifyOtpUseCase: VerifyOtp(authRepository),
+                  registerStep3UseCase: RegisterStep3(authRepository),
+                );
+              },
+              child: SignUpVerifyEmailScreen(email: email),
+            ),
+          );
+        }
+        return _errorRoute(settings.name);
       case '/sign_up_input_screen':
         return MaterialPageRoute(builder: (_) => const SignUpInputScreen());
       case '/forgot_password_verify_email':

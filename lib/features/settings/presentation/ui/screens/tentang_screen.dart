@@ -11,8 +11,8 @@ class TentangScreen extends StatelessWidget {
       elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+      child: const Padding(
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -24,7 +24,7 @@ class TentangScreen extends StatelessWidget {
                 color: AppColors.text,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'Aplikasi ini merupakan solusi terbaik untuk memenuhi kebutuhan informasi dan interaksi di lingkungan kampus. '
               'Dengan antarmuka yang intuitif dan fitur-fitur unggulan, aplikasi ini memudahkan pengguna untuk mendapatkan '
@@ -37,7 +37,7 @@ class TentangScreen extends StatelessWidget {
                 color: AppColors.text,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'Dikembangkan oleh:',
               style: TextStyle(
@@ -46,7 +46,7 @@ class TentangScreen extends StatelessWidget {
                 color: AppColors.text,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'DevMoss\nEmail: devmoss@gmail.com\nWebsite: www.mediaexplant.com',
               style: TextStyle(
@@ -83,7 +83,7 @@ class TentangScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             // Nama Aplikasi
-            Center(
+            const Center(
               child: Text(
                 'Media Explant',
                 style: TextStyle(

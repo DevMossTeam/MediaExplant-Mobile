@@ -58,7 +58,7 @@ class BeritaTerkiniItem extends StatelessWidget {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -88,7 +88,7 @@ class BeritaTerkiniItem extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Positioned.fill(
               child: Material(
                 color: Colors.transparent, // Hindari warna latar belakang

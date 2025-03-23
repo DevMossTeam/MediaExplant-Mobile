@@ -68,12 +68,12 @@ class KomentarItem extends StatelessWidget {
                         const SizedBox(width: 10),
 
                         // Like
-                        Icon(Icons.favorite_border,
+                        const Icon(Icons.favorite_border,
                             size: 16, color: Colors.grey),
                         const SizedBox(width: 5),
                         Text(
                           comment.likes.toString(),
-                          style: TextStyle(fontSize: 13, color: Colors.grey),
+                          style: const TextStyle(fontSize: 13, color: Colors.grey),
                         ),
 
                         const SizedBox(width: 10),

@@ -64,7 +64,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
               ),
               actions: [
                 Container(
-                  margin: EdgeInsets.only(right: 20),
+                  margin: const EdgeInsets.only(right: 20),
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
@@ -93,7 +93,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -117,7 +117,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                     ),
                     const Divider(color: Colors.grey, thickness: 0.5),
                     Padding(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

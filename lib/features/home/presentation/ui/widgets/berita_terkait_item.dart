@@ -18,7 +18,7 @@ class BeritaTerkaitItem extends StatelessWidget {
         elevation: 1,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         color: Colors.white,
-        child: Container(
+        child: SizedBox(
           width: 160,
           height: 150,
           child: Stack(
@@ -28,7 +28,7 @@ class BeritaTerkaitItem extends StatelessWidget {
                   ClipRRect(
                     borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(15)),
-                    child: Container(
+                    child: SizedBox(
                       width: double.infinity,
                       height: 70,
                       child: CachedNetworkImage(

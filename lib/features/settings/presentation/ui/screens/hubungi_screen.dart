@@ -17,9 +17,9 @@ class MyApp extends StatelessWidget {
   title: 'Hubungi Kami',
   theme: ThemeData(
     primaryColor: AppColors.primary,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.primary,
-      iconTheme: const IconThemeData(color: Colors.white), // Ubah warna ikon di AppBar
+      iconTheme: IconThemeData(color: Colors.white), // Ubah warna ikon di AppBar
     ),
   ),
   home: const HubungiScreen(),
@@ -52,11 +52,11 @@ class HubungiScreen extends StatelessWidget {
           title: const Text('Hubungi Kami'),
           backgroundColor: AppColors.primary,
           // TabBar added at the bottom of the AppBar.
-bottom: TabBar(
+bottom: const TabBar(
   labelColor: Colors.white,
   unselectedLabelColor: Colors.white70,
   indicatorColor: Colors.white,
-  tabs: const [
+  tabs: [
     Tab(
       icon: Icon(Icons.message),
       text: 'Kirim Pesan',
@@ -96,7 +96,7 @@ class ContactFormTab extends StatelessWidget {
           // Header icon for the contact form.
           Container(
             margin: const EdgeInsets.only(bottom: 24),
-            child: Icon(
+            child: const Icon(
               Icons.contact_mail,
               size: 120,
               color: AppColors.primary,
@@ -107,7 +107,7 @@ class ContactFormTab extends StatelessWidget {
           // Additional spacing for aesthetics.
           const SizedBox(height: 16),
           // A small footer note (optional).
-          Text(
+          const Text(
             'Kami akan segera merespons pesan Anda.',
             style: TextStyle(
               fontStyle: FontStyle.italic,
@@ -148,7 +148,7 @@ class ContactInfoTab extends StatelessWidget {
         leading: Icon(icon, color: iconColor, size: 30),
         title: Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: AppColors.text,
           ),
@@ -173,7 +173,7 @@ class ContactInfoTab extends StatelessWidget {
           // Header icon for the contact info section.
           Container(
             margin: const EdgeInsets.only(bottom: 24),
-            child: Icon(
+            child: const Icon(
               Icons.info_outline,
               size: 120,
               color: AppColors.primary,
@@ -228,7 +228,7 @@ class ContactInfoTab extends StatelessWidget {
           // Extra spacing for a polished look.
           const SizedBox(height: 16),
           // Optional footer text.
-          Text(
+          const Text(
             'Kami tersedia selama 08:00 - 17:00 WIB',
             style: TextStyle(
               fontStyle: FontStyle.italic,
@@ -244,7 +244,7 @@ class ContactInfoTab extends StatelessWidget {
 /// Stateful widget representing the contact form where users can send a message.
 /// This widget handles input validation and simulates sending the message.
 class _ContactForm extends StatefulWidget {
-  const _ContactForm({super.key});
+  const _ContactForm();
 
   @override
   State<_ContactForm> createState() => _ContactFormState();
@@ -294,7 +294,7 @@ class _ContactFormState extends State<_ContactForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Form header text.
-          Text(
+          const Text(
             'Kirim Pesan',
             style: TextStyle(
               fontSize: 22,

@@ -90,15 +90,15 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
                               obscureText: _obscurePassword,
                               style: const TextStyle(color: Colors.black87),
                               decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.lock, color: AppColors.primary),
+                                prefixIcon: const Icon(Icons.lock, color: AppColors.primary),
                                 labelText: "Password",
                                 labelStyle: const TextStyle(color: Colors.black54),
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black38),
+                                  borderSide: const BorderSide(color: Colors.black38),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: AppColors.primary, width: 2),
+                                  borderSide: const BorderSide(color: AppColors.primary, width: 2),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 border: OutlineInputBorder(
@@ -133,15 +133,15 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
                               obscureText: _obscureConfirmPassword,
                               style: const TextStyle(color: Colors.black87),
                               decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.lock_outline, color: AppColors.primary),
+                                prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
                                 labelText: "Confirm Password",
                                 labelStyle: const TextStyle(color: Colors.black54),
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black38),
+                                  borderSide: const BorderSide(color: Colors.black38),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: AppColors.primary, width: 2),
+                                  borderSide: const BorderSide(color: AppColors.primary, width: 2),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 border: OutlineInputBorder(
@@ -215,8 +215,8 @@ class _FooterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: const [
+    return const Column(
+      children: [
         SizedBox(height: 10),
         Text(
           "© 2025 MediaExPlant. All rights reserved.",

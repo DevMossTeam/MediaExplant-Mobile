@@ -107,7 +107,7 @@ class _ForgotPasswordVerifyEmailScreenState
                               keyboardType: TextInputType.number,
                               style: const TextStyle(color: Colors.black87),
                               decoration: InputDecoration(
-                                prefixIcon: Icon(
+                                prefixIcon: const Icon(
                                   Icons.confirmation_number,
                                   color: AppColors.primary,
                                 ),
@@ -116,11 +116,11 @@ class _ForgotPasswordVerifyEmailScreenState
                                     const TextStyle(color: Colors.black54),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide:
-                                      BorderSide(color: Colors.black38),
+                                      const BorderSide(color: Colors.black38),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                       color: AppColors.primary, width: 2),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -233,8 +233,8 @@ class _FooterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: const [
+    return const Column(
+      children: [
         SizedBox(height: 10),
         Text(
           "© 2025 MediaExPlant. All rights reserved.",

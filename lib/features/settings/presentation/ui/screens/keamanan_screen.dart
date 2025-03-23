@@ -17,7 +17,7 @@ class KeamananScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Judul Halaman
-            Text(
+            const Text(
               'Keamanan Akun Anda',
               style: TextStyle(
                 fontSize: 24,
@@ -26,7 +26,7 @@ class KeamananScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               'Kelola pengaturan keamanan untuk melindungi akun Anda.',
               style: TextStyle(
                 fontSize: 16,
@@ -94,7 +94,7 @@ class KeamananScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             // Tips Keamanan
-            Text(
+            const Text(
               'Tips Keamanan',
               style: TextStyle(
                 fontSize: 20,
@@ -103,7 +103,7 @@ class KeamananScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               '• Jangan bagikan informasi login Anda kepada siapa pun.\n'
               '• Gunakan password yang kuat dan unik untuk setiap akun.\n'
               '• Perbarui pengaturan keamanan secara berkala.',
@@ -140,7 +140,7 @@ class KeamananScreen extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
             color: AppColors.text,
@@ -222,7 +222,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               "Reset Password",
               style: TextStyle(
                 fontSize: 20,
@@ -237,15 +237,15 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               keyboardType: TextInputType.emailAddress,
               style: const TextStyle(color: Colors.black87),
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.email, color: AppColors.primary),
+                prefixIcon: const Icon(Icons.email, color: AppColors.primary),
                 labelText: "Enter your email",
                 labelStyle: const TextStyle(color: Colors.black54),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black38),
+                  borderSide: const BorderSide(color: Colors.black38),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.primary, width: 2),
+                  borderSide: const BorderSide(color: AppColors.primary, width: 2),
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
@@ -317,7 +317,7 @@ class ChangeEmailSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
+          const Text(
             "Ganti Email",
             style: TextStyle(
               fontSize: 20,
@@ -326,7 +326,7 @@ class ChangeEmailSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             "Apakah Anda yakin ingin mengirim kode verifikasi ke email Anda?",
             style: TextStyle(
               fontSize: 16,
@@ -451,7 +451,7 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               "Ganti Password",
               style: TextStyle(
                 fontSize: 20,
@@ -467,16 +467,16 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
               obscureText: _obscureCurrent,
               decoration: InputDecoration(
                 prefixIcon:
-                    Icon(Icons.lock_outline, color: AppColors.primary),
+                    const Icon(Icons.lock_outline, color: AppColors.primary),
                 labelText: "Password Saat Ini",
                 labelStyle: const TextStyle(color: Colors.black54),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black38),
+                  borderSide: const BorderSide(color: Colors.black38),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide:
-                      BorderSide(color: AppColors.primary, width: 2),
+                      const BorderSide(color: AppColors.primary, width: 2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 suffixIcon: IconButton(
@@ -504,16 +504,16 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
               controller: _newPasswordController,
               obscureText: _obscureNew,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.lock, color: AppColors.primary),
+                prefixIcon: const Icon(Icons.lock, color: AppColors.primary),
                 labelText: "Password Baru",
                 labelStyle: const TextStyle(color: Colors.black54),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black38),
+                  borderSide: const BorderSide(color: Colors.black38),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide:
-                      BorderSide(color: AppColors.primary, width: 2),
+                      const BorderSide(color: AppColors.primary, width: 2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 suffixIcon: IconButton(
@@ -544,16 +544,16 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
               controller: _confirmPasswordController,
               obscureText: _obscureConfirm,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.lock, color: AppColors.primary),
+                prefixIcon: const Icon(Icons.lock, color: AppColors.primary),
                 labelText: "Konfirmasi Password",
                 labelStyle: const TextStyle(color: Colors.black54),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black38),
+                  borderSide: const BorderSide(color: Colors.black38),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide:
-                      BorderSide(color: AppColors.primary, width: 2),
+                      const BorderSide(color: AppColors.primary, width: 2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 suffixIcon: IconButton(

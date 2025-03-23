@@ -174,7 +174,7 @@ class _UmumScreenState extends State<UmumScreen> {
               ),
               const SizedBox(height: 8),
               ListTile(
-                leading: Icon(Icons.camera_alt, color: AppColors.primary),
+                leading: const Icon(Icons.camera_alt, color: AppColors.primary),
                 title: const Text('Ambil dari Kamera'),
                 onTap: () async {
                   Navigator.of(context).pop();
@@ -199,7 +199,7 @@ class _UmumScreenState extends State<UmumScreen> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.photo_library, color: AppColors.primary),
+                leading: const Icon(Icons.photo_library, color: AppColors.primary),
                 title: const Text('Pilih dari Galeri'),
                 onTap: () async {
                   Navigator.of(context).pop();
@@ -262,10 +262,10 @@ class _UmumScreenState extends State<UmumScreen> {
               child: InkWell(
                 onTap: _pickImage,
                 borderRadius: BorderRadius.circular(20),
-                child: CircleAvatar(
+                child: const CircleAvatar(
                   radius: 20,
                   backgroundColor: AppColors.primary,
-                  child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                  child: Icon(Icons.camera_alt, color: Colors.white, size: 20),
                 ),
               ),
             ),
@@ -345,7 +345,7 @@ class _UmumScreenState extends State<UmumScreen> {
               elevation: 4,
               child: ListTile(
                 onTap: _editNamaLengkap,
-                leading: Icon(Icons.account_circle, color: AppColors.primary),
+                leading: const Icon(Icons.account_circle, color: AppColors.primary),
                 title: const Text("Nama Lengkap", style: TextStyle(fontSize: 14, color: Colors.grey)),
                 subtitle: Text(
                   _namaLengkapController.text,
@@ -361,7 +361,7 @@ class _UmumScreenState extends State<UmumScreen> {
               elevation: 4,
               child: ListTile(
                 onTap: _editUsername,
-                leading: Icon(Icons.person, color: AppColors.primary),
+                leading: const Icon(Icons.person, color: AppColors.primary),
                 title: const Text("Username", style: TextStyle(fontSize: 14, color: Colors.grey)),
                 subtitle: Text(
                   _usernameController.text,

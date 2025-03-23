@@ -56,7 +56,7 @@ class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
         ),
         title: Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
             color: AppColors.text,
@@ -91,7 +91,7 @@ class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Judul Halaman
-            Text(
+            const Text(
               'Pengaturan Notifikasi',
               style: TextStyle(
                 fontSize: 24,
@@ -100,7 +100,7 @@ class _SettingNotifikasiScreenState extends State<SettingNotifikasiScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               'Atur preferensi notifikasi Anda di bawah ini:',
               style: TextStyle(
                 fontSize: 16,

@@ -239,15 +239,15 @@ class _LoginCard extends StatelessWidget {
                 keyboardType: TextInputType.emailAddress,
                 style: const TextStyle(color: Colors.black87),
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person, color: AppColors.primary),
+                  prefixIcon: const Icon(Icons.person, color: AppColors.primary),
                   labelText: "Username or Email",
                   labelStyle: const TextStyle(color: Colors.black54),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black38),
+                    borderSide: const BorderSide(color: Colors.black38),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.primary, width: 2),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   border: OutlineInputBorder(
@@ -265,15 +265,15 @@ class _LoginCard extends StatelessWidget {
                 obscureText: obscurePassword,
                 style: const TextStyle(color: Colors.black87),
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.lock, color: AppColors.primary),
+                  prefixIcon: const Icon(Icons.lock, color: AppColors.primary),
                   labelText: "Password",
                   labelStyle: const TextStyle(color: Colors.black54),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black38),
+                    borderSide: const BorderSide(color: Colors.black38),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.primary, width: 2),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   border: OutlineInputBorder(
@@ -305,9 +305,9 @@ class _LoginCard extends StatelessWidget {
                   onTap: onForgotPassword,
                   borderRadius: BorderRadius.circular(8),
                   splashColor: AppColors.primary.withOpacity(0.2),
-                  child: Padding(
+                  child: const Padding(
                     padding:
-                        const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                        EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                     child: Text(
                       "Forgot Password?",
                       style: TextStyle(
@@ -359,7 +359,7 @@ class _LoginCard extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: onSignUp,
-                    child: Text(
+                    child: const Text(
                       "Sign Up",
                       style: TextStyle(
                         fontSize: 16,
@@ -386,8 +386,8 @@ class _FooterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: const [
+    return const Column(
+      children: [
         SizedBox(height: 10),
         Text(
           "© 2025 MediaExPlant. All rights reserved.",
@@ -468,7 +468,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               "Reset Password",
               style: TextStyle(
                 fontSize: 20,
@@ -483,15 +483,15 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               keyboardType: TextInputType.emailAddress,
               style: const TextStyle(color: Colors.black87),
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.email, color: AppColors.primary),
+                prefixIcon: const Icon(Icons.email, color: AppColors.primary),
                 labelText: "Enter your email",
                 labelStyle: const TextStyle(color: Colors.black54),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black38),
+                  borderSide: const BorderSide(color: Colors.black38),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.primary, width: 2),
+                  borderSide: const BorderSide(color: AppColors.primary, width: 2),
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),

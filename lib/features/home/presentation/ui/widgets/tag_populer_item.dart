@@ -7,7 +7,7 @@ class TagPopulerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: InkWell(
         onTap: onTap, // Memicu aksi klik
         splashColor: Colors.black.withAlpha(50),

@@ -72,7 +72,7 @@ class HomePopularScreen extends StatelessWidget {
           const SizedBox(height: 10),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 10),
-            child: const Text(
+            child: Text(
               "Yang kami sarankan",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -104,7 +104,7 @@ class HomePopularScreen extends StatelessWidget {
           const SizedBox(height: 20),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 10),
-            child: const Text(
+            child: Text(
               "Tag Terpopuler",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -121,7 +121,7 @@ class HomePopularScreen extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text("Anda menekan tag ke-${index + 1}"),
-                        duration: Duration(seconds: 2),
+                        duration: const Duration(seconds: 2),
                       ),
                     );
                   },

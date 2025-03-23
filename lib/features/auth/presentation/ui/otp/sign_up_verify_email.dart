@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:provider/provider.dart';
+import 'package:mediaexplant/features/auth/presentation/logic/sign_up_viewmodel.dart';
 
 /// Layar verifikasi OTP untuk Sign Up.
 /// Setelah OTP diverifikasi dengan benar, pengguna akan dinavigasikan ke halaman Sign Up Input.
 /// Jika tombol back ditekan dua kali dalam 2 detik, pengguna akan diarahkan ke halaman Sign In.
 class SignUpVerifyEmailScreen extends StatefulWidget {
-  const SignUpVerifyEmailScreen({Key? key}) : super(key: key);
+  final String email;
+  const SignUpVerifyEmailScreen({Key? key, required this.email}) : super(key: key);
 
   @override
   State<SignUpVerifyEmailScreen> createState() => _SignUpVerifyEmailScreenState();
@@ -14,28 +17,25 @@ class SignUpVerifyEmailScreen extends StatefulWidget {
 class _SignUpVerifyEmailScreenState extends State<SignUpVerifyEmailScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _otpController = TextEditingController();
-  bool _isVerifying = false;
   DateTime? _lastBackPressTime;
 
-  /// Fungsi simulasi verifikasi OTP.
-  /// Pada contoh ini, OTP yang valid adalah "123456".
+  /// Fungsi untuk verifikasi OTP menggunakan viewmodel.
   Future<void> _verifyOtp() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isVerifying = true;
-      });
-      // Simulasi delay verifikasi OTP (ganti dengan pemanggilan API sesuai kebutuhan)
-      await Future.delayed(const Duration(seconds: 2));
-      setState(() {
-        _isVerifying = false;
-      });
+      final signUpVM = Provider.of<SignUpViewModel>(context, listen: false);
 
-      if (_otpController.text.trim() == '123456') {
+      // Memanggil usecase verifyOtp dari viewmodel.
+      final response = await signUpVM.verifyOtp(
+        email: widget.email,
+        otp: _otpController.text.trim(),
+      );
+
+      if (response['success'] == true) {
         // Navigasi ke halaman Sign Up Input setelah OTP berhasil diverifikasi.
         Navigator.pushReplacementNamed(context, '/sign_up_input_screen');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Invalid OTP, please try again.")),
+          SnackBar(content: Text(response['message'] ?? "Invalid OTP, please try again.")),
         );
       }
     }
@@ -68,6 +68,9 @@ class _SignUpVerifyEmailScreenState extends State<SignUpVerifyEmailScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    // Mendengarkan perubahan loading dari viewmodel.
+    final isVerifying = context.watch<SignUpViewModel>().isLoading;
+    
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -124,15 +127,15 @@ class _SignUpVerifyEmailScreenState extends State<SignUpVerifyEmailScreen> {
                                 keyboardType: TextInputType.number,
                                 style: const TextStyle(color: Colors.black87),
                                 decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.confirmation_number, color: AppColors.primary),
+                                  prefixIcon: const Icon(Icons.confirmation_number, color: AppColors.primary),
                                   labelText: "OTP",
                                   labelStyle: const TextStyle(color: Colors.black54),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black38),
+                                    borderSide: const BorderSide(color: Colors.black38),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: AppColors.primary, width: 2),
+                                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   border: OutlineInputBorder(
@@ -154,14 +157,14 @@ class _SignUpVerifyEmailScreenState extends State<SignUpVerifyEmailScreen> {
                                 width: double.infinity,
                                 height: 50,
                                 child: ElevatedButton(
-                                  onPressed: _isVerifying ? null : _verifyOtp,
+                                  onPressed: isVerifying ? null : _verifyOtp,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
-                                  child: _isVerifying
+                                  child: isVerifying
                                       ? const CircularProgressIndicator(
                                           color: Colors.white,
                                         )
@@ -245,8 +248,8 @@ class _FooterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: const [
+    return const Column(
+      children: [
         SizedBox(height: 10),
         Text(
           "© 2025 MediaExPlant. All rights reserved.",

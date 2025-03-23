@@ -19,10 +19,10 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.background,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         // Gunakan textTheme yang bersih dan modern.
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           bodySmall: TextStyle(fontSize: 16, color: AppColors.text),
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.primary,
           titleTextStyle: TextStyle(
             fontSize: 20,
@@ -109,7 +109,7 @@ class _HubungiKamiScreenState extends State<HubungiKamiScreen> {
           key: _formKey,
           child: Column(
             children: [
-              Text(
+              const Text(
                 'Hubungi Tim Dukungan',
                 style: TextStyle(
                   fontSize: 24,
@@ -274,7 +274,7 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
 
   /// Header dengan judul dan deskripsi.
   Widget _buildHeader() {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -285,7 +285,7 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
             color: AppColors.primary,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           'Cari jawaban dari pertanyaan yang sering diajukan atau hubungi tim dukungan kami.',
           style: TextStyle(
@@ -293,7 +293,7 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
             color: AppColors.text,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
       ],
     );
   }
@@ -343,11 +343,11 @@ Widget _buildCategoryDropdown() {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.primary),
+            borderSide: const BorderSide(color: AppColors.primary),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.primary),
+            borderSide: const BorderSide(color: AppColors.primary),
           ),
         ),
         items: _categories.map((cat) {
@@ -437,7 +437,7 @@ Widget _buildCategoryDropdown() {
               const SizedBox(height: 8),
               _buildCategoryDropdown(),
               const SizedBox(height: 24),
-              Text(
+              const Text(
                 'Pertanyaan yang Sering Diajukan',
                 style: TextStyle(
                   fontSize: 20,
@@ -454,7 +454,7 @@ Center(
       Navigator.pushNamed(context, '/hubungi');
     },
     // Hapus "const" dan tetapkan warna ikon secara eksplisit
-    icon: Icon(Icons.contact_support, color: Colors.white),
+    icon: const Icon(Icons.contact_support, color: Colors.white),
     label: const Text('Hubungi Tim Dukungan'),
     style: ElevatedButton.styleFrom(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

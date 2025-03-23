@@ -220,15 +220,15 @@ class _SignUpCard extends StatelessWidget {
                 keyboardType: TextInputType.name,
                 style: const TextStyle(color: Colors.black87),
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person, color: AppColors.primary),
+                  prefixIcon: const Icon(Icons.person, color: AppColors.primary),
                   labelText: "Nama Lengkap",
                   labelStyle: const TextStyle(color: Colors.black54),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black38),
+                    borderSide: const BorderSide(color: Colors.black38),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.primary, width: 2),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   border: OutlineInputBorder(
@@ -248,15 +248,15 @@ class _SignUpCard extends StatelessWidget {
                 controller: usernameController,
                 style: const TextStyle(color: Colors.black87),
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.alternate_email, color: AppColors.primary),
+                  prefixIcon: const Icon(Icons.alternate_email, color: AppColors.primary),
                   labelText: "Username",
                   labelStyle: const TextStyle(color: Colors.black54),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black38),
+                    borderSide: const BorderSide(color: Colors.black38),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.primary, width: 2),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   border: OutlineInputBorder(
@@ -277,15 +277,15 @@ class _SignUpCard extends StatelessWidget {
                 keyboardType: TextInputType.emailAddress,
                 style: const TextStyle(color: Colors.black87),
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.email, color: AppColors.primary),
+                  prefixIcon: const Icon(Icons.email, color: AppColors.primary),
                   labelText: "Email",
                   labelStyle: const TextStyle(color: Colors.black54),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black38),
+                    borderSide: const BorderSide(color: Colors.black38),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.primary, width: 2),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   border: OutlineInputBorder(
@@ -340,7 +340,7 @@ class _SignUpCard extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: onGoToSignIn,
-                    child: Text(
+                    child: const Text(
                       "Sign In",
                       style: TextStyle(
                         fontSize: 16,
@@ -367,8 +367,8 @@ class _FooterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: const [
+    return const Column(
+      children: [
         SizedBox(height: 10),
         Text(
           "© 2025 MediaExPlant. All rights reserved.",
@@ -445,7 +445,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               "Reset Password",
               style: TextStyle(
                 fontSize: 20,
@@ -460,15 +460,15 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               keyboardType: TextInputType.emailAddress,
               style: const TextStyle(color: Colors.black87),
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.email, color: AppColors.primary),
+                prefixIcon: const Icon(Icons.email, color: AppColors.primary),
                 labelText: "Enter your email",
                 labelStyle: const TextStyle(color: Colors.black54),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black38),
+                  borderSide: const BorderSide(color: Colors.black38),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.primary, width: 2),
+                  borderSide: const BorderSide(color: AppColors.primary, width: 2),
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),

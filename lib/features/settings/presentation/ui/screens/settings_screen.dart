@@ -47,17 +47,17 @@ class SettingsScreen extends StatelessWidget {
             // Section: Pengaturan
             const SectionHeader(title: "Pengaturan"),
             const SizedBox(height: 8),
-            SettingItem(
+            const SettingItem(
               icon: Icons.settings,
               title: "Umum",
               routeName: '/settings/umum',
             ),
-            SettingItem(
+            const SettingItem(
               icon: Icons.lock,
               title: "Keamanan",
               routeName: '/settings/keamanan',
             ),
-            SettingItem(
+            const SettingItem(
               icon: Icons.notifications,
               title: "Setting Notifikasi",
               routeName: '/settings/setting_notifikasi',
@@ -66,17 +66,17 @@ class SettingsScreen extends StatelessWidget {
             // Section: Pusat Informasi
             const SectionHeader(title: "Pusat Informasi"),
             const SizedBox(height: 8),
-            SettingItem(
+            const SettingItem(
               icon: Icons.info,
               title: "Tentang",
               routeName: '/settings/tentang',
             ),
-            SettingItem(
+            const SettingItem(
               icon: Icons.help,
               title: "Pusat Bantuan",
               routeName: '/settings/pusat_bantuan',
             ),
-            SettingItem(
+            const SettingItem(
               icon: Icons.contact_mail,
               title: "Hubungi",
               routeName: '/settings/hubungi',
@@ -85,7 +85,7 @@ class SettingsScreen extends StatelessWidget {
             // Section: Lainnya (contoh Logout)
             const SectionHeader(title: "Lainnya"),
             const SizedBox(height: 8),
-            SettingItem(
+            const SettingItem(
               icon: Icons.logout,
               title: "Logout",
               routeName: '/settings/logout',
@@ -156,7 +156,7 @@ class SettingItem extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
             color: AppColors.text,
