@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_rekomendasi_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/komentar_terbanyak_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/tag_populer_item.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +18,30 @@ class HomePopularScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [
+                  AppColors.primary,
+                  Colors.red,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: const Text(
+                "Berita Terpopuler",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
           const SizedBox(
             height: 10,
           ),
@@ -52,11 +78,25 @@ class HomePopularScreen extends StatelessWidget {
             },
           ),
           const SizedBox(height: 10),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              "Yang kami sarankan",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [
+                  AppColors.primary,
+                  Colors.red,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: const Text(
+                "Yang Kami Sarankan",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -74,11 +114,25 @@ class HomePopularScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              "Tag Terpopuler",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [
+                  AppColors.primary,
+                  Colors.red,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: const Text(
+                "Tag Terpopuler",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
           SizedBox(
@@ -100,6 +154,38 @@ class HomePopularScreen extends StatelessWidget {
                 );
               },
             ),
+          ),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [
+                  AppColors.primary,
+                  Colors.red,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: const Text(
+                "Komentar Terbanyak",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          ListView.builder(
+            shrinkWrap: true, // Menyesuaikan ukuran dengan isi list
+            physics:
+                const NeverScrollableScrollPhysics(), // Mencegah scroll ganda
+            itemCount: beritaList.length,
+            itemBuilder: (context, index) {
+              return ChangeNotifierProvider.value(
+                  value: beritaList[index], child: KomentarTerbanyakItem());
+            },
           ),
         ],
       ),
