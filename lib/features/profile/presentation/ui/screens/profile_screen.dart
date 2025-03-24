@@ -16,8 +16,8 @@ class SlideLeftRoute extends PageRouteBuilder {
               (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
             const end = Offset.zero;
-            final tween = Tween(begin: begin, end: end)
-                .chain(CurveTween(curve: Curves.easeInOut));
+            final tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeInOut));
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -62,27 +62,23 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Menggunakan ChangeNotifierProvider untuk menyediakan ProfileViewModel
     return ChangeNotifierProvider(
       create: (_) => ProfileViewModel(),
       child: Consumer<ProfileViewModel>(
         builder: (context, profileVM, child) {
-          if (profileVM.userData.isEmpty) {
+          // Jika data profil belum dimuat, tampilkan loading
+          if (profileVM.profile == null) {
             return Scaffold(
               backgroundColor: AppColors.background,
               body: const Center(child: CircularProgressIndicator()),
             );
           }
 
+          // Menggunakan data profil dari viewModel
           bool isLoggedIn = profileVM.isLoggedIn;
-          // Mapping data profile dari AuthStorage ke format yang dibutuhkan UI.
           final profile = {
-            "name": profileVM.userData['nama_lengkap'] ??
-                profileVM.userData['nama_pengguna'] ??
-                "User",
-            "avatarUrl": profileVM.userData['profile_pic'] ??
-                "https://via.placeholder.com/150",
-            "joinedDate": "N/A",
+            "name": profileVM.fullName,
+            "avatarUrl": profileVM.profilePic,
           };
 
           return Scaffold(
@@ -93,7 +89,7 @@ class ProfileScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  SlideLeftRoute(page: const SettingsScreen()),
+                  SlideLeftRoute(page: SettingsScreen()),
                 );
               },
               icon: const Icon(Icons.settings, color: Colors.white),
@@ -102,11 +98,12 @@ class ProfileScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.white),
               ),
             ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.endFloat,
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
             body: isLoggedIn
                 ? LoggedInProfileContent(
-                    profile: profile, articles: dummySavedArticles)
+                    profile: profile,
+                    articles: dummySavedArticles,
+                  )
                 : const NotLoggedInProfileContent(),
           );
         },
@@ -136,8 +133,7 @@ class LoggedInProfileContent extends StatelessWidget {
           // Konten utama berisi judul dan daftar artikel tersimpan.
           SliverToBoxAdapter(
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -160,8 +156,7 @@ class NotLoggedInProfileContent extends StatefulWidget {
   const NotLoggedInProfileContent({Key? key}) : super(key: key);
 
   @override
-  _NotLoggedInProfileContentState createState() =>
-      _NotLoggedInProfileContentState();
+  _NotLoggedInProfileContentState createState() => _NotLoggedInProfileContentState();
 }
 
 class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
@@ -183,10 +178,8 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
-    _headerSlideAnimation = Tween<Offset>(
-            begin: const Offset(0, 0.5), end: Offset.zero)
-        .animate(
-            CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+    _headerSlideAnimation = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _contentFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
@@ -264,16 +257,13 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
           icon: const Icon(Icons.login, color: Colors.white),
           label: const Text(
             'Login',
-            style:
-                TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             elevation: 5,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0)),
-            padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
           ),
         ),
       ),
@@ -349,12 +339,12 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      automaticallyImplyLeading: false, // Nonaktifkan tombol back
       expandedHeight: 300,
       pinned: false,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
-          double percentage = (constraints.maxHeight - kToolbarHeight) /
-              (300 - kToolbarHeight);
+          double percentage = (constraints.maxHeight - kToolbarHeight) / (300 - kToolbarHeight);
           bool isCollapsed = percentage < 0.01;
 
           return FlexibleSpaceBar(
@@ -530,8 +520,7 @@ class SavedArticleCard extends StatelessWidget {
                         height: 140,
                         width: double.infinity,
                         color: Colors.grey.shade300,
-                        child: const Icon(Icons.broken_image,
-                            color: Colors.grey),
+                        child: const Icon(Icons.broken_image, color: Colors.grey),
                       );
                     },
                   ),
@@ -607,8 +596,7 @@ class ArticleDetailScreen extends StatelessWidget {
                 return Container(
                   height: 250,
                   color: Colors.grey.shade300,
-                  child: const Icon(Icons.broken_image,
-                      color: Colors.grey, size: 50),
+                  child: const Icon(Icons.broken_image, color: Colors.grey, size: 50),
                 );
               },
             ),
@@ -617,8 +605,7 @@ class ArticleDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               description,
-              style: const TextStyle(
-                  fontSize: 16, height: 1.5, color: AppColors.text),
+              style: const TextStyle(fontSize: 16, height: 1.5, color: AppColors.text),
             ),
           ),
         ],

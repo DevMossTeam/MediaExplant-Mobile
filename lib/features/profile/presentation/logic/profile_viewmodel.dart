@@ -1,43 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/core/utils/auth_storage.dart';
+import 'package:mediaexplant/features/profile/domain/entities/profile.dart';
+import 'package:mediaexplant/features/profile/domain/usecases/get_profile.dart';
+import 'package:mediaexplant/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:mediaexplant/features/profile/data/repositories/profile_repository_impl.dart';
 
 /// ViewModel untuk profil pengguna.
-/// Memuat data user (token, nama lengkap, foto profil, dll.) dari AuthStorage.
+/// Mengambil data profil melalui use case yang mengakses data dari API (dengan bantuan AuthStorage).
 class ProfileViewModel extends ChangeNotifier {
-  bool _isLoggedIn = false;
-  bool get isLoggedIn => _isLoggedIn;
+  Profile? _profile;
+  Profile? get profile => _profile;
 
-  /// Menyimpan data user yang diambil dari AuthStorage.
-  Map<String, String?> _userData = {};
-  Map<String, String?> get userData => _userData;
+  /// Status login, true jika data profil tersedia.
+  bool get isLoggedIn => _profile != null;
 
-  /// Getter convenience untuk nama lengkap.
-  String? get fullName => _userData['nama_lengkap'];
+  final GetProfile _getProfile;
 
-  /// Getter convenience untuk URL foto profil.
-  String? get profilePic => _userData['profile_pic'];
-
-  ProfileViewModel() {
-    _loadUserData();
+  ProfileViewModel()
+      : _getProfile = GetProfile(
+          ProfileRepositoryImpl(
+            remoteDataSource: ProfileRemoteDataSource(),
+          ),
+        ) {
+    // Memuat data profil saat inisialisasi
+    loadProfile();
   }
 
-  /// Memuat data user dari AuthStorage.
-  /// Jika terjadi error, akan menangkap dan mencetak log error-nya.
-  Future<void> _loadUserData() async {
+  /// Memuat data profil pengguna.
+  Future<void> loadProfile() async {
     try {
-      _userData = await AuthStorage.getUserData();
-      final token = _userData['token'];
-      _isLoggedIn = token != null && token.isNotEmpty;
-    } catch (e, stacktrace) {
-      debugPrint('Error loading user data: $e\n$stacktrace');
-      _userData = {};
-      _isLoggedIn = false;
+      _profile = await _getProfile();
+    } catch (e) {
+      // Tangani error jika terjadi kegagalan pengambilan data
+      _profile = null;
     }
     notifyListeners();
   }
 
-  /// Method publik untuk menyegarkan data user.
-  Future<void> refreshUserData() async {
-    await _loadUserData();
+  /// Menyegarkan data profil pengguna.
+  Future<void> refreshProfile() async {
+    await loadProfile();
   }
+
+  /// Getter convenience untuk nama lengkap.
+  String get fullName => _profile?.fullName ?? 'User';
+
+  /// Getter convenience untuk URL foto profil.
+  String get profilePic =>
+      _profile?.profilePic ?? 'https://via.placeholder.com/150';
 }

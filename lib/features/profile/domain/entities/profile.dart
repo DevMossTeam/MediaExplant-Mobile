@@ -1,13 +1,6 @@
 class Profile {
-  final String id;
-  final String name;
-  final String email;
-  final String avatarUrl;
+  final String fullName;
+  final String profilePic;
 
-  Profile({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.avatarUrl,
-  });
+  Profile({required this.fullName, required this.profilePic});
 }

@@ -54,6 +54,11 @@ class MyApp extends StatelessWidget {
           titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.text),
           bodyMedium: TextStyle(fontSize: 14, color: AppColors.text),
         ),
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: AppColors.primary, // Warna cursor
+          selectionColor: AppColors.primary.withOpacity(0.4),
+          selectionHandleColor: AppColors.primary,
+        ),
       ),
       home: const UmumScreen(),
     );
@@ -590,6 +595,7 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
                   child: TextFormField(
                     controller: _controller,
                     autofocus: true,
+                    cursorColor: AppColors.primary, // Tambahkan properti ini
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.text),
                     maxLength: 25,
                     buildCounter: (BuildContext context, {int? currentLength, int? maxLength, bool? isFocused}) {
