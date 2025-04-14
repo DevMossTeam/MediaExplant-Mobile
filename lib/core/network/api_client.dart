@@ -5,8 +5,8 @@ class ApiClient {
   // Ganti dengan alamat backend Laravel sesuai dengan environment
   // Emulator Android: http://10.0.2.2:8000/api
   // Simulator iOS / perangkat fisik: http://localhost:8000/api atau http://[IP_komputer]:8000/api
-  final String baseUrl = "http://192.168.1.3:8000/api";
-
+  final String baseUrl = "http://192.168.1.21:8000/api";
+  // final String baseUrl = "http://192.168.1.46:8000/api";
   Future<dynamic> getData(String endpoint, {Map<String, String>? headers}) async {
     final url = Uri.parse("$baseUrl/$endpoint");
 
