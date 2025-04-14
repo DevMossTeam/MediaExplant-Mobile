@@ -1,4 +1,3 @@
-```
 MediaExplant/
 ├── android/
 ├── ios/
@@ -285,4 +284,3 @@ MediaExplant/
 ├── main.dart                             // Entry point aplikasi
 ├── pubspec.yaml                          // Dependency dan asset config
 └── README.md
-```
