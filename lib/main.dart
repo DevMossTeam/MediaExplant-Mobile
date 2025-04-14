@@ -79,7 +79,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   // Hapus NotificationScreen dari list halaman
   final List<Widget> _pages = const [
     HomeScreen(),
-    // SearchScreen(),
+    SearchScreen(),
     ProfileScreen(),
   ];
   
