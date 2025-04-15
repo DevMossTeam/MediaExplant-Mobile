@@ -22,7 +22,9 @@ class BeritaPopulerItem extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: CachedNetworkImage(
-                  imageUrl: berita.gambar,
+                  imageUrl: berita.gambar ??
+                      berita.firstImageFromKonten ??
+                      'https://via.placeholder.com/150',
                   width: 120,
                   height: 100,
                   fit: BoxFit.cover,

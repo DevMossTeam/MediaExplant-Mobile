@@ -22,8 +22,8 @@ void main() {
         ),
         // Provider untuk Berita
         ChangeNotifierProvider(
-          create: (context) => BeritaProvider(),
-        ),
+            // create: (context) => BeritaProvider(),
+            create: (_) => BeritaProvider()),
       ],
       child: const MyApp(),
     ),
@@ -32,7 +32,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
 /// Placeholder untuk Search
 class SearchScreen extends StatelessWidget {
   const SearchScreen({Key? key}) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,7 +69,7 @@ class SearchScreen extends StatelessWidget {
 /// Halaman utama dengan Bottom Navigation Bar
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({Key? key}) : super(key: key);
-  
+
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
@@ -82,7 +82,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     SearchScreen(),
     ProfileScreen(),
   ];
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

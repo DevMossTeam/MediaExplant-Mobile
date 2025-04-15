@@ -1,14 +1,28 @@
-// import 'package:mediaexplant/features/home/data/repositories/news_repository_impl.dart';
-// import 'package:mediaexplant/features/home/data/models/berita.dart';
+// import 'dart:convert';
+// import 'package:http/http.dart' as http;
+// import '../models/berita.dart';
 
-// abstract class LocalDataSource {
-//   Future<List<Berita>> getSavedArticles();
+// abstract class NewsRemoteDataSource {
+//   Future<List<Berita>> fetchAllBerita();
 // }
 
-// class LocalDataSourceImpl implements LocalDataSource {
+// class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
+//   final http.Client client;
+
+//   NewsRemoteDataSourceImpl({required this.client});
+
 //   @override
-//   Future<List<Berita>> getSavedArticles() async {
-//     // Menggunakan data dummy
-//     return Future.value(dummbeyBerita);
+//   Future<List<Berita>> fetchAllBerita() async {
+//     final response = await client.get(
+//       Uri.parse('http://127.0.0.1:8000/api/berita'),
+//       headers: {'Content-Type': 'application/json'},
+//     );
+
+//     if (response.statusCode == 200) {
+//       final List<dynamic> jsonList = json.decode(response.body);
+//       return jsonList.map((json) => Berita.fromJson(json)).toList();
+//     } else {
+//       throw Exception('Gagal memuat berita');
+//     }
 //   }
 // }

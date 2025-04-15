@@ -49,7 +49,9 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                     fit: StackFit.expand,
                     children: [
                       CachedNetworkImage(
-                        imageUrl: widget.berita.gambar,
+                        imageUrl: widget.berita.gambar ??
+                            widget.berita.firstImageFromKonten ??
+                            'https://via.placeholder.com/150',
                         fit: BoxFit.cover,
                         placeholder: (context, url) => const Center(
                           child: CircularProgressIndicator(),

@@ -31,7 +31,9 @@ class BeritaTerkaitItem extends StatelessWidget {
                       width: double.infinity,
                       height: 70,
                       child: CachedNetworkImage(
-                        imageUrl: berita.gambar,
+                        imageUrl: berita.gambar ??
+                            berita.firstImageFromKonten ??
+                            'https://via.placeholder.com/150',
                         fit: BoxFit.cover,
                         placeholder: (context, url) => const Center(
                           child:
