@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
@@ -18,6 +19,20 @@ class DetailBeritaScreen extends StatefulWidget {
 }
 
 class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
+  // Fungsi untuk menghapus gambar pertama dari konten berita
+  String removeFirstImageFromKonten(String konten) {
+  // Hapus tag <p> yang hanya berisi <img> (bisa ada atribut)
+  final RegExp imgInPTag = RegExp(r'<p[^>]*>\s*<img[^>]*>\s*</p>', caseSensitive: false);
+  konten = konten.replaceFirst(imgInPTag, '');
+
+  // Jika ada <img> yang berdiri sendiri tanpa <p>
+  final RegExp standaloneImgTag = RegExp(r'<img[^>]*>', caseSensitive: false);
+  konten = konten.replaceFirst(standaloneImgTag, '');
+
+  return konten.trim(); // Menghilangkan whitespace di awal/akhir
+}
+
+
   @override
   Widget build(BuildContext context) {
     // Mengubah warna status bar
@@ -30,6 +45,14 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
 
     final beritaProvider = Provider.of<BeritaProvider>(context);
     final beritaList = beritaProvider.allBerita;
+
+    String kontenTanpaGambar =
+        removeFirstImageFromKonten(widget.berita.kontenBerita);
+
+    // String removeFirstImageFromKonten(String konten) {
+    //   final RegExp regExp = RegExp(r'<img[^>]*src="[^"]*"[^>]*>');
+    //   return konten.replaceFirst(regExp, '');
+    // }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -154,13 +177,23 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             widget.berita.tanggalDibuat,
                             style: const TextStyle(color: Colors.grey),
                           ),
-                          const SizedBox(height: 10),
+                          
+                          // const SizedBox(height: 10),
 
-                          Text(
-                            widget.berita.kontenBerita,
-                            style: const TextStyle(
-                                fontSize: 16, color: Colors.black87),
+                          Html(
+                            data: kontenTanpaGambar,
+                            style: {
+                              "body": Style(
+                                fontSize: FontSize(16),
+                                color: Colors.black87,
+                                lineHeight: LineHeight.number(1.5),
+                              ),
+                              "p": Style(
+                                margin: Margins.only(bottom: 12),
+                              ),
+                            },
                           ),
+
                           const SizedBox(height: 20),
 
                           // Tombol interaksi
