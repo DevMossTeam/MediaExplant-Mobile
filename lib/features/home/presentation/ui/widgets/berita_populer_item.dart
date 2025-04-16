@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,8 @@ class BeritaPopulerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final berita = Provider.of<Berita>(context);
+    final bookmarkProvider =
+        Provider.of<BookmarkProvider>(context, listen: false);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Stack(
@@ -126,7 +129,10 @@ class BeritaPopulerItem extends StatelessWidget {
                   : const Icon(Icons.bookmark_outline),
               color: Colors.black54,
               onPressed: () {
-                berita.statusBookmark();
+                bookmarkProvider.toggleBookmark(
+                    userId: "ovPHOkUBw3FHrq6PeQkg1McfBqkF",
+                    beritaId: berita.idBerita,
+                    berita: berita);
               },
             ),
           )

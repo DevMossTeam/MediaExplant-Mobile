@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_terkini_item.dart';
 import 'package:provider/provider.dart';
@@ -19,31 +19,34 @@ class _HomeLatestScreenState extends State<HomeLatestScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_isInit) {
-      setState(() {
-        _isLoading = true; // Set loading state saat data di-fetch
-      });
-      print('Fetching berita data...'); // Debugging: Menandakan mulai fetching data
+      final beritaProvider =
+          Provider.of<BeritaTerkiniViewmodel>(context, listen: false);
 
-      Provider.of<BeritaProvider>(context, listen: false)
-          .fetchBerita()
-          .then((_) {
-        print('Berita data fetched successfully'); // Debugging: Menandakan data sudah berhasil di-fetch
+      // Cek apakah data sudah pernah dimuat
+      if (!beritaProvider.isLoaded) {
         setState(() {
-          _isLoading = false; // Data selesai dimuat, hentikan loading
+          _isLoading = true;
         });
-      }).catchError((error) {
-        print('Error while fetching berita data: $error'); // Debugging: Menangkap error jika fetching gagal
-        setState(() {
-          _isLoading = false;
+
+        beritaProvider.getBerita().then((_) {
+          setState(() {
+            _isLoading = false;
+          });
+        }).catchError((error) {
+          print("Error saat get berita: $error");
+          setState(() {
+            _isLoading = false;
+          });
         });
-      });
+      }
+
       _isInit = false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final beritaProvider = Provider.of<BeritaProvider>(context);
+    final beritaProvider = Provider.of<BeritaTerkiniViewmodel>(context);
     final beritaList = beritaProvider.allBerita;
 
     return _isLoading

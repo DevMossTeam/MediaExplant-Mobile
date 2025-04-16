@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
-import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
 import 'package:mediaexplant/features/navigation/app_router.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
@@ -38,12 +39,15 @@ void main() {
         ),
         // Provider global untuk ProfileViewModel, dengan parameter required getProfile.
         ChangeNotifierProvider<ProfileViewModel>(
-          create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>())..refreshUserData(),
+          create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>())
+            ..refreshUserData(),
         ),
         // Provider untuk Berita
         ChangeNotifierProvider(
-          create: (_) => BeritaProvider(),
+          create: (_) => BeritaTerkiniViewmodel(),
         ),
+        // Provider untuk bookamark
+        ChangeNotifierProvider(create: (ctx) => BookmarkProvider()),
       ],
       child: const MyApp(),
     ),
@@ -52,7 +56,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -76,7 +80,7 @@ class MyApp extends StatelessWidget {
 /// Placeholder untuk Search
 class SearchScreen extends StatelessWidget {
   const SearchScreen({Key? key}) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,21 +93,21 @@ class SearchScreen extends StatelessWidget {
 /// Halaman utama dengan Bottom Navigation Bar
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({Key? key}) : super(key: key);
-  
+
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
-  
+
   // Daftar halaman
   final List<Widget> _pages = const [
     HomeScreen(),
     SearchScreen(),
     ProfileScreen(),
   ];
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

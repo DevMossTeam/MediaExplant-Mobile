@@ -40,7 +40,7 @@ class Berita with ChangeNotifier {
     this.isDislike = false,
   });
 
-  /// ✅ Fungsi untuk mengambil gambar pertama dari konten HTML
+  // Fungsi untuk mengambil gambar pertama dari konten HTML
   String? get firstImageFromKonten {
     final RegExp regex = RegExp(r'<img[^>]+src="([^">]+)"');
     final match = regex.firstMatch(kontenBerita);

@@ -33,39 +33,8 @@
 //   }
 // }
 
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:mediaexplant/features/home/data/models/berita.dart';
 
-class BeritaProvider with ChangeNotifier {
-  List<Berita> _allBerita = [];
 
-  List<Berita> get allBerita => _allBerita;
 
-  Future<void> fetchBerita() async {
-    final url = Uri.parse('http://10.0.2.2:8000/api/berita'); // Ganti sesuai IP API kamu
-    try {
-      print('Fetching berita from API...'); // Debugging: Menandakan bahwa request API dimulai
-      final response = await http.get(url);
-
-      print('Response status: ${response.statusCode}'); // Debugging: Menampilkan status code dari response
-
-      if (response.statusCode == 200) {
-        print('Response body: ${response.body}'); // Debugging: Menampilkan body response untuk memastikan data yang diterima
-        final List<dynamic> data = json.decode(response.body);
-
-        _allBerita = data.map((item) => Berita.fromJson(item)).toList();
-
-        notifyListeners();
-      } else {
-        throw Exception("Gagal mengambil berita. Status code: ${response.statusCode}");
-      }
-    } catch (error) {
-      print("Terjadi kesalahan saat fetch data: $error"); // Debugging: Menampilkan error jika ada masalah saat fetch data
-      rethrow;
-    }
-  }
-}
 
 

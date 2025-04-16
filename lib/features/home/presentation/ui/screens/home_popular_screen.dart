@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
-import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_rekomendasi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/komentar_terbanyak_item.dart';
@@ -12,7 +12,7 @@ class HomePopularScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final beritaProvider = Provider.of<BeritaProvider>(context);
+    final beritaProvider = Provider.of<BeritaTerkiniViewmodel>(context);
     final beritaList = beritaProvider.allBerita;
     return SingleChildScrollView(
       child: Column(

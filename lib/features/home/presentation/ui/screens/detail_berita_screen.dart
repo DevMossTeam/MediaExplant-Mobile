@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
-import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_terkait_item.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +43,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
       ),
     );
 
-    final beritaProvider = Provider.of<BeritaProvider>(context);
+    final beritaProvider = Provider.of<BeritaTerkiniViewmodel>(context);
     final beritaList = beritaProvider.allBerita;
 
     String kontenTanpaGambar =
