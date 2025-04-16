@@ -24,7 +24,9 @@ class BeritaRekomendasiItem extends StatelessWidget {
             children: [
               // Gambar Berita
               CachedNetworkImage(
-                imageUrl: berita.gambar,
+                imageUrl: berita.gambar ??
+                    berita.firstImageFromKonten ??
+                    'https://via.placeholder.com/150',
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,

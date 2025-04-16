@@ -10,10 +10,10 @@ class Berita with ChangeNotifier {
   final String idBerita;
   final String judul;
   final String kontenBerita;
-  final String gambar;
+  final String? gambar;
   final String tanggalDibuat;
   final String penulis;
-  final String profil;
+  final String? profil;
   final String kategori;
   int jumlahLike;
   int jumlahDislike;
@@ -39,7 +39,14 @@ class Berita with ChangeNotifier {
     this.isLike = false,
     this.isDislike = false,
   });
-  
+
+  /// ✅ Fungsi untuk mengambil gambar pertama dari konten HTML
+  String? get firstImageFromKonten {
+    final RegExp regex = RegExp(r'<img[^>]+src="([^">]+)"');
+    final match = regex.firstMatch(kontenBerita);
+    return match?.group(1);
+  }
+
   void statusBookmark() {
     isBookmark = !isBookmark;
     notifyListeners();

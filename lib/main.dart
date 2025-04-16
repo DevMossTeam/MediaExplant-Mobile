@@ -22,29 +22,24 @@ void main() {
         Provider<ApiClient>(
           create: (_) => ApiClient(),
         ),
-
         // Provider untuk ProfileRemoteDataSource
         Provider<ProfileRemoteDataSource>(
           create: (_) => ProfileRemoteDataSource(),
         ),
-
-        // Provider untuk ProfileRepository (pastikan ProfileRepositoryImpl terdefinisi)
+        // Provider untuk ProfileRepository (menggunakan implementasi ProfileRepositoryImpl)
         Provider<ProfileRepository>(
           create: (ctx) => ProfileRepositoryImpl(
             remoteDataSource: ctx.read<ProfileRemoteDataSource>(),
           ),
         ),
-
         // Provider untuk use-case GetProfile
         Provider<GetProfile>(
           create: (ctx) => GetProfile(ctx.read<ProfileRepository>()),
         ),
-
         // Provider global untuk ProfileViewModel, dengan parameter required getProfile.
         ChangeNotifierProvider<ProfileViewModel>(
           create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>())..refreshUserData(),
         ),
-
         // Provider untuk Berita
         ChangeNotifierProvider(
           create: (_) => BeritaProvider(),
@@ -72,7 +67,7 @@ class MyApp extends StatelessWidget {
       ),
       // Gunakan MainNavigationScreen sebagai halaman utama
       home: const MainNavigationScreen(),
-      // onGenerateRoute tetap dapat digunakan untuk navigasi lain
+      // onGenerateRoute tetap dapat digunakan untuk navigasi named route lain
       onGenerateRoute: AppRouter.generateRoute,
     );
   }

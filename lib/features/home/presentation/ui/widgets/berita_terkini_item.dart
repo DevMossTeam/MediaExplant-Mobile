@@ -32,7 +32,9 @@ class BeritaTerkiniItem extends StatelessWidget {
                     width: double.infinity,
                     constraints: const BoxConstraints(maxWidth: 600),
                     child: CachedNetworkImage(
-                      imageUrl: berita.gambar,
+                      imageUrl: berita.gambar ??
+                          berita.firstImageFromKonten ??
+                          'https://via.placeholder.com/150',
                       height: 150,
                       fit: BoxFit.cover,
                       placeholder: (context, url) => const Center(
