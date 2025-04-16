@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
+import 'package:mediaexplant/core/utils/auth_storage.dart';
+import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
 import '../../logic/sign_in_viewmodel.dart';
 
 /// Halaman Sign In dengan background gradient gelap dan card login terang.
@@ -30,39 +32,41 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<void> _signIn() async {
     if (_formKey.currentState!.validate()) {
-      final signInViewModel =
-          Provider.of<SignInViewModel>(context, listen: false);
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      final signInViewModel = context.read<SignInViewModel>();
+
+      // Tampilkan SnackBar "Signing in..."
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Signing in..."),
-          duration: Duration(seconds: 1),
-        ),
+        const SnackBar(content: Text("Signing in..."), duration: Duration(seconds: 1)),
       );
 
       await signInViewModel.signIn(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+      
+      // Hide SnackBar
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
+      // Debug: Ambil dan tampilkan data AuthStorage
+      final authData = await AuthStorage.getUserData();
+      debugPrint("AuthStorage Data after signIn: $authData");
+
       if (signInViewModel.errorMessage != null) {
-        // Tampilkan pesan statis jika terjadi error (misal: username atau password salah)
-        const errorText = "Password yang Anda masukkan salah.";
+        // Tampilkan pesan error jika terjadi kesalahan
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(errorText),
+            content: Text("Password yang Anda masukkan salah."),
             duration: Duration(seconds: 2),
           ),
         );
       } else if (signInViewModel.authResponse != null) {
+        // Setelah login berhasil, refresh data profil supaya data di AuthStorage terbaru
+        await context.read<ProfileViewModel>().refreshUserData();
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Login berhasil!"),
-            duration: Duration(seconds: 1),
-          ),
+          const SnackBar(content: Text("Login berhasil!"), duration: Duration(seconds: 1)),
         );
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
         Navigator.pushReplacementNamed(context, '/home');
       }
     }
@@ -82,9 +86,7 @@ class _SignInScreenState extends State<SignInScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (context) {
-        return const ForgotPasswordSheet();
-      },
+      builder: (context) => const ForgotPasswordSheet(),
     );
   }
 
@@ -93,23 +95,20 @@ class _SignInScreenState extends State<SignInScreen> {
     final size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
-        // Ganti '/home' dengan rute halaman profile atau home yang diinginkan
+        // Navigasi ke halaman home jika tombol back ditekan
         Navigator.pushReplacementNamed(context, '/home');
         return false;
       },
       child: Scaffold(
         body: Stack(
           children: [
-            // Background gradient gelap
+            // Background gradient
             Container(
               height: double.infinity,
               width: double.infinity,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary,
-                    Colors.red.shade900,
-                  ],
+                  colors: [AppColors.primary, Colors.red.shade900],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -188,10 +187,7 @@ class _HeaderWidget extends StatelessWidget {
         const SizedBox(height: 8),
         const Text(
           "Sign in to continue",
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.white70,
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.white70),
         ),
       ],
     );
@@ -306,8 +302,7 @@ class _LoginCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   splashColor: AppColors.primary.withOpacity(0.2),
                   child: const Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                     child: Text(
                       "Forgot Password?",
                       style: TextStyle(
@@ -345,7 +340,7 @@ class _LoginCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              // Navigasi ke halaman Sign Up (bagian ini berada di dalam card)
+              // Navigasi ke halaman Sign Up
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -441,7 +436,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
   void _sendOtp() {
     if (_forgotFormKey.currentState!.validate()) {
       Navigator.pop(context);
-      // Setelah OTP terkirim, navigasikan ke halaman verifikasi OTP untuk reset password.
+      // Navigasi ke halaman verifikasi OTP untuk reset password.
       Navigator.pushNamed(context, '/forgot_password_verify_email');
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';  // Untuk debugPrint
 import 'package:mediaexplant/features/profile/domain/entities/profile.dart';
 import 'package:mediaexplant/features/profile/domain/repositories/profile_repository.dart';
 
@@ -7,6 +8,11 @@ class GetProfile {
   GetProfile(this.repository);
 
   Future<Profile?> call() async {
-    return await repository.getProfile();
+    try {
+      return await repository.getProfile();
+    } catch (e, st) {
+      debugPrint("GetProfile Error: $e\n$st");
+      return null;
+    }
   }
 }

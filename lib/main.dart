@@ -4,9 +4,15 @@ import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/home/data/providers/berita_provider.dart';
 import 'package:mediaexplant/features/navigation/app_router.dart';
-import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
+
+// Pastikan Anda mengimpor kelas-kelas berikut:
+import 'package:mediaexplant/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:mediaexplant/features/profile/domain/repositories/profile_repository.dart';
+import 'package:mediaexplant/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:mediaexplant/features/profile/domain/usecases/get_profile.dart';
+import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
 
 void main() {
   runApp(
@@ -16,13 +22,32 @@ void main() {
         Provider<ApiClient>(
           create: (_) => ApiClient(),
         ),
-        // Provider untuk Profile view model.
-        ChangeNotifierProvider<ProfileViewModel>(
-          create: (_) => ProfileViewModel(),
+
+        // Provider untuk ProfileRemoteDataSource
+        Provider<ProfileRemoteDataSource>(
+          create: (_) => ProfileRemoteDataSource(),
         ),
+
+        // Provider untuk ProfileRepository (pastikan ProfileRepositoryImpl terdefinisi)
+        Provider<ProfileRepository>(
+          create: (ctx) => ProfileRepositoryImpl(
+            remoteDataSource: ctx.read<ProfileRemoteDataSource>(),
+          ),
+        ),
+
+        // Provider untuk use-case GetProfile
+        Provider<GetProfile>(
+          create: (ctx) => GetProfile(ctx.read<ProfileRepository>()),
+        ),
+
+        // Provider global untuk ProfileViewModel, dengan parameter required getProfile.
+        ChangeNotifierProvider<ProfileViewModel>(
+          create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>())..refreshUserData(),
+        ),
+
         // Provider untuk Berita
         ChangeNotifierProvider(
-          create: (context) => BeritaProvider(),
+          create: (_) => BeritaProvider(),
         ),
       ],
       child: const MyApp(),
@@ -45,7 +70,9 @@ class MyApp extends StatelessWidget {
           unselectedItemColor: Colors.black,
         ),
       ),
-      initialRoute: '/',
+      // Gunakan MainNavigationScreen sebagai halaman utama
+      home: const MainNavigationScreen(),
+      // onGenerateRoute tetap dapat digunakan untuk navigasi lain
       onGenerateRoute: AppRouter.generateRoute,
     );
   }
@@ -58,9 +85,7 @@ class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Search"),
-      ),
+      appBar: AppBar(title: const Text("Search")),
       body: const Center(child: Text("Search Screen")),
     );
   }
@@ -76,7 +101,8 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
-  // Hapus NotificationScreen dari list halaman
+  
+  // Daftar halaman
   final List<Widget> _pages = const [
     HomeScreen(),
     SearchScreen(),

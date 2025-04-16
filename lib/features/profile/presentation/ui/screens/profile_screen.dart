@@ -5,6 +5,7 @@ import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmod
 import 'package:mediaexplant/features/settings/presentation/ui/screens/settings_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:mediaexplant/features/profile/domain/usecases/get_profile.dart';
 
 /// Custom Route untuk transisi slide left
 class SlideLeftRoute extends PageRouteBuilder {
@@ -31,87 +32,67 @@ class SlideLeftRoute extends PageRouteBuilder {
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
-  // Data dummy untuk artikel tersimpan (bisa digantikan dengan data dari API atau ViewModel lain)
+  // Data dummy untuk artikel tersimpan
   static const List<Map<String, String>> dummySavedArticles = [
     {
       "title": "Artikel Tersimpan 1",
       "thumbnailUrl": "https://via.placeholder.com/300x200",
       "description": "Deskripsi singkat artikel tersimpan 1 yang sangat menarik dan informatif.",
     },
-    {
-      "title": "Artikel Tersimpan 2",
-      "thumbnailUrl": "https://via.placeholder.com/300x200",
-      "description": "Deskripsi singkat artikel tersimpan 2 yang memberikan wawasan mendalam.",
-    },
-    {
-      "title": "Artikel Tersimpan 3",
-      "thumbnailUrl": "https://via.placeholder.com/300x200",
-      "description": "Deskripsi singkat artikel tersimpan 3 dengan konten yang relevan.",
-    },
-    {
-      "title": "Artikel Tersimpan 4",
-      "thumbnailUrl": "https://via.placeholder.com/300x200",
-      "description": "Deskripsi singkat artikel tersimpan 4 dengan informasi terkini.",
-    },
-    {
-      "title": "Artikel Tersimpan 5",
-      "thumbnailUrl": "https://via.placeholder.com/300x200",
-      "description": "Deskripsi singkat artikel tersimpan 5 yang memukau.",
-    },
+    // ... data dummy lainnya
   ];
 
   @override
   Widget build(BuildContext context) {
-    // Menggunakan ChangeNotifierProvider untuk menyediakan ProfileViewModel
-    return ChangeNotifierProvider(
-      create: (_) => ProfileViewModel(),
-      child: Consumer<ProfileViewModel>(
-        builder: (context, profileVM, child) {
-          if (profileVM.userData.isEmpty) {
-            return Scaffold(
-              backgroundColor: AppColors.background,
-              body: const Center(child: CircularProgressIndicator()),
+    // Provider akan otomatis memanggil _loadUserData() di konstruktor
+return ChangeNotifierProvider(
+  create: (ctx) => ProfileViewModel(
+    getProfile: ctx.read<GetProfile>(),
+  ),
+  child: Consumer<ProfileViewModel>(
+    builder: (context, profileVM, child) {
+      // Tampilkan indikator loading ketika _userData masih kosong.
+      if (profileVM.userData.isEmpty) {
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          body: const Center(child: CircularProgressIndicator()),
+        );
+      }
+
+      // Gunakan langsung getter dari viewmodel.
+      final isLoggedIn = profileVM.isLoggedIn;
+
+      // Mapping data dari viewmodel.
+      final profile = {
+        "name": profileVM.fullName,
+        "avatarUrl": profileVM.profilePic,
+      };
+
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        floatingActionButton: FloatingActionButton.extended(
+          backgroundColor: AppColors.primary,
+          elevation: 6,
+          onPressed: () {
+            Navigator.push(
+              context,
+              SlideLeftRoute(page: SettingsScreen()),
             );
-          }
-
-          bool isLoggedIn = profileVM.isLoggedIn;
-          // Mapping data profile dari AuthStorage ke format yang dibutuhkan UI.
-          final profile = {
-            "name": profileVM.userData['nama_lengkap'] ??
-                profileVM.userData['nama_pengguna'] ??
-                "User",
-            "avatarUrl": profileVM.userData['profile_pic'] ??
-                "https://via.placeholder.com/150",
-            "joinedDate": "N/A",
-          };
-
-          return Scaffold(
-            backgroundColor: AppColors.background,
-            floatingActionButton: FloatingActionButton.extended(
-              backgroundColor: AppColors.primary,
-              elevation: 6,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  SlideLeftRoute(page: SettingsScreen()),
-                );
-              },
-              icon: const Icon(Icons.settings, color: Colors.white),
-              label: const Text(
-                'Settings',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.endFloat,
-            body: isLoggedIn
-                ? LoggedInProfileContent(
-                    profile: profile, articles: dummySavedArticles)
-                : const NotLoggedInProfileContent(),
-          );
-        },
-      ),
-    );
+          },
+          icon: const Icon(Icons.settings, color: Colors.white),
+          label: const Text(
+            'Settings',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        body: isLoggedIn
+            ? LoggedInProfileContent(profile: profile, articles: dummySavedArticles)
+            : const NotLoggedInProfileContent(),
+      );
+    },
+  ),
+);
   }
 }
 
@@ -119,7 +100,6 @@ class ProfileScreen extends StatelessWidget {
 class LoggedInProfileContent extends StatelessWidget {
   final Map<String, String> profile;
   final List<Map<String, String>> articles;
-
   const LoggedInProfileContent({
     Key? key,
     required this.profile,
@@ -136,8 +116,7 @@ class LoggedInProfileContent extends StatelessWidget {
           // Konten utama berisi judul dan daftar artikel tersimpan.
           SliverToBoxAdapter(
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -184,9 +163,10 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
     );
 
     _headerSlideAnimation = Tween<Offset>(
-            begin: const Offset(0, 0.5), end: Offset.zero)
-        .animate(
-            CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+      begin: const Offset(0, 0.5), end: Offset.zero)
+      .animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeOutBack)
+      );
 
     _contentFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
@@ -264,8 +244,8 @@ class _NotLoggedInProfileContentState extends State<NotLoggedInProfileContent>
           icon: const Icon(Icons.login, color: Colors.white),
           label: const Text(
             'Login',
-            style:
-                TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,

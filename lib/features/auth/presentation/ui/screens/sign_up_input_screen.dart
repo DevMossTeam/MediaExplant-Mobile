@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/features/auth/presentation/logic/sign_up_viewmodel.dart';
+import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
 
 class SignUpInputScreen extends StatefulWidget {
   final String email;
@@ -48,7 +49,7 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
     if (_formKey.currentState!.validate()) {
       final signUpVM = Provider.of<SignUpViewModel>(context, listen: false);
 
-      // Memanggil usecase registerStep3 untuk mendaftarkan akun dengan memasukkan password
+      // Panggil proses registrasi (registerStep3)
       await signUpVM.registerStep3(
         email: widget.email,
         password: _passwordController.text.trim(),
@@ -56,6 +57,7 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
       );
 
       if (signUpVM.errorMessage != null) {
+        // Jika terjadi error, tampilkan pesan error
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Error: ${signUpVM.errorMessage}"),
@@ -63,6 +65,9 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
           ),
         );
       } else {
+        // Jika sign up berhasil, refresh data profil agar status login berubah
+        await Provider.of<ProfileViewModel>(context, listen: false).refreshUserData();
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Sign Up Successful!"),
@@ -77,7 +82,7 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    // Mengambil state loading dari SignUpViewModel
+    // Ambil state loading dari SignUpViewModel
     final isLoading = context.watch<SignUpViewModel>().isLoading;
 
     return WillPopScope(
@@ -127,7 +132,7 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
                           key: _formKey,
                           child: Column(
                             children: [
-                              // Password
+                              // Field Password
                               TextFormField(
                                 controller: _passwordController,
                                 obscureText: _obscurePassword,
@@ -170,7 +175,7 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
                                 },
                               ),
                               const SizedBox(height: 20),
-                              // Confirm Password
+                              // Field Confirm Password
                               TextFormField(
                                 controller: _confirmPasswordController,
                                 obscureText: _obscureConfirmPassword,
@@ -244,7 +249,7 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Footer
+                    // Footer dengan informasi hak cipta
                     const _FooterWidget(),
                   ],
                 ),
