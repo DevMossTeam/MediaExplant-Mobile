@@ -11,9 +11,6 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/pusat_ban
 import 'package:mediaexplant/features/settings/presentation/ui/screens/setting_notifikasi_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/tentang_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_screen.dart';
-import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
-import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
-import 'package:mediaexplant/main.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_in_screen.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_screen.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/otp/sign_up_verify_email.dart';
@@ -29,6 +26,9 @@ import 'package:mediaexplant/features/auth/domain/usecases/register_step1.dart';
 import 'package:mediaexplant/features/auth/domain/usecases/verify_otp.dart';
 import 'package:mediaexplant/features/auth/domain/usecases/register_step3.dart';
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
+import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
+import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
+import 'package:mediaexplant/main.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {

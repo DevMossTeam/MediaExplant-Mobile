@@ -5,28 +5,22 @@ import 'package:mediaexplant/core/utils/auth_storage.dart';
 
 class UmumViewModel extends ChangeNotifier {
   final ApiClient _apiClient;
-
-  UmumViewModel({required ApiClient apiClient})
-      : _apiClient = apiClient {
-    // Load data user saat inisialisasi
+  UmumViewModel({required ApiClient apiClient}) : _apiClient = apiClient {
     loadUserData();
   }
 
-  // Variabel private untuk menyimpan data profil
   String _username = "";
   String _namaLengkap = "";
   String _role = "";
   String _profilePic = "";
   bool _isLoading = true;
 
-  // Getter publik
   String get username => _username;
   String get namaLengkap => _namaLengkap;
   String get role => _role;
   String get profilePic => _profilePic;
   bool get isLoading => _isLoading;
 
-  /// Muat data user dari AuthStorage.
   Future<void> loadUserData() async {
     _isLoading = true;
     notifyListeners();
@@ -36,69 +30,62 @@ class UmumViewModel extends ChangeNotifier {
       _namaLengkap = data['nama_lengkap'] ?? "";
       _role = data['role'] ?? "";
       _profilePic = data['profile_pic'] ?? "";
-      debugPrint("UmumViewModel loaded data: $data");
-    } catch (e, st) {
-      debugPrint("Error loading user data: $e\n$st");
-      _username = "";
-      _namaLengkap = "";
-      _role = "";
-      _profilePic = "";
+    } catch (_) {
+      _username = _namaLengkap = _role = _profilePic = "";
     }
     _isLoading = false;
     notifyListeners();
   }
 
-  /// Update profil (username dan nama lengkap) ke backend dan simpan hasilnya ke AuthStorage.
+  /// Kirim POST ke /api/profile/update
   Future<void> updateUserData({String? username, String? namaLengkap}) async {
+    final current = await AuthStorage.getUserData();
+    final token = current['token'] as String? ?? "";
+    final payload = {
+      if (username != null) 'nama_pengguna': username,
+      if (namaLengkap != null) 'nama_lengkap': namaLengkap,
+    };
     try {
-      // Ambil data profil saat ini dari AuthStorage
-      final currentData = await AuthStorage.getUserData();
-      // Panggil API update profile – kirim token melalui header, bukan di payload.
-      final updatedData = await _apiClient.updateProfile({
-        'nama_pengguna': username ?? currentData['nama_pengguna'] ?? "",
-        'nama_lengkap': namaLengkap ?? currentData['nama_lengkap'] ?? "",
-      }, headers: {
-        "Authorization": "Bearer ${currentData['token'] ?? ""}"
-      });
-      // Simpan data yang diperbarui ke AuthStorage
+      final updated = await _apiClient.updateProfile(
+        payload,
+        headers: { "Authorization": "Bearer $token" },
+      );
       await AuthStorage.saveUserData(
-        token: updatedData['token'] ?? currentData['token'] ?? "",
-        uid: updatedData['uid'] ?? currentData['uid'] ?? "",
-        namaPengguna: updatedData['nama_pengguna'] ?? username ?? currentData['nama_pengguna'] ?? "",
-        email: updatedData['email'] ?? currentData['email'] ?? "",
-        profilePic: updatedData['profile_pic'] ?? currentData['profile_pic'] ?? "",
-        role: updatedData['role'] ?? currentData['role'] ?? "",
-        namaLengkap: updatedData['nama_lengkap'] ?? namaLengkap ?? currentData['nama_lengkap'] ?? "",
+        token: token,
+        uid: updated['user']['uid'] ?? current['uid'],
+        namaPengguna: updated['user']['nama_pengguna'] ?? username ?? current['nama_pengguna'],
+        namaLengkap: updated['user']['nama_lengkap'] ?? namaLengkap ?? current['nama_lengkap'],
+        email: updated['user']['email'] ?? current['email'],
+        profilePic: updated['user']['profile_pic'] ?? current['profile_pic'],
+        role: updated['user']['role'] ?? current['role'],
       );
       await loadUserData();
-    } catch (e, st) {
-      debugPrint("Error updating profile: $e\n$st");
-      // Anda bisa menampilkan pesan error di UI jika diperlukan.
+    } catch (e) {
+      debugPrint("Error updateUserData: $e");
     }
   }
 
-  /// Update foto profil melalui API.
-  /// Pastikan metode uploadProfileImage di ApiClient sudah diimplementasikan!
   Future<void> updateProfileImage(File imageFile) async {
+    final current = await AuthStorage.getUserData();
+    final token = current['token'] as String? ?? "";
     try {
-      final currentData = await AuthStorage.getUserData();
-      final updatedData = await _apiClient.uploadProfileImage(
-        token: currentData['token'] ?? "",
-        uid: currentData['uid'] ?? "",
+      final updated = await _apiClient.uploadProfileImage(
+        token: token,
+        uid: current['uid'] as String,
         imageFile: imageFile,
       );
       await AuthStorage.saveUserData(
-        token: updatedData['token'] ?? currentData['token'] ?? "",
-        uid: updatedData['uid'] ?? currentData['uid'] ?? "",
-        namaPengguna: updatedData['nama_pengguna'] ?? currentData['nama_pengguna'] ?? "",
-        email: updatedData['email'] ?? currentData['email'] ?? "",
-        profilePic: updatedData['profile_pic'] ?? "",
-        role: updatedData['role'] ?? currentData['role'] ?? "",
-        namaLengkap: updatedData['nama_lengkap'] ?? currentData['nama_lengkap'] ?? "",
+        token: token,
+        uid: updated['user']['uid'] ?? current['uid'],
+        namaPengguna: updated['user']['nama_pengguna'] ?? current['nama_pengguna'],
+        namaLengkap: updated['user']['nama_lengkap'] ?? current['nama_lengkap'],
+        email: updated['user']['email'] ?? current['email'],
+        profilePic: updated['user']['profile_pic'] ?? current['profile_pic'],
+        role: updated['user']['role'] ?? current['role'],
       );
       await loadUserData();
-    } catch (e, st) {
-      debugPrint("Error updating profile image: $e\n$st");
+    } catch (e) {
+      debugPrint("Error updateProfileImage: $e");
     }
   }
 }
