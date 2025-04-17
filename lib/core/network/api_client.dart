@@ -28,23 +28,31 @@ class ApiClient {
     return _handleResponse(response);
   }
 
-  Future<dynamic> uploadProfileImage({
-    required String token,
-    required String uid,
-    required File imageFile,
-  }) async {
-    final uri = Uri.parse("$baseUrl/profile/upload-image");
-    final request = http.MultipartRequest('POST', uri)
-      ..headers.addAll({
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      })
-      ..fields['uid'] = uid
-      ..files.add(await http.MultipartFile.fromPath('profile_pic', imageFile.path));
-    final streamed = await request.send();
-    final response = await http.Response.fromStream(streamed);
-    return _handleResponse(response);
-  }
+Future<dynamic> uploadProfileImage({
+  required String token,
+  required String uid,
+  required File imageFile,
+}) async {
+  final String endpoint = "$baseUrl/profile/update"; // POST bukan PUT
+  final uri = Uri.parse(endpoint);
+
+  final request = http.MultipartRequest('POST', uri);
+
+  request.headers.addAll({
+    "Accept": "application/json",
+    "Authorization": "Bearer $token",
+  });
+
+  request.fields['uid'] = uid;
+
+  // Perhatikan field name: harus 'profile_pic'
+  request.files.add(await http.MultipartFile.fromPath('profile_pic', imageFile.path));
+
+  final streamedResponse = await request.send();
+  final response = await http.Response.fromStream(streamedResponse);
+
+  return _handleResponse(response);
+}
 
   /// Ganti updateProfile agar pakai POST
   Future<dynamic> updateProfile(Map<String, dynamic> data,

@@ -147,114 +147,127 @@ class _UmumScreenState extends State<UmumScreen> {
     }
   }
 
-  /// Menampilkan opsi pemilihan gambar (hapus, ambil dari kamera, pilih dari galeri).
-  Future<void> _showImageOptions() async {
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                height: 4,
-                width: 40,
-                margin: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const Text(
-                'Pilih Opsi',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              const SizedBox(height: 8),
-              if (_profileImage != null)
-                ListTile(
-                  leading: const Icon(Icons.delete, color: AppColors.primary),
-                  title: const Text('Hapus Foto'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    setState(() {
-                      _profileImage = null;
-                    });
-                    scaffoldMessenger.showSnackBar(
-                      const SnackBar(content: Text("Foto profil dihapus")),
-                    );
-                  },
-                ),
-              ListTile(
-                leading: const Icon(Icons.camera_alt, color: AppColors.primary),
-                title: const Text('Ambil dari Kamera'),
-                onTap: () async {
-                  Navigator.of(context).pop();
-                  try {
-                    final XFile? pickedFile =
-                        await _picker.pickImage(source: ImageSource.camera);
-                    if (pickedFile != null) {
-                      final File imageFile = File(pickedFile.path);
-                      final File? cropped = await _cropImage(imageFile);
-                      if (cropped != null) {
-                        setState(() {
-                          _profileImage = cropped;
-                        });
-                        if (!mounted) return;
-                        await Provider.of<UmumViewModel>(context, listen: false)
-                            .updateProfileImage(cropped);
-                      }
-                    }
-                  } catch (e) {
-                    if (mounted) {
-                      scaffoldMessenger.showSnackBar(
-                        SnackBar(content: Text('Gagal mengambil gambar: $e')),
-                      );
-                    }
-                  }
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo_library, color: AppColors.primary),
-                title: const Text('Pilih dari Galeri'),
-                onTap: () async {
-                  Navigator.of(context).pop();
-                  try {
-                    final XFile? pickedFile =
-                        await _picker.pickImage(source: ImageSource.gallery);
-                    if (pickedFile != null) {
-                      final File imageFile = File(pickedFile.path);
-                      final File? cropped = await _cropImage(imageFile);
-                      if (cropped != null) {
-                        setState(() {
-                          _profileImage = cropped;
-                        });
-                        if (!mounted) return;
-                        await Provider.of<UmumViewModel>(context, listen: false)
-                            .updateProfileImage(cropped);
-                      }
-                    }
-                  } catch (e) {
-                    if (mounted) {
-                      scaffoldMessenger.showSnackBar(
-                        SnackBar(content: Text('Gagal memilih gambar: $e')),
-                      );
-                    }
-                  }
-                },
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
-    );
-  }
+/// Menampilkan opsi pemilihan gambar (hapus, ambil dari kamera, pilih dari galeri).
+Future<void> _showImageOptions() async {
+  // simpan context utama agar selalu aktif
+  final parentContext = context;
+  final scaffoldMessenger = ScaffoldMessenger.of(parentContext);
 
+  showModalBottomSheet(
+    context: parentContext,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (sheetContext) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 4,
+              width: 40,
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const Text(
+              'Pilih Opsi',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            
+            if (_profileImage != null)
+              ListTile(
+                leading: const Icon(Icons.delete, color: AppColors.primary),
+                title: const Text('Hapus Foto'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  setState(() => _profileImage = null);
+                  scaffoldMessenger.showSnackBar(
+                    const SnackBar(content: Text("Foto profil dihapus"))
+                  );
+                },
+              ),
+
+            // Ambil dari Kamera
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: AppColors.primary),
+              title: const Text('Ambil dari Kamera'),
+              onTap: () async {
+                Navigator.of(sheetContext).pop();
+                try {
+                  final XFile? pickedFile = await _picker.pickImage(
+                    source: ImageSource.camera
+                  );
+                  if (pickedFile == null) return;
+
+                  final File imageFile = File(pickedFile.path);
+                  final File? cropped = await _cropImage(imageFile);
+                  if (cropped == null) return;
+
+                  setState(() => _profileImage = cropped);
+
+                  // gunakan parentContext untuk update dan SnackBar
+                  await Provider.of<UmumViewModel>(
+                    parentContext,
+                    listen: false,
+                  ).updateProfileImage(cropped);
+
+                  scaffoldMessenger.showSnackBar(
+                    const SnackBar(content: Text("Foto profil diperbarui"))
+                  );
+                } catch (e) {
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(content: Text('Gagal mengambil gambar: $e'))
+                  );
+                }
+              },
+            ),
+
+            // Pilih dari Galeri
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: AppColors.primary),
+              title: const Text('Pilih dari Galeri'),
+              onTap: () async {
+                Navigator.of(sheetContext).pop();
+                try {
+                  final XFile? pickedFile = await _picker.pickImage(
+                    source: ImageSource.gallery
+                  );
+                  if (pickedFile == null) return;
+
+                  final File imageFile = File(pickedFile.path);
+                  final File? cropped = await _cropImage(imageFile);
+                  if (cropped == null) return;
+
+                  setState(() => _profileImage = cropped);
+
+                  await Provider.of<UmumViewModel>(
+                    parentContext,
+                    listen: false,
+                  ).updateProfileImage(cropped);
+
+                  scaffoldMessenger.showSnackBar(
+                    const SnackBar(content: Text("Foto profil diperbarui"))
+                  );
+                } catch (e) {
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(content: Text('Gagal memilih gambar: $e'))
+                  );
+                }
+              },
+            ),
+
+            const SizedBox(height: 8),
+          ],
+        ),
+      );
+    },
+  );
+}
   /// Build header profil dengan avatar yang dapat diedit.
   Widget _buildProfileHeader(UmumViewModel vm) {
     Widget avatar;
