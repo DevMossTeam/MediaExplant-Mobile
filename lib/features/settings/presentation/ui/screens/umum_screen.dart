@@ -227,6 +227,10 @@ Future<void> _showImageOptions() async {
 
 /// Build header profil dengan avatar yang dapat diedit & di‑preview.
 Widget _buildProfileHeader(UmumViewModel vm) {
+  // Apakah ada gambar untuk dipreview?
+  final bool hasImage = _profileImage != null || vm.profilePic.isNotEmpty;
+
+  // Tentukan ImageProvider kalau ada
   ImageProvider? imageProvider;
   if (_profileImage != null) {
     imageProvider = FileImage(_profileImage!);
@@ -234,6 +238,7 @@ Widget _buildProfileHeader(UmumViewModel vm) {
     imageProvider = CachedNetworkImageProvider(vm.profilePic);
   }
 
+  // Hero + CircleAvatar
   final avatar = Hero(
     tag: 'profile-image',
     child: Material(
@@ -253,33 +258,42 @@ Widget _buildProfileHeader(UmumViewModel vm) {
     ),
   );
 
+  // Jika ada gambar, bungkus avatar dengan InkWell untuk preview; jika tidak, kembalikan avatar polos
+  final previewWidget = hasImage
+      ? InkWell(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) {
+              return Scaffold(
+                backgroundColor: Colors.black,
+                appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  iconTheme: const IconThemeData(color: Colors.white),
+                ),
+                body: Center(
+                  child: Hero(
+                    tag: 'profile-image',
+                    child: _profileImage != null
+                        ? Image.file(_profileImage!)
+                        : CachedNetworkImage(imageUrl: vm.profilePic),
+                  ),
+                ),
+              );
+            }));
+          },
+          child: avatar,
+        )
+      : avatar;
+
   return Column(
     children: [
       Stack(
         alignment: Alignment.bottomRight,
         children: [
-          // Preview fullscreen
-          InkWell(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return Scaffold(
-                  backgroundColor: Colors.black,
-                  appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0, iconTheme: const IconThemeData(color: Colors.white)),
-                  body: Center(
-                    child: Hero(
-                      tag: 'profile-image',
-                      child: imageProvider != null
-                          ? (_profileImage != null ? Image.file(_profileImage!) : CachedNetworkImage(imageUrl: vm.profilePic))
-                          : avatar,
-                    ),
-                  ),
-                );
-              }));
-            },
-            child: avatar,
-          ),
+          // Preview hanya kalau hasImage == true
+          previewWidget,
 
-          // Tombol edit
+          // Tombol edit selalu aktif
           Positioned(
             bottom: 0,
             right: 0,
@@ -298,7 +312,6 @@ Widget _buildProfileHeader(UmumViewModel vm) {
     ],
   );
 }
-
 
   // Fungsi untuk mengedit username dengan mengambil nilai asli dari UmumViewModel.
   Future<void> _editUsername() async {
