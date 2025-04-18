@@ -21,17 +21,17 @@ class DetailBeritaScreen extends StatefulWidget {
 class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
   // Fungsi untuk menghapus gambar pertama dari konten berita
   String removeFirstImageFromKonten(String konten) {
-  // Hapus tag <p> yang hanya berisi <img> (bisa ada atribut)
-  final RegExp imgInPTag = RegExp(r'<p[^>]*>\s*<img[^>]*>\s*</p>', caseSensitive: false);
-  konten = konten.replaceFirst(imgInPTag, '');
+    // Hapus tag <p> yang hanya berisi <img> (bisa ada atribut)
+    final RegExp imgInPTag =
+        RegExp(r'<p[^>]*>\s*<img[^>]*>\s*</p>', caseSensitive: false);
+    konten = konten.replaceFirst(imgInPTag, '');
 
-  // Jika ada <img> yang berdiri sendiri tanpa <p>
-  final RegExp standaloneImgTag = RegExp(r'<img[^>]*>', caseSensitive: false);
-  konten = konten.replaceFirst(standaloneImgTag, '');
+    // Jika ada <img> yang berdiri sendiri tanpa <p>
+    final RegExp standaloneImgTag = RegExp(r'<img[^>]*>', caseSensitive: false);
+    konten = konten.replaceFirst(standaloneImgTag, '');
 
-  return konten.trim(); // Menghilangkan whitespace di awal/akhir
-}
-
+    return konten.trim(); // Menghilangkan whitespace di awal/akhir
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,11 +88,20 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                   );
                 },
               ),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+              leading: Container(
+                margin: const EdgeInsets.only(left: 15),
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.black.withAlpha(100),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
               actions: [
                 Container(
@@ -144,42 +153,25 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                               color: Colors.black,
                             ),
                           ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Oleh: ${widget.berita.penulis}  |  ${widget.berita.tanggalDibuat}',
+                            style: const TextStyle(color: Colors.grey),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ],
                       ),
                     ),
                     const Divider(color: Colors.grey, thickness: 0.5),
                     Padding(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Konten berita
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundImage:
-                                    NetworkImage(widget.berita.penulis),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  widget.berita.penulis,
-                                  style: const TextStyle(color: Colors.grey),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            widget.berita.tanggalDibuat,
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                          
-                          // const SizedBox(height: 10),
-
+                          // Konten berita HTML
                           Html(
                             data: kontenTanpaGambar,
                             style: {
@@ -195,6 +187,14 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                           ),
 
                           const SizedBox(height: 20),
+                          const Text(
+                            "Berikan Tanggapanmu :",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
 
                           // Tombol interaksi
                           Row(

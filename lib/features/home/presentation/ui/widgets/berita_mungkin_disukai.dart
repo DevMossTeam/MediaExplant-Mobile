@@ -6,8 +6,8 @@ import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:provider/provider.dart';
 
-class BeritaPopulerItem extends StatelessWidget {
-  const BeritaPopulerItem({super.key});
+class BeritaMungkinDisukai extends StatelessWidget {
+  const BeritaMungkinDisukai({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class BeritaPopulerItem extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 60,
-      margin: const EdgeInsets.symmetric(vertical: 5 ,horizontal: 10),
+      margin: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
       child: Stack(
         children: [
           Row(
@@ -58,7 +58,8 @@ class BeritaPopulerItem extends StatelessWidget {
                           "${berita.kategori} | ",
                           style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 12, color: AppColors.primary),
+                              fontSize: 12,
+                              color: AppColors.primary),
                         ),
                         Text(
                           maxLines: 1,

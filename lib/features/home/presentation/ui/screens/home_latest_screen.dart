@@ -57,12 +57,12 @@ class _HomeLatestScreenState extends State<HomeLatestScreen> {
               children: [
                 const SizedBox(height: 8),
 
-                // **Berita Terkini**
-                if (beritaList.isNotEmpty)
-                  ChangeNotifierProvider.value(
-                    value: beritaList[0],
-                    child: const BeritaTerkiniItem(),
-                  ),
+                // // **Berita Terkini**
+                // if (beritaList.isNotEmpty)
+                //   ChangeNotifierProvider.value(
+                //     value: beritaList[0],
+                //     child: const BeritaTerkiniItem(),
+                //   ),
 
                 // **Berita Populer**
                 ListView.builder(
