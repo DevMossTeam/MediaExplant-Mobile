@@ -201,23 +201,20 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
     if (!_forgotFormKey.currentState!.validate()) return;
     setState(() => _loading = true);
     final vm = context.read<KeamananViewModel>();
-    try {
-      await vm.sendResetPasswordOtp(_forgotEmailController.text.trim());
-      if (!mounted) return;
+    final email = _forgotEmailController.text.trim();
+    final ok = await vm.sendResetPasswordOtp(email);
+    if (ok) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("OTP sent to ${_forgotEmailController.text.trim()}")),
+        SnackBar(content: Text(vm.successMessage ?? "OTP sent to $email")),
       );
       Navigator.pushNamed(context, '/forgot_password_verify_email');
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(vm.errorMessage ?? "Gagal mengirim OTP")),
+      );
     }
+    if (mounted) setState(() => _loading = false);
   }
 
   @override
@@ -311,23 +308,19 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
   Future<void> _sendVerification() async {
     setState(() => _loading = true);
     final vm = context.read<KeamananViewModel>();
-    try {
-      await vm.sendChangeEmailOtp();
-      if (!mounted) return;
+    final ok = await vm.sendChangeEmailOtp();
+    if (ok) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Kode verifikasi telah dikirim ke email Anda.")),
+        SnackBar(content: Text(vm.successMessage ?? "OTP telah dikirim")),
       );
       Navigator.pushNamed(context, '/change_email_verify_email');
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(vm.errorMessage ?? "Gagal mengirim OTP")),
+      );
     }
+    if (mounted) setState(() => _loading = false);
   }
 
   @override
@@ -449,25 +442,21 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
     if (!_changeFormKey.currentState!.validate()) return;
     setState(() => _loading = true);
     final vm = context.read<KeamananViewModel>();
-    try {
-      await vm.changePassword(
-        currentPassword: _currentPasswordController.text.trim(),
-        newPassword: _newPasswordController.text.trim(),
-      );
-      if (!mounted) return;
+    final ok = await vm.changePassword(
+      currentPassword: _currentPasswordController.text.trim(),
+      newPassword: _newPasswordController.text.trim(),
+    );
+    if (ok) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Password changed successfully")),
+        SnackBar(content: Text(vm.successMessage ?? "Password berhasil diubah")),
       );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(vm.errorMessage ?? "Gagal mengubah password")),
+      );
     }
+    if (mounted) setState(() => _loading = false);
   }
 
   @override

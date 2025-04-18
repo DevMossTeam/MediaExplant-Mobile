@@ -33,13 +33,12 @@ class KeamananViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 1. Ganti password: input current & new, kirim ke API `/password/change`
+  /// 1. Ganti password: kirim ke API `/password/change`
   Future<bool> changePassword({
     required String currentPassword,
     required String newPassword,
   }) async {
     _setLoading(true);
-
     try {
       final data = await AuthStorage.getUserData();
       final token = data['token'] ?? '';
@@ -56,10 +55,10 @@ class KeamananViewModel extends ChangeNotifier {
       );
 
       if (resp['success'] == true) {
-        _setSuccess(resp['message'] as String? ?? 'Password berhasil diubah');
+        _setSuccess(resp['message'] as String? ?? 'Password berhasil diubah!');
         return true;
       } else {
-        _setError(resp['message'] as String? ?? 'Gagal mengubah password');
+        _setError(resp['message'] as String? ?? 'Gagal mengubah password.');
       }
     } catch (e) {
       _setError(e.toString());
@@ -69,27 +68,27 @@ class KeamananViewModel extends ChangeNotifier {
     return false;
   }
 
-  /// 2. Kirim OTP ke email terdaftar untuk ganti email (API: `/email/change/send-otp`)
+  /// 2. Kirim OTP ke email terdaftar untuk ganti email.
+  ///    API route: POST /email/send-change-otp
   Future<bool> sendChangeEmailOtp() async {
     _setLoading(true);
-
     try {
       final data = await AuthStorage.getUserData();
       final token = data['token'] ?? '';
 
       final resp = await _apiClient.postData(
-        'email/change/send-otp',
-        {},
+        'email/send-change-otp',
+        {}, // tidak perlu payload selain header
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
 
       if (resp['success'] == true) {
-        _setSuccess(resp['message'] as String? ?? 'OTP berhasil dikirim');
+        _setSuccess(resp['message'] as String? ?? 'OTP berhasil dikirim.');
         return true;
       } else {
-        _setError(resp['message'] as String? ?? 'Gagal mengirim OTP');
+        _setError(resp['message'] as String? ?? 'Gagal mengirim OTP.');
       }
     } catch (e) {
       _setError(e.toString());
@@ -99,21 +98,22 @@ class KeamananViewModel extends ChangeNotifier {
     return false;
   }
 
-  /// 3. Kirim OTP untuk reset password, hanya jika email ada di database (API: `/password/reset/send-otp`)
+  /// 3. Kirim OTP untuk reset password.
+  ///    API route: POST /password/send-reset-otp
+  ///    Hanya jika email terdaftar di database.
   Future<bool> sendResetPasswordOtp(String email) async {
     _setLoading(true);
-
     try {
       final resp = await _apiClient.postData(
-        'password/reset/send-otp',
-        { 'email': email },
+        'password/send-reset-otp',
+        {'email': email},
       );
 
       if (resp['success'] == true) {
-        _setSuccess(resp['message'] as String? ?? 'OTP berhasil dikirim');
+        _setSuccess(resp['message'] as String? ?? 'OTP berhasil dikirim.');
         return true;
       } else {
-        _setError(resp['message'] as String? ?? 'Email tidak ditemukan');
+        _setError(resp['message'] as String? ?? 'Email tidak ditemukan.');
       }
     } catch (e) {
       _setError(e.toString());

@@ -59,7 +59,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SettingItem(
               icon: Icons.notifications,
-              title: "Setting Notifikasi",
+              title: "Notifikasi",
               routeName: '/settings/setting_notifikasi',
             ),
             const SizedBox(height: 24),
