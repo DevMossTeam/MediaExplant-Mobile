@@ -64,6 +64,29 @@ class UmumViewModel extends ChangeNotifier {
       debugPrint("Error updateUserData: $e");
     }
   }
+  
+  Future<void> deleteProfileImage() async {
+  final current = await AuthStorage.getUserData();
+  final token = current['token'] as String? ?? "";
+  try {
+    final updated = await _apiClient.deleteProfileImage(
+      token: token,
+      uid: current['uid'] as String,
+    );
+    await AuthStorage.saveUserData(
+      token: token,
+      uid: updated['user']['uid'] ?? current['uid'],
+      namaPengguna: updated['user']['nama_pengguna'] ?? current['nama_pengguna'],
+      namaLengkap: updated['user']['nama_lengkap'] ?? current['nama_lengkap'],
+      email: updated['user']['email'] ?? current['email'],
+      profilePic: "", // Kosongkan profilePic setelah dihapus
+      role: updated['user']['role'] ?? current['role'],
+    );
+    await loadUserData();
+  } catch (e) {
+    debugPrint("Error deleteProfileImage: $e");
+  }
+}
 
   Future<void> updateProfileImage(File imageFile) async {
     final current = await AuthStorage.getUserData();

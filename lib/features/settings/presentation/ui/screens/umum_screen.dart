@@ -149,8 +149,8 @@ class _UmumScreenState extends State<UmumScreen> {
 
 /// Menampilkan opsi pemilihan gambar (hapus, ambil dari kamera, pilih dari galeri).
 Future<void> _showImageOptions() async {
-  // simpan context utama agar selalu aktif
   final parentContext = context;
+  final vm = Provider.of<UmumViewModel>(parentContext, listen: false);
   final scaffoldMessenger = ScaffoldMessenger.of(parentContext);
 
   showModalBottomSheet(
@@ -158,191 +158,188 @@ Future<void> _showImageOptions() async {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
-    builder: (sheetContext) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 4,
-              width: 40,
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
+    builder: (sheetContext) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag-handle
+          Container(
+            height: 4, width: 40,
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
             ),
-            const Text(
-              'Pilih Opsi',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            
-            if (_profileImage != null)
-              ListTile(
-                leading: const Icon(Icons.delete, color: AppColors.primary),
-                title: const Text('Hapus Foto'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  setState(() => _profileImage = null);
-                  scaffoldMessenger.showSnackBar(
-                    const SnackBar(content: Text("Foto profil dihapus"))
-                  );
-                },
-              ),
+          ),
+          const Text(
+            'Pilih Opsi',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 8),
 
-            // Ambil dari Kamera
+          // Hapus Foto: hanya kalau ada lokal atau URL
+          if (_profileImage != null || vm.profilePic.isNotEmpty)
             ListTile(
-              leading: const Icon(Icons.camera_alt, color: AppColors.primary),
-              title: const Text('Ambil dari Kamera'),
+              leading: const Icon(Icons.delete, color: AppColors.primary),
+              title: const Text('Hapus Foto'),
               onTap: () async {
                 Navigator.of(sheetContext).pop();
-                try {
-                  final XFile? pickedFile = await _picker.pickImage(
-                    source: ImageSource.camera
-                  );
-                  if (pickedFile == null) return;
-
-                  final File imageFile = File(pickedFile.path);
-                  final File? cropped = await _cropImage(imageFile);
-                  if (cropped == null) return;
-
-                  setState(() => _profileImage = cropped);
-
-                  // gunakan parentContext untuk update dan SnackBar
-                  await Provider.of<UmumViewModel>(
-                    parentContext,
-                    listen: false,
-                  ).updateProfileImage(cropped);
-
-                  scaffoldMessenger.showSnackBar(
-                    const SnackBar(content: Text("Foto profil diperbarui"))
-                  );
-                } catch (e) {
-                  scaffoldMessenger.showSnackBar(
-                    SnackBar(content: Text('Gagal mengambil gambar: $e'))
-                  );
-                }
+                // Clear lokal
+                setState(() => _profileImage = null);
+                // Clear di backend/storage
+                await vm.deleteProfileImage();
+                scaffoldMessenger.showSnackBar(
+                  const SnackBar(content: Text("Foto profil dihapus"))
+                );
               },
             ),
 
-            // Pilih dari Galeri
-            ListTile(
-              leading: const Icon(Icons.photo_library, color: AppColors.primary),
-              title: const Text('Pilih dari Galeri'),
-              onTap: () async {
-                Navigator.of(sheetContext).pop();
-                try {
-                  final XFile? pickedFile = await _picker.pickImage(
-                    source: ImageSource.gallery
-                  );
-                  if (pickedFile == null) return;
+          // Ambil dari Kamera
+          ListTile(
+            leading: const Icon(Icons.camera_alt, color: AppColors.primary),
+            title: const Text('Ambil dari Kamera'),
+            onTap: () async {
+              Navigator.of(sheetContext).pop();
+              try {
+                final picked = await _picker.pickImage(source: ImageSource.camera);
+                if (picked == null) return;
+                final cropped = await _cropImage(File(picked.path));
+                if (cropped == null) return;
+                setState(() => _profileImage = cropped);
+                await vm.updateProfileImage(cropped);
+                scaffoldMessenger.showSnackBar(
+                  const SnackBar(content: Text("Foto profil diperbarui"))
+                );
+              } catch (e) {
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(content: Text('Gagal mengambil gambar: $e'))
+                );
+              }
+            },
+          ),
 
-                  final File imageFile = File(pickedFile.path);
-                  final File? cropped = await _cropImage(imageFile);
-                  if (cropped == null) return;
+          // Pilih dari Galeri
+          ListTile(
+            leading: const Icon(Icons.photo_library, color: AppColors.primary),
+            title: const Text('Pilih dari Galeri'),
+            onTap: () async {
+              Navigator.of(sheetContext).pop();
+              try {
+                final picked = await _picker.pickImage(source: ImageSource.gallery);
+                if (picked == null) return;
+                final cropped = await _cropImage(File(picked.path));
+                if (cropped == null) return;
+                setState(() => _profileImage = cropped);
+                await vm.updateProfileImage(cropped);
+                scaffoldMessenger.showSnackBar(
+                  const SnackBar(content: Text("Foto profil diperbarui"))
+                );
+              } catch (e) {
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(content: Text('Gagal memilih gambar: $e'))
+                );
+              }
+            },
+          ),
 
-                  setState(() => _profileImage = cropped);
-
-                  await Provider.of<UmumViewModel>(
-                    parentContext,
-                    listen: false,
-                  ).updateProfileImage(cropped);
-
-                  scaffoldMessenger.showSnackBar(
-                    const SnackBar(content: Text("Foto profil diperbarui"))
-                  );
-                } catch (e) {
-                  scaffoldMessenger.showSnackBar(
-                    SnackBar(content: Text('Gagal memilih gambar: $e'))
-                  );
-                }
-              },
-            ),
-
-            const SizedBox(height: 8),
-          ],
-        ),
-      );
-    },
+          const SizedBox(height: 8),
+        ],
+      ),
+    ),
   );
 }
-  /// Build header profil dengan avatar yang dapat diedit.
-  Widget _buildProfileHeader(UmumViewModel vm) {
-    Widget avatar;
-    if (_profileImage != null) {
-      avatar = Hero(
-        tag: 'profile-image',
-        child: Material(
-          elevation: 4,
-          shape: const CircleBorder(),
-          child: CircleAvatar(
-            radius: 60,
-            backgroundColor: Colors.transparent,
-            backgroundImage: FileImage(_profileImage!),
-          ),
-        ),
-      );
-    } else {
-      if (vm.profilePic.isNotEmpty) {
-        avatar = Hero(
-          tag: 'profile-image',
-          child: Material(
-            elevation: 4,
-            shape: const CircleBorder(),
-            child: CircleAvatar(
-              radius: 60,
-              backgroundColor: Colors.transparent,
-              backgroundImage: CachedNetworkImageProvider(vm.profilePic),
-            ),
-          ),
-        );
-      } else {
-        avatar = Hero(
-          tag: 'profile-image',
-          child: Material(
-            elevation: 4,
-            shape: const CircleBorder(),
-            child: CircleAvatar(
-              radius: 60,
-              backgroundColor: _getAvatarColor(),
-              child: Text(
-                vm.namaLengkap.isNotEmpty ? vm.namaLengkap[0].toUpperCase() : '?',
-                style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-            ),
-          ),
-        );
-      }
-    }
-    return Column(
-      children: [
-        Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            InkWell(
-              onTap: _showImageOptions,
-              child: avatar,
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: InkWell(
-                onTap: _showImageOptions,
-                borderRadius: BorderRadius.circular(20),
-                child: const CircleAvatar(
-                  radius: 20,
-                  backgroundColor: AppColors.primary,
-                  child: Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
+
+/// Build header profil dengan avatar yang dapat diedit & di‐preview.
+Widget _buildProfileHeader(UmumViewModel vm) {
+  Widget avatar;
+  // Jika ada file lokal
+  if (_profileImage != null) {
+    avatar = CircleAvatar(
+      radius: 60,
+      backgroundImage: FileImage(_profileImage!),
     );
   }
+  // Jika URL dari server
+  else if (vm.profilePic.isNotEmpty) {
+    avatar = CircleAvatar(
+      radius: 60,
+      backgroundImage: CachedNetworkImageProvider(vm.profilePic),
+    );
+  }
+  // Default: inisial
+  else {
+    avatar = CircleAvatar(
+      radius: 60,
+      backgroundColor: _getAvatarColor(),
+      child: Text(
+        vm.namaLengkap.isNotEmpty ? vm.namaLengkap[0].toUpperCase() : '?',
+        style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+    );
+  }
+
+  return Column(
+    children: [
+      Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          // Preview on tap
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => Scaffold(
+                    backgroundColor: Colors.black,
+                    appBar: AppBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      iconTheme: const IconThemeData(color: Colors.white),
+                    ),
+                    body: Center(
+                      child: InteractiveViewer(
+                        child: _profileImage != null
+                          // Preview local file
+                          ? Image.file(_profileImage!)
+                          // Preview network image
+                          : vm.profilePic.isNotEmpty
+                            ? Image.network(vm.profilePic)
+                            // Kalau tidak ada foto, tampilkan avatar biasa
+                            : avatar,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+            child: Material(
+              elevation: 4,
+              shape: const CircleBorder(),
+              child: avatar,
+            ),
+          ),
+
+          // Tombol edit
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: InkWell(
+              onTap: _showImageOptions,
+              borderRadius: BorderRadius.circular(20),
+              child: const CircleAvatar(
+                radius: 20,
+                backgroundColor: AppColors.primary,
+                child: Icon(Icons.camera_alt, color: Colors.white, size: 20),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
 
   // Fungsi untuk mengedit username dengan mengambil nilai asli dari UmumViewModel.
   Future<void> _editUsername() async {

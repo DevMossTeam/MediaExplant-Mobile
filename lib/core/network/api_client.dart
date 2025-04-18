@@ -5,16 +5,25 @@ import 'dart:io';
 class ApiClient {
   final String baseUrl = "http://192.168.1.21:8000/api";
 
+  /// GET /{endpoint}
   Future<dynamic> getData(String endpoint, {Map<String, String>? headers}) async {
     final url = Uri.parse("$baseUrl/$endpoint");
-    final response = await http.get(url, headers: {
-      "Accept": "application/json",
-      ...?headers,
-    });
+    final response = await http.get(
+      url,
+      headers: {
+        "Accept": "application/json",
+        ...?headers,
+      },
+    );
     return _handleResponse(response);
   }
 
-  Future<dynamic> postData(String endpoint, Map<String, dynamic> data, {Map<String, String>? headers}) async {
+  /// POST /{endpoint} dengan JSON body
+  Future<dynamic> postData(
+    String endpoint,
+    Map<String, dynamic> data, {
+    Map<String, String>? headers,
+  }) async {
     final url = Uri.parse("$baseUrl/$endpoint");
     final response = await http.post(
       url,
@@ -28,36 +37,55 @@ class ApiClient {
     return _handleResponse(response);
   }
 
-Future<dynamic> uploadProfileImage({
-  required String token,
-  required String uid,
-  required File imageFile,
-}) async {
-  final String endpoint = "$baseUrl/profile/update"; // POST bukan PUT
-  final uri = Uri.parse(endpoint);
+  /// POST multipart ke /profile/update untuk upload foto profile
+  Future<dynamic> uploadProfileImage({
+    required String token,
+    required String uid,
+    required File imageFile,
+  }) async {
+    final uri = Uri.parse("$baseUrl/profile/update");
+    final request = http.MultipartRequest('POST', uri)
+      ..headers.addAll({
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      })
+      ..fields['uid'] = uid
+      ..files.add(
+        await http.MultipartFile.fromPath(
+          'profile_pic', // field name sesuai API
+          imageFile.path,
+        ),
+      );
 
-  final request = http.MultipartRequest('POST', uri);
+    final streamed = await request.send();
+    final response = await http.Response.fromStream(streamed);
+    return _handleResponse(response);
+  }
 
-  request.headers.addAll({
-    "Accept": "application/json",
-    "Authorization": "Bearer $token",
-  });
-
-  request.fields['uid'] = uid;
-
-  // Perhatikan field name: harus 'profile_pic'
-  request.files.add(await http.MultipartFile.fromPath('profile_pic', imageFile.path));
-
-  final streamedResponse = await request.send();
-  final response = await http.Response.fromStream(streamedResponse);
-
-  return _handleResponse(response);
-}
-
-  /// Ganti updateProfile agar pakai POST
-  Future<dynamic> updateProfile(Map<String, dynamic> data,
-      {Map<String, String>? headers}) {
+  /// POST /profile/update untuk update teks (username, nama_lengkap)
+  Future<dynamic> updateProfile(
+    Map<String, dynamic> data, {
+    Map<String, String>? headers,
+  }) async {
     return postData("profile/update", data, headers: headers);
+  }
+
+   /// Hapus foto profil via API
+  Future<dynamic> deleteProfileImage({
+    required String token,
+    required String uid,
+  }) async {
+    final uri = Uri.parse("$baseUrl/profile/delete-image");
+    final response = await http.post(
+      uri,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode({"uid": uid}),
+    );
+    return _handleResponse(response);
   }
 
   dynamic _handleResponse(http.Response response) {
@@ -72,7 +100,9 @@ Future<dynamic> uploadProfileImage({
 class ApiException implements Exception {
   final int statusCode;
   final String message;
+
   ApiException(this.statusCode, this.message);
+
   @override
   String toString() => "ApiException: $statusCode – $message";
 }
