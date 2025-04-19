@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
-import 'home_popular_screen.dart';
-import 'home_latest_screen.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/home_berita_screen.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/home_untuk_anda_screen.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -14,7 +15,7 @@ class HomeScreen extends StatelessWidget {
         child: Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.background,
             title: const Text(
               'MediaExplant',
               style: TextStyle(
@@ -45,8 +46,8 @@ class HomeScreen extends StatelessWidget {
           ),
           body: const TabBarView(
             children: [
-              HomeLatestScreen(),
-              HomePopularScreen(),
+              HomeUntukAndaScreen(),
+              HomeBeritaScreen(),
             ],
           ),
         ),

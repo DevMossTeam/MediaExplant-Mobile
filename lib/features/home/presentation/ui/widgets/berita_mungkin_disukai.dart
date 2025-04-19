@@ -130,7 +130,7 @@ class BeritaMungkinDisukai extends StatelessWidget {
                 },
                 splashColor: Colors.black.withAlpha(50),
                 highlightColor: Colors.white.withAlpha(100),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(5),
               ),
             ),
           ),

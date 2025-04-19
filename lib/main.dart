@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -110,43 +111,50 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: SizedBox(
-        height: 75,
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: AppColors.background,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: Colors.white,
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(
-                _currentIndex == 0 ? Icons.home : Icons.home_outlined,
-                color: AppColors.primary,
+    // mengatur warna status bar
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: AppColors.background,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        body: _pages[_currentIndex],
+        bottomNavigationBar: SizedBox(
+          height: 75,
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.white,
+            selectedItemColor: AppColors.primary,
+            unselectedItemColor: Colors.white,
+            currentIndex: _currentIndex,
+            onTap: (index) => setState(() => _currentIndex = index),
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(
+                  _currentIndex == 0 ? Icons.home : Icons.home_outlined,
+                  color: AppColors.primary,
+                ),
+                label: '',
               ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.search,
-                color: AppColors.primary,
-                size: _currentIndex == 1 ? 30 : 24,
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.search,
+                  color: AppColors.primary,
+                  size: _currentIndex == 1 ? 30 : 24,
+                ),
+                label: '',
               ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                _currentIndex == 2 ? Icons.person : Icons.person_outline,
-                color: AppColors.primary,
+              BottomNavigationBarItem(
+                icon: Icon(
+                  _currentIndex == 2 ? Icons.person : Icons.person_outline,
+                  color: AppColors.primary,
+                ),
+                label: '',
               ),
-              label: '',
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

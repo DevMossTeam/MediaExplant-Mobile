@@ -14,16 +14,17 @@ class BeritaTerkiniItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final berita = Provider.of<Berita>(context);
-    final bookmarkProvider = Provider.of<BookmarkProvider>(context, listen: false);
+    final bookmarkProvider =
+        Provider.of<BookmarkProvider>(context, listen: false);
     return SizedBox(
-      height: 250,
+      height: 280,
       width: double.infinity,
       child: Center(
         child: Stack(
           children: [
             Card(
               color: Colors.amber,
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5)),
               child: ClipRRect(
@@ -50,13 +51,13 @@ class BeritaTerkiniItem extends StatelessWidget {
 
             // konten
             Positioned(
-              bottom: 0,
+              bottom: 10,
               left: 0,
               right: 0,
               child: Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Container(
-                  height: 200,
+                  height: 170,
                   decoration: const BoxDecoration(
                     borderRadius:
                         BorderRadius.vertical(bottom: Radius.circular(5)),
@@ -67,7 +68,7 @@ class BeritaTerkiniItem extends StatelessWidget {
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -87,7 +88,6 @@ class BeritaTerkiniItem extends StatelessWidget {
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 5),
                       ],
                     ),
                   ),
@@ -95,7 +95,7 @@ class BeritaTerkiniItem extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(15),
               child: Positioned.fill(
                 child: Material(
                   color: Colors.transparent, // Hindari warna latar belakang
@@ -138,7 +138,7 @@ class BeritaTerkiniItem extends StatelessWidget {
                     },
                     splashColor: Colors.black.withAlpha(100),
                     highlightColor: Colors.white.withAlpha(100),
-                    borderRadius: BorderRadius.circular(15), // Warna highlight
+                    borderRadius: BorderRadius.circular(5), // Warna highlight
                   ),
                 ),
               ),

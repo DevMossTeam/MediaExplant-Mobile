@@ -18,75 +18,70 @@ class KomentarTerbanyakItem extends StatelessWidget {
           // margin: const EdgeInsets.symmetric(vertical: 2),
           child: Stack(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: Row(
-                  // crossAxisAlignment: CrossAxisAlignment.center,
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Stack(
-                      children: [
-                        Icon(
-                          Icons.messenger,
-                          color: AppColors.primary,
-                          size: 100,
+              Row(
+                children: [
+                  const Stack(
+                    children: [
+                      Icon(
+                        Icons.messenger,
+                        color: AppColors.primary,
+                        size: 100,
+                      ),
+                      Positioned.fill(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "843",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "Komentar",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            )
+                          ],
                         ),
-                        Positioned.fill(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "843",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "Komentar",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              )
-                            ],
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(width: 10),
+
+                  // Judul & Tanggal
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          berita.judul,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "${berita.tanggalDibuat} yang lalu",
+                          style:
+                              const TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ],
                     ),
-
-                    const SizedBox(width: 10),
-
-                    // Judul & Tanggal
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            berita.judul,
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "${berita.tanggalDibuat} yang lalu",
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // const SizedBox(
-                    //   width: 50,
-                    // )
-                  ],
-                ),
+                  ),
+                  // const SizedBox(
+                  //   width: 50,
+                  // )
+                ],
               ),
 
               // InkWell di atas semua elemen
