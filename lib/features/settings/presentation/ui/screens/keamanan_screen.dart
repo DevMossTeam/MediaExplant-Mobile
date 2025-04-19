@@ -3,6 +3,8 @@ import 'package:mediaexplant/core/constants/app_colors.dart'; // Ganti dengan pa
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/settings/logic/keamanan_viewmodel.dart'; // import ViewModel
+import 'dart:async';
+import 'package:fluttertoast/fluttertoast.dart'; // <-- import fluttertoast
 
 class KeamananScreen extends StatefulWidget {
   const KeamananScreen({Key? key}) : super(key: key);
@@ -302,7 +304,6 @@ Future<void> _sendOtp() async {
   }
 }
 
-/// Bottom sheet untuk Ganti Email.
 class ChangeEmailSheet extends StatefulWidget {
   const ChangeEmailSheet({Key? key}) : super(key: key);
 
@@ -311,42 +312,136 @@ class ChangeEmailSheet extends StatefulWidget {
 }
 
 class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
-  bool _loading = false;
+  final TextEditingController _otpController = TextEditingController();
+  final FocusNode _otpFocusNode = FocusNode();
+  bool _loadingSend = false;
+  bool _loadingVerify = false;
+  bool _otpSent = false;
+  int _secondsLeft = 0;
+  Timer? _timer;
 
-/// ChangeEmailSheet
-Future<void> _sendVerification() async {
-  setState(() => _loading = true);
-
-  final vm = context.read<KeamananViewModel>();
-  final ok = await vm.sendChangeEmailOtp();
-
-  // Matikan loading dulu
-  if (mounted) setState(() => _loading = false);
-
-  if (ok) {
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(vm.successMessage ?? "OTP telah dikirim")),
-    );
-    Navigator.pushNamed(context, '/change_email_verify_email');
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(vm.errorMessage ?? "Gagal mengirim OTP")),
-    );
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _otpController.dispose();
+    _otpFocusNode.dispose();
+    super.dispose();
   }
-}
+
+  void _startTimer() {
+    _secondsLeft = 60;
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_secondsLeft <= 1) {
+        timer.cancel();
+      }
+      setState(() => _secondsLeft--);
+    });
+  }
+
+  String _obfuscateEmail(String email) {
+    final parts = email.split('@');
+    if (parts.length != 2) return email;
+    final name = parts[0];
+    final domain = parts[1];
+    if (name.length <= 2) {
+      return '${name[0]}***@$domain';
+    } else {
+      return '${name[0]}***${name[name.length - 1]}@$domain';
+    }
+  }
+
+  Future<void> _sendVerification() async {
+    setState(() => _loadingSend = true);
+    final vm = context.read<KeamananViewModel>();
+    final ok = await vm.sendChangeEmailOtp();
+
+    if (mounted) {
+      setState(() {
+        _loadingSend = false;
+        if (ok) {
+          _otpSent = true;
+          _startTimer();
+        }
+      });
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (ok) {
+          final email = vm.sentOtpEmail ?? '-';
+          final displayedEmail = _obfuscateEmail(email);
+          Fluttertoast.showToast(
+            msg: 'Email sudah terkirim ke $displayedEmail',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black87,
+            textColor: Colors.white,
+            fontSize: 14,
+          );
+          _otpFocusNode.requestFocus();
+        } else {
+          Fluttertoast.showToast(
+            msg: vm.errorMessage ?? "Gagal mengirim OTP",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black87,
+            textColor: Colors.white,
+            fontSize: 14,
+          );
+        }
+      });
+    }
+  }
+
+  Future<void> _verifyOtp() async {
+    final otp = _otpController.text.trim();
+    if (otp.isEmpty) {
+      Fluttertoast.showToast(
+        msg: "Masukkan kode OTP terlebih dahulu",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      return;
+    }
+
+    setState(() => _loadingVerify = true);
+    final vm = context.read<KeamananViewModel>();
+    final ok = await vm.verifyChangeEmailOtp(otp);
+
+    if (mounted) {
+      setState(() => _loadingVerify = false);
+
+      if (ok) {
+        Navigator.pop(context);
+        Fluttertoast.showToast(
+          msg: vm.successMessage ?? "Verifikasi berhasil",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+        );
+        Navigator.pushNamed(context, '/change_email_form');
+      } else {
+        Fluttertoast.showToast(
+          msg: vm.errorMessage ?? "Kode OTP tidak valid",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom, top: 16, left: 16, right: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        top: 16,
+        left: 16,
+        right: 16,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
-            "Ganti Email",
+            "Verifikasi Email",
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -354,56 +449,82 @@ Future<void> _sendVerification() async {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            "Apakah Anda yakin ingin mengirim kode verifikasi ke email Anda?",
-            style: TextStyle(fontSize: 16, color: Colors.black87),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
           Row(
             children: [
               Expanded(
-                child: ElevatedButton(
-                  onPressed: _loading ? null : () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[300],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                child: TextField(
+                controller: _otpController,
+                focusNode: _otpFocusNode,
+                keyboardType: TextInputType.number,
+                enabled: _otpSent, // ✅ input hanya aktif jika OTP sudah dikirim
+                decoration: InputDecoration(
+                  labelText: "Kode OTP",
+                  border: const OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.primary),
                   ),
-                  child: const Text(
-                    "Batal",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  hintText: _otpSent ? null : 'Kirim OTP terlebih dahulu',
                 ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _loading ? null : _sendVerification,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: _loading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          "Kirim Kode",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+              ),
+              const SizedBox(width: 12),
+              _loadingSend
+                  ? const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : GestureDetector(
+                      onTap: _secondsLeft > 0 ? null : _sendVerification,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: _otpSent && _secondsLeft > 0
+                                ? Colors.grey
+                                : AppColors.primary,
                           ),
                         ),
+                        child: Text(
+                          _otpSent && _secondsLeft > 0
+                              ? '$_secondsLeft'
+                              : 'Kirim',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: _otpSent && _secondsLeft > 0
+                                ? Colors.grey
+                                : AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: (_loadingVerify || !_otpSent) ? null : _verifyOtp,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
-            ],
+              child: _loadingVerify
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text(
+                      "Verifikasi",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+            ),
           ),
           const SizedBox(height: 16),
         ],

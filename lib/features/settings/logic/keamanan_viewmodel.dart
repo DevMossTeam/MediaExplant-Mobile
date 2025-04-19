@@ -11,10 +11,12 @@ class KeamananViewModel extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   String? _successMessage;
+  String? _sentOtpEmail;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String? get successMessage => _successMessage;
+  String? get sentOtpEmail => _sentOtpEmail;
 
   void _setLoading(bool v) {
     _isLoading = v;
@@ -33,18 +35,17 @@ class KeamananViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// reset pesan setelah ditampilkan
   void clearMessages() {
     _errorMessage = null;
     _successMessage = null;
     notifyListeners();
   }
 
-  /// Ganti password
   Future<bool> changePassword({
     required String currentPassword,
     required String newPassword,
   }) async {
+    clearMessages();
     _setLoading(true);
     try {
       final data = await AuthStorage.getUserData();
@@ -71,8 +72,8 @@ class KeamananViewModel extends ChangeNotifier {
     return false;
   }
 
-  /// Kirim OTP ganti email
   Future<bool> sendChangeEmailOtp() async {
+    clearMessages();
     _setLoading(true);
     try {
       final data = await AuthStorage.getUserData();
@@ -83,6 +84,7 @@ class KeamananViewModel extends ChangeNotifier {
         headers: {'Authorization': 'Bearer $token'},
       );
       if (resp['success'] == true) {
+        _sentOtpEmail = data['email']; // ✅ set email yang dipakai kirim OTP
         _setSuccess(resp['message'] ?? 'OTP berhasil dikirim.');
         return true;
       } else {
@@ -96,12 +98,37 @@ class KeamananViewModel extends ChangeNotifier {
     return false;
   }
 
-  /// Kirim OTP reset password
+  Future<bool> verifyChangeEmailOtp(String otp) async {
+    clearMessages();
+    _setLoading(true);
+    try {
+      final data = await AuthStorage.getUserData();
+      final token = data['token'] ?? '';
+      final resp = await _apiClient.postData(
+        'email/verify-change-otp',
+        {'otp': otp},
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (resp['success'] == true) {
+        _setSuccess(resp['message'] ?? 'Verifikasi berhasil.');
+        return true;
+      } else {
+        _setError(resp['message'] ?? 'OTP tidak valid.');
+      }
+    } catch (e) {
+      _setError(e.toString());
+    } finally {
+      _setLoading(false);
+    }
+    return false;
+  }
+
   Future<bool> sendResetPasswordOtp(String email) async {
+    clearMessages();
     _setLoading(true);
     try {
       final resp = await _apiClient.postData(
-        'password/send-reset-otp',      // <<–– perbaikan endpoint
+        'password/send-reset-otp',
         {'email': email},
       );
       if (resp['success'] == true) {
