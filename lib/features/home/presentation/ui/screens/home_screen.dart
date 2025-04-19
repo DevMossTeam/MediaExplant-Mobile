@@ -8,33 +8,47 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: const Text(
-            'MediaExplant',
-            style: TextStyle(fontWeight: FontWeight.bold, color:AppColors.primary,),
-          ),
-          bottom: const TabBar(
-            labelColor: AppColors.primary,
-            unselectedLabelColor:Colors.grey,
-            indicatorColor: AppColors.primary,
-            tabs: [
-              Tab(
-                text: 'Terbaru',
+    return SafeArea(
+      child: DefaultTabController(
+        length: 4,
+        child: Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            title: const Text(
+              'MediaExplant',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
               ),
-              Tab(text: 'Popular'),
+            ),
+            bottom: const TabBar(
+              labelColor: AppColors.primary,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: AppColors.primary,
+              isScrollable: false,
+              labelStyle: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+              tabs: [
+                Tab(
+                  text: 'Untuk Anda',
+                ),
+                Tab(text: 'Berita'),
+                Tab(
+                  text: 'Produk',
+                ),
+                Tab(text: 'Karya'),
+              ],
+            ),
+          ),
+          body: const TabBarView(
+            children: [
+              HomeLatestScreen(),
+              HomePopularScreen(),
             ],
           ),
-        ),
-        body: const TabBarView(
-          children: [
-            HomeLatestScreen(),
-            HomePopularScreen(),
-          ],
         ),
       ),
     );
