@@ -16,7 +16,6 @@ import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_scree
 import 'package:mediaexplant/features/auth/presentation/ui/otp/sign_up_verify_email.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_up_input_screen.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/otp/forgot_password_verify_email.dart';
-import 'package:mediaexplant/features/auth/presentation/ui/otp/change_email_verify_email.dart';
 import 'package:mediaexplant/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:mediaexplant/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:mediaexplant/features/auth/presentation/logic/sign_in_viewmodel.dart';
@@ -164,9 +163,6 @@ class AppRouter {
       case '/forgot_password_verify_email':
         return MaterialPageRoute(
             builder: (_) => const ForgotPasswordVerifyEmailScreen());
-      case '/change_email_verify_email':
-        return MaterialPageRoute(
-            builder: (_) => const ChangeEmailVerifyEmailScreen());
       default:
         return _errorRoute(settings.name);
     }

@@ -354,7 +354,7 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
   Future<void> _sendVerification() async {
     setState(() => _loadingSend = true);
     final vm = context.read<KeamananViewModel>();
-    final ok = await vm.sendChangeEmailOtp();
+    final ok = await vm.sendChangeEmailOtp(); // Kirim OTP email lama
 
     if (mounted) {
       setState(() {
@@ -368,9 +368,9 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (ok) {
           final email = vm.sentOtpEmail ?? '-';
-          final displayedEmail = _obfuscateEmail(email);
+          final displayed = _obfuscateEmail(email);
           Fluttertoast.showToast(
-            msg: 'Email sudah terkirim ke $displayedEmail',
+            msg: 'OTP dikirim ke $displayed',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             backgroundColor: Colors.black87,
@@ -380,12 +380,9 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
           _otpFocusNode.requestFocus();
         } else {
           Fluttertoast.showToast(
-            msg: vm.errorMessage ?? "Gagal mengirim OTP",
+            msg: vm.errorMessage ?? 'Gagal kirim OTP',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.black87,
-            textColor: Colors.white,
-            fontSize: 14,
           );
         }
       });
@@ -396,7 +393,7 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
     final otp = _otpController.text.trim();
     if (otp.isEmpty) {
       Fluttertoast.showToast(
-        msg: "Masukkan kode OTP terlebih dahulu",
+        msg: 'Masukkan kode OTP terlebih dahulu',
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
       );
@@ -405,7 +402,8 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
 
     setState(() => _loadingVerify = true);
     final vm = context.read<KeamananViewModel>();
-    final ok = await vm.verifyChangeEmailOtp(otp);
+    // Panggil verifyOldEmailOtp, bukan verifyChangeEmailOtp
+    final ok = await vm.verifyOldEmailOtp(otp);
 
     if (mounted) {
       setState(() => _loadingVerify = false);
@@ -413,14 +411,15 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
       if (ok) {
         Navigator.pop(context);
         Fluttertoast.showToast(
-          msg: vm.successMessage ?? "Verifikasi berhasil",
+          msg: vm.successMessage ?? 'Email lama terverifikasi',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
         );
+        // Lanjut ke step 2: input email baru
         Navigator.pushNamed(context, '/change_email_form');
       } else {
         Fluttertoast.showToast(
-          msg: vm.errorMessage ?? "Kode OTP tidak valid",
+          msg: vm.errorMessage ?? 'OTP tidak valid',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
         );
@@ -433,15 +432,13 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
-        top: 16,
-        left: 16,
-        right: 16,
+        top: 16, left: 16, right: 16,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
-            "Verifikasi Email",
+            'Verifikasi Email Lama',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -453,25 +450,24 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
             children: [
               Expanded(
                 child: TextField(
-                controller: _otpController,
-                focusNode: _otpFocusNode,
-                keyboardType: TextInputType.number,
-                enabled: _otpSent, // ✅ input hanya aktif jika OTP sudah dikirim
-                decoration: InputDecoration(
-                  labelText: "Kode OTP",
-                  border: const OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.primary),
+                  controller: _otpController,
+                  focusNode: _otpFocusNode,
+                  keyboardType: TextInputType.number,
+                  enabled: _otpSent,
+                  decoration: InputDecoration(
+                    labelText: 'Kode OTP',
+                    border: const OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: AppColors.primary),
+                    ),
+                    hintText: _otpSent ? null : 'Kirim OTP terlebih dahulu',
                   ),
-                  hintText: _otpSent ? null : 'Kirim OTP terlebih dahulu',
                 ),
-              ),
               ),
               const SizedBox(width: 12),
               _loadingSend
                   ? const SizedBox(
-                      height: 24,
-                      width: 24,
+                      height: 24, width: 24,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : GestureDetector(
@@ -482,18 +478,18 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: _otpSent && _secondsLeft > 0
+                            color: (_otpSent && _secondsLeft > 0)
                                 ? Colors.grey
                                 : AppColors.primary,
                           ),
                         ),
                         child: Text(
-                          _otpSent && _secondsLeft > 0
+                          (_otpSent && _secondsLeft > 0)
                               ? '$_secondsLeft'
                               : 'Kirim',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: _otpSent && _secondsLeft > 0
+                            color: (_otpSent && _secondsLeft > 0)
                                 ? Colors.grey
                                 : AppColors.primary,
                           ),
@@ -517,7 +513,7 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
               child: _loadingVerify
                   ? const CircularProgressIndicator(color: Colors.white)
                   : const Text(
-                      "Verifikasi",
+                      'Verifikasi',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white,
@@ -532,6 +528,7 @@ class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
     );
   }
 }
+
 
 /// Bottom sheet untuk Ganti Password.
 class ChangePasswordSheet extends StatefulWidget {
