@@ -25,8 +25,10 @@ import 'package:mediaexplant/features/auth/domain/usecases/register_step1.dart';
 import 'package:mediaexplant/features/auth/domain/usecases/verify_otp.dart';
 import 'package:mediaexplant/features/auth/domain/usecases/register_step3.dart';
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
+import 'package:mediaexplant/features/settings/logic/keamanan_viewmodel.dart';
 import 'package:mediaexplant/features/welcome/ui/welcome_screen.dart';
 import 'package:mediaexplant/features/welcome/ui/splash_screen.dart';
+import 'package:mediaexplant/features/auth/presentation/ui/otp/change_email_form_screen.dart';
 import 'package:mediaexplant/main.dart';
 
 class AppRouter {
@@ -70,6 +72,13 @@ class AppRouter {
             child: const UmumScreen(),
           ),
         );
+        case '/change_email_form':
+  return _slideLeftRoute(
+    ChangeNotifierProvider<KeamananViewModel>(
+      create: (ctx) => KeamananViewModel(apiClient: ctx.read<ApiClient>()),
+      child: const ChangeEmailFormScreen(),
+    ),
+  );
       case '/notifications':
         return MaterialPageRoute(builder: (_) => const NotificationsScreen());
       case '/login':
