@@ -4,123 +4,141 @@ import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/settings/logic/keamanan_viewmodel.dart'; // import ViewModel
 
-class KeamananScreen extends StatelessWidget {
-  const KeamananScreen({super.key});
+class KeamananScreen extends StatefulWidget {
+  const KeamananScreen({Key? key}) : super(key: key);
 
+  @override
+  State<KeamananScreen> createState() => _KeamananScreenState();
+}
+
+class _KeamananScreenState extends State<KeamananScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<KeamananViewModel>(
       create: (ctx) => KeamananViewModel(apiClient: ctx.read<ApiClient>()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Keamanan'),
-          backgroundColor: AppColors.primary,
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Judul Halaman
-              const Text(
-                'Keamanan Akun Anda',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.text,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Kelola pengaturan keamanan untuk melindungi akun Anda.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.text,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Daftar opsi keamanan
-              _buildSecurityOption(
-                context,
-                icon: Icons.lock_outline,
-                title: 'Ganti Password',
-                description:
-                    'Ubah password untuk meningkatkan keamanan akun Anda.',
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(24)),
+      child: Consumer<KeamananViewModel>(
+        builder: (ctx, vm, _) {
+          // Optional: reset messages setiap kali rebuild body
+          if (vm.errorMessage != null || vm.successMessage != null) {
+            // tampilkan SnackBar kalau perlu
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final msg = vm.errorMessage ?? vm.successMessage!;
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(content: Text(msg)),
+              );
+              vm.clearMessages();
+            });
+          }
+
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Keamanan'),
+              backgroundColor: AppColors.primary,
+            ),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Keamanan Akun Anda',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.text,
                     ),
-                    builder: (context) => const ChangePasswordSheet(),
-                  );
-                },
-              ),
-              _buildSecurityOption(
-                context,
-                icon: Icons.email_outlined,
-                title: 'Ganti Email',
-                description:
-                    'Ubah alamat email yang terkait dengan akun Anda.',
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(24)),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Kelola pengaturan keamanan untuk melindungi akun Anda.',
+                    style: TextStyle(fontSize: 16, color: AppColors.text),
+                  ),
+                  const SizedBox(height: 16),
+
+                  _buildSecurityOption(
+                    ctx,
+                    icon: Icons.lock_outline,
+                    title: 'Ganti Password',
+                    description: 'Ubah password untuk meningkatkan keamanan akun Anda.',
+                    onTap: () {
+                      final vmInstance = ctx.read<KeamananViewModel>();
+                      showModalBottomSheet(
+                        context: ctx,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                        ),
+                        builder: (_) => ChangeNotifierProvider.value(
+                          value: vmInstance,
+                          child: const ChangePasswordSheet(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  _buildSecurityOption(
+                    ctx,
+                    icon: Icons.email_outlined,
+                    title: 'Ganti Email',
+                    description: 'Ubah alamat email yang terkait dengan akun Anda.',
+                    onTap: () {
+                      final vmInstance = ctx.read<KeamananViewModel>();
+                      showModalBottomSheet(
+                        context: ctx,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                        ),
+                        builder: (_) => ChangeNotifierProvider.value(
+                          value: vmInstance,
+                          child: const ChangeEmailSheet(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  _buildSecurityOption(
+                    ctx,
+                    icon: Icons.help_outline,
+                    title: 'Lupa Password',
+                    description: 'Reset password jika Anda lupa password akun Anda.',
+                    onTap: () {
+                      final vmInstance = ctx.read<KeamananViewModel>();
+                      showModalBottomSheet(
+                        context: ctx,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                        ),
+                        builder: (_) => ChangeNotifierProvider.value(
+                          value: vmInstance,
+                          child: const ForgotPasswordSheet(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Tips Keamanan',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.text,
                     ),
-                    builder: (context) => const ChangeEmailSheet(),
-                  );
-                },
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    '• Jangan bagikan informasi login Anda kepada siapa pun.\n'
+                    '• Gunakan password yang kuat dan unik untuk setiap akun.\n'
+                    '• Perbarui pengaturan keamanan secara berkala.',
+                    style: TextStyle(fontSize: 16, height: 1.5, color: AppColors.text),
+                  ),
+                ],
               ),
-              _buildSecurityOption(
-                context,
-                icon: Icons.help_outline,
-                title: 'Lupa Password',
-                description:
-                    'Reset password jika Anda lupa password akun Anda.',
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(24)),
-                    ),
-                    builder: (context) => const ForgotPasswordSheet(),
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              // Tips Keamanan
-              const Text(
-                'Tips Keamanan',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.text,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '• Jangan bagikan informasi login Anda kepada siapa pun.\n'
-                '• Gunakan password yang kuat dan unik untuk setiap akun.\n'
-                '• Perbarui pengaturan keamanan secara berkala.',
-                style: TextStyle(
-                  fontSize: 16,
-                  height: 1.5,
-                  color: AppColors.text,
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -138,31 +156,16 @@ class KeamananScreen extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         onTap: onTap,
-        leading: Icon(
-          icon,
-          color: AppColors.primary,
-          size: 28,
-        ),
+        leading: Icon(icon, color: AppColors.primary, size: 28),
         title: Text(
           title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            color: AppColors.text,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.text),
         ),
         subtitle: Text(
           description,
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.text.withOpacity(0.8),
-          ),
+          style: TextStyle(fontSize: 14, color: AppColors.text.withOpacity(0.8)),
         ),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          size: 16,
-          color: AppColors.text.withOpacity(0.6),
-        ),
+        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.text.withOpacity(0.6)),
       ),
     );
   }
@@ -197,25 +200,30 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
     super.dispose();
   }
 
-  Future<void> _sendOtp() async {
-    if (!_forgotFormKey.currentState!.validate()) return;
-    setState(() => _loading = true);
-    final vm = context.read<KeamananViewModel>();
-    final email = _forgotEmailController.text.trim();
-    final ok = await vm.sendResetPasswordOtp(email);
-    if (ok) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(vm.successMessage ?? "OTP sent to $email")),
-      );
-      Navigator.pushNamed(context, '/forgot_password_verify_email');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(vm.errorMessage ?? "Gagal mengirim OTP")),
-      );
-    }
-    if (mounted) setState(() => _loading = false);
+/// ForgotPasswordSheet
+Future<void> _sendOtp() async {
+  if (!_forgotFormKey.currentState!.validate()) return;
+  setState(() => _loading = true);
+
+  final vm = context.read<KeamananViewModel>();
+  final email = _forgotEmailController.text.trim();
+  final ok = await vm.sendResetPasswordOtp(email);
+
+  // Matikan loading dulu
+  if (mounted) setState(() => _loading = false);
+
+  if (ok) {
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(vm.successMessage ?? "OTP sent to $email")),
+    );
+    Navigator.pushNamed(context, '/forgot_password_verify_email');
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(vm.errorMessage ?? "Gagal mengirim OTP")),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -305,23 +313,28 @@ class ChangeEmailSheet extends StatefulWidget {
 class _ChangeEmailSheetState extends State<ChangeEmailSheet> {
   bool _loading = false;
 
-  Future<void> _sendVerification() async {
-    setState(() => _loading = true);
-    final vm = context.read<KeamananViewModel>();
-    final ok = await vm.sendChangeEmailOtp();
-    if (ok) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(vm.successMessage ?? "OTP telah dikirim")),
-      );
-      Navigator.pushNamed(context, '/change_email_verify_email');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(vm.errorMessage ?? "Gagal mengirim OTP")),
-      );
-    }
-    if (mounted) setState(() => _loading = false);
+/// ChangeEmailSheet
+Future<void> _sendVerification() async {
+  setState(() => _loading = true);
+
+  final vm = context.read<KeamananViewModel>();
+  final ok = await vm.sendChangeEmailOtp();
+
+  // Matikan loading dulu
+  if (mounted) setState(() => _loading = false);
+
+  if (ok) {
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(vm.successMessage ?? "OTP telah dikirim")),
+    );
+    Navigator.pushNamed(context, '/change_email_verify_email');
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(vm.errorMessage ?? "Gagal mengirim OTP")),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -438,26 +451,31 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
     super.dispose();
   }
 
-  Future<void> _changePassword() async {
-    if (!_changeFormKey.currentState!.validate()) return;
-    setState(() => _loading = true);
-    final vm = context.read<KeamananViewModel>();
-    final ok = await vm.changePassword(
-      currentPassword: _currentPasswordController.text.trim(),
-      newPassword: _newPasswordController.text.trim(),
+/// ChangePasswordSheet
+Future<void> _changePassword() async {
+  if (!_changeFormKey.currentState!.validate()) return;
+  setState(() => _loading = true);
+
+  final vm = context.read<KeamananViewModel>();
+  final ok = await vm.changePassword(
+    currentPassword: _currentPasswordController.text.trim(),
+    newPassword: _newPasswordController.text.trim(),
+  );
+
+  // Matikan loading dulu
+  if (mounted) setState(() => _loading = false);
+
+  if (ok) {
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(vm.successMessage ?? "Password berhasil diubah")),
     );
-    if (ok) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(vm.successMessage ?? "Password berhasil diubah")),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(vm.errorMessage ?? "Gagal mengubah password")),
-      );
-    }
-    if (mounted) setState(() => _loading = false);
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(vm.errorMessage ?? "Gagal mengubah password")),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
