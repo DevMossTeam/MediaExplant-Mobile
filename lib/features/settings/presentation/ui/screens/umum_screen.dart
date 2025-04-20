@@ -483,7 +483,6 @@ class ProfileImagePreviewScreen extends StatelessWidget {
   }
 }
 
-/// Generic widget for editing a field (e.g., Full Name or Username).
 class EditFieldScreen extends StatefulWidget {
   final String title;
   final String initialValue;
@@ -504,19 +503,20 @@ class EditFieldScreen extends StatefulWidget {
   State<EditFieldScreen> createState() => _EditFieldScreenState();
 }
 
-class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProviderStateMixin {
+class _EditFieldScreenState extends State<EditFieldScreen>
+    with SingleTickerProviderStateMixin {
   late TextEditingController _controller;
   final _formKey = GlobalKey<FormState>();
+
+  // Animasi fade
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.initialValue)
-      ..addListener(() {
-        setState(() {});
-      });
+    _controller = TextEditingController(text: widget.initialValue);
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -526,6 +526,22 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
       curve: Curves.easeIn,
     );
     _animationController.forward();
+
+    // Setelah frame pertama, attach listener:
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final umumVM = Provider.of<UmumViewModel>(context, listen: false);
+      if (widget.fieldLabel == "Username") {
+        // Mulai cek sekali untuk initialValue
+        umumVM.onUsernameChanged(_controller.text);
+      }
+      _controller.addListener(() {
+        // setiap text berubah, update state (untuk suffixIcon)
+        setState(() {});
+        if (widget.fieldLabel == "Username") {
+          umumVM.onUsernameChanged(_controller.text);
+        }
+      });
+    });
   }
 
   @override
@@ -535,7 +551,6 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
     super.dispose();
   }
 
-  /// Convert text to Title Case.
   String _toTitleCase(String text) {
     if (text.isEmpty) return text;
     return text.split(' ').map((word) {
@@ -544,7 +559,6 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
     }).join(' ');
   }
 
-  /// Save the field after validation and fade out animation.
   void _save() {
     if (_formKey.currentState!.validate()) {
       String resultText = _controller.text;
@@ -559,13 +573,22 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
     }
   }
 
-  /// Cancel editing and return.
   void _cancel() {
     Navigator.pop(context, null);
   }
 
   @override
   Widget build(BuildContext context) {
+    final umumVM = Provider.of<UmumViewModel>(context);
+    // Cek form valid
+    final isFormValid = _formKey.currentState?.validate() ?? false;
+    // Tombol Simpan aktif jika:
+    // - form valid
+    // - (bila username) sedang tidak mengecek & tersedia
+    final canSave = isFormValid &&
+        (widget.fieldLabel != "Username" ||
+            (!umumVM.isCheckingUsername && umumVM.isUsernameAvailable));
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -573,17 +596,23 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
         elevation: 0.5,
         leading: TextButton(
           onPressed: _cancel,
-          child: const Text("Batal", style: TextStyle(color: AppColors.text, fontSize: 13)),
+          child:
+              const Text("Batal", style: TextStyle(color: AppColors.text, fontSize: 13)),
         ),
         title: Text(
           widget.title,
-          style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(
+              color: AppColors.text, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         centerTitle: true,
         actions: [
           TextButton(
-            onPressed: _save,
-            child: const Text("Simpan", style: TextStyle(color: AppColors.text, fontSize: 13, fontWeight: FontWeight.bold)),
+            onPressed: canSave ? _save : null,
+            child: const Text("Simpan",
+                style: TextStyle(
+                    color: AppColors.text,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -596,7 +625,8 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
             child: ListView(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12, horizontal: 12),
                   decoration: BoxDecoration(
                     color: AppColors.background,
                     borderRadius: BorderRadius.circular(12),
@@ -614,11 +644,20 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
                     controller: _controller,
                     autofocus: true,
                     cursorColor: AppColors.primary,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.text),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.text,
+                    ),
                     maxLength: 25,
-                    buildCounter: (BuildContext context, {int? currentLength, int? maxLength, bool? isFocused}) {
+                    buildCounter: (
+                      BuildContext context, {
+                      required int currentLength,
+                      int? maxLength,
+                      required bool isFocused,
+                    }) {
                       return Text(
-                        '${currentLength ?? 0}/${maxLength ?? 25}',
+                        '$currentLength/${maxLength ?? 25}',
                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                       );
                     },
@@ -626,19 +665,48 @@ class _EditFieldScreenState extends State<EditFieldScreen> with SingleTickerProv
                       hintText: widget.fieldLabel,
                       hintStyle: const TextStyle(color: Colors.grey),
                       border: InputBorder.none,
-                      suffixIcon: _controller.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear, color: Colors.grey),
-                              onPressed: () => _controller.clear(),
-                            )
-                          : null,
+
+                      // SUFFIX ICON:
+                      suffixIcon: widget.fieldLabel == "Username"
+                          ? _controller.text.isEmpty
+                              ? null
+                              : (umumVM.isCheckingUsername
+                                  ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2),
+                                    )
+                                  : (umumVM.isUsernameAvailable
+                                      ? const Icon(Icons.check,
+                                          color: Colors.green)
+                                      : const Icon(Icons.close,
+                                          color: Colors.red)))
+                          : (_controller.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear,
+                                      color: Colors.grey),
+                                  onPressed: () => _controller.clear(),
+                                )
+                              : null),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Tidak boleh kosong";
                       }
+                      // tambahkan validasi custom jika ada
                       if (widget.validator != null) {
-                        return widget.validator!(value);
+                        final v = widget.validator!(value);
+                        if (v != null) return v;
+                      }
+                      // khusus username: cek ketersediaan
+                      if (widget.fieldLabel == "Username") {
+                        if (umumVM.isCheckingUsername) {
+                          return "Sedang memeriksa...";
+                        }
+                        if (!umumVM.isUsernameAvailable) {
+                          return "Username sudah terpakai";
+                        }
                       }
                       return null;
                     },

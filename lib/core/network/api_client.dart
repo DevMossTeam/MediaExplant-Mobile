@@ -7,16 +7,25 @@ class ApiClient {
 
   ApiClient({this.baseUrl = "http://192.168.1.21:8000/api"});
 
-  /// Generic GET
+  /// Generic GET, sekarang bisa pakai queryParameters
   Future<Map<String, dynamic>> getData(
     String endpoint, {
     Map<String, String>? headers,
+    Map<String, dynamic>? queryParameters,
   }) async {
-    final uri = Uri.parse("$baseUrl/$endpoint");
-    final resp = await http.get(uri, headers: {
-      "Accept": "application/json",
-      ...?headers,
-    });
+    // Buat Uri dengan queryParameters bila ada
+    final uri = Uri.parse("$baseUrl/$endpoint").replace(
+      queryParameters:
+          queryParameters?.map((k, v) => MapEntry(k, v.toString())),
+    );
+
+    final resp = await http.get(
+      uri,
+      headers: {
+        "Accept": "application/json",
+        ...?headers,
+      },
+    );
     return _handleResponse(resp);
   }
 
@@ -42,14 +51,12 @@ class ApiClient {
   /// Upload file multipart (profile image)
   Future<Map<String, dynamic>> uploadProfileImage({
     required String token,
-    required String uid,
     required File imageFile,
   }) async {
     final uri = Uri.parse("$baseUrl/profile/update");
     final req = http.MultipartRequest('POST', uri)
       ..headers['Accept'] = 'application/json'
       ..headers['Authorization'] = 'Bearer $token'
-      ..fields['uid'] = uid
       ..files.add(await http.MultipartFile.fromPath(
         'profile_pic',
         imageFile.path,
@@ -63,8 +70,8 @@ class ApiClient {
   /// Hapus foto profil
   Future<Map<String, dynamic>> deleteProfileImage({
     required String token,
-    required String uid,
   }) async {
+    // endpoint delete-image tidak butuh body selain token
     final uri = Uri.parse("$baseUrl/profile/delete-image");
     final resp = await http.post(
       uri,
@@ -73,7 +80,6 @@ class ApiClient {
         "Content-Type": "application/json",
         "Authorization": "Bearer $token",
       },
-      body: jsonEncode({"uid": uid}),
     );
     return _handleResponse(resp);
   }
@@ -81,9 +87,26 @@ class ApiClient {
   /// update teks pada profile
   Future<Map<String, dynamic>> updateProfile(
     Map<String, dynamic> data, {
-    Map<String, String>? headers,
+    required String token,
   }) async {
-    return postData("profile/update", data, headers: headers);
+    return postData(
+      "profile/update",
+      data,
+      headers: { "Authorization": "Bearer $token" },
+    );
+  }
+
+  /// Cek ketersediaan username sebelum simpan
+  Future<bool> checkUsernameAvailability({
+    required String token,
+    required String username,
+  }) async {
+    final data = await getData(
+      "profile/check-username",
+      headers: { "Authorization": "Bearer $token" },
+      queryParameters: { "nama_pengguna": username },
+    );
+    return data['available'] as bool? ?? false;
   }
 
   /// Handle semua response, parse JSON, lempar ApiException kalau error

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
+import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
@@ -58,6 +59,9 @@ void main() {
         // ✅ Provider untuk HubungiViewModel
         ChangeNotifierProvider<SettingsViewModel>(
           create: (ctx) => SettingsViewModel(apiClient: ctx.read<ApiClient>()),
+        ),
+                ChangeNotifierProvider<UmumViewModel>(
+          create: (ctx) => UmumViewModel(apiClient: ctx.read<ApiClient>()),
         ),
       ],
       child: const MyApp(),
