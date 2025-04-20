@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
+import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
@@ -29,7 +30,7 @@ void main() {
         Provider<ProfileRemoteDataSource>(
           create: (_) => ProfileRemoteDataSource(),
         ),
-        // Provider untuk ProfileRepository
+        // Provider untuk ProfileRepository (menggunakan implementasi ProfileRepositoryImpl)
         Provider<ProfileRepository>(
           create: (ctx) => ProfileRepositoryImpl(
             remoteDataSource: ctx.read<ProfileRemoteDataSource>(),
@@ -39,7 +40,7 @@ void main() {
         Provider<GetProfile>(
           create: (ctx) => GetProfile(ctx.read<ProfileRepository>()),
         ),
-        // Provider untuk ProfileViewModel
+        // Provider global untuk ProfileViewModel, dengan parameter required getProfile.
         ChangeNotifierProvider<ProfileViewModel>(
           create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>())
             ..refreshUserData(),
@@ -50,10 +51,13 @@ void main() {
         ),
         // Provider untuk Bookmark
         ChangeNotifierProvider(create: (ctx) => BookmarkProvider()),
-
         // ✅ Provider untuk HubungiViewModel
         ChangeNotifierProvider<HubungiViewModel>(
           create: (ctx) => HubungiViewModel(apiClient: ctx.read<ApiClient>()),
+        ),
+        // ✅ Provider untuk HubungiViewModel
+        ChangeNotifierProvider<SettingsViewModel>(
+          create: (ctx) => SettingsViewModel(apiClient: ctx.read<ApiClient>()),
         ),
       ],
       child: const MyApp(),
