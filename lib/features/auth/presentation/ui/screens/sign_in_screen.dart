@@ -4,6 +4,7 @@ import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/utils/auth_storage.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
+import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import '../../logic/sign_in_viewmodel.dart';
 
 /// Halaman Sign In dengan background gradient gelap dan card login terang.
@@ -30,47 +31,59 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  Future<void> _signIn() async {
-    if (_formKey.currentState!.validate()) {
-      final signInViewModel = context.read<SignInViewModel>();
+Future<void> _signIn() async {
+  if (_formKey.currentState!.validate()) {
+    final signInViewModel = context.read<SignInViewModel>();
 
-      // Tampilkan SnackBar "Signing in..."
+    // Tampilkan SnackBar "Signing in..."
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Signing in..."),
+        duration: Duration(seconds: 1),
+      ),
+    );
+
+    await signInViewModel.signIn(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+
+    // Hide SnackBar
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+    // Debug: Ambil dan tampilkan data AuthStorage
+    final authData = await AuthStorage.getUserData();
+    debugPrint("AuthStorage Data after signIn: $authData");
+
+    if (signInViewModel.errorMessage != null) {
+      // Tampilkan pesan error jika terjadi kesalahan
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Signing in..."), duration: Duration(seconds: 1)),
+        SnackBar(
+          content: Text(signInViewModel.errorMessage!),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } else if (signInViewModel.authResponse != null) {
+      // 1. Refresh profile data
+      await context.read<ProfileViewModel>().refreshUserData();
+
+      // 2. **Refresh SettingsViewModel** agar SettingsScreen tahu sudah login
+      await context.read<SettingsViewModel>().refreshLoginState();
+
+      // 3. Tampilkan snackbar sukses
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Login berhasil!"),
+          duration: Duration(seconds: 1),
+        ),
       );
 
-      await signInViewModel.signIn(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-      
-      // Hide SnackBar
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-      // Debug: Ambil dan tampilkan data AuthStorage
-      final authData = await AuthStorage.getUserData();
-      debugPrint("AuthStorage Data after signIn: $authData");
-
-      if (signInViewModel.errorMessage != null) {
-        // Tampilkan pesan error jika terjadi kesalahan
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Password yang Anda masukkan salah."),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      } else if (signInViewModel.authResponse != null) {
-        // Setelah login berhasil, refresh data profil supaya data di AuthStorage terbaru
-        await context.read<ProfileViewModel>().refreshUserData();
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Login berhasil!"), duration: Duration(seconds: 1)),
-        );
-
-        Navigator.pushReplacementNamed(context, '/home');
-      }
+      // 4. Navigasi ke home
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
+}
+
 
   /// Navigasi ke halaman Sign Up.
   void _goToSignUp() {
