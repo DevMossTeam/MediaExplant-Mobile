@@ -57,7 +57,7 @@ class BeritaTerkiniViewmodel with ChangeNotifier {
       judul: faker.lorem.sentence(),
       kontenBerita: faker.lorem.sentences(3).join(' '),
       gambar: "https://picsum.photos/id/${1 + index}/500/300",
-      tanggalDibuat: "2 jam yang lalu",
+      tanggalDibuat: "7 Dec 2024",
       penulis: faker.person.name(),
       profil: "https://picsum.photos/id/2/500/300",
       kategori: "Teknologi",

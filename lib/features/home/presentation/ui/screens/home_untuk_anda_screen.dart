@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_rekomendasi_untuk_anda_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_teratas_untuk_anda.dart';
@@ -105,18 +106,52 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                 ),
 
                 // berita teratas untuk anda
+
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: beritaList.length,
-                    itemBuilder: (context, index) {
-                      return ChangeNotifierProvider.value(
-                        value: beritaList[index],
-                        child: BeritaTeratasUntukAnda(),
-                      );
-                    },
+                  padding: const EdgeInsets.only(
+                    left: 15,
+                    top: 5,
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 140,
+                        child: GridView.builder(
+                            itemCount: beritaList.length,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    mainAxisSpacing: 10,
+                                    crossAxisSpacing: 10,
+                                    childAspectRatio: 0.25,
+                                    crossAxisCount: 2),
+                            itemBuilder: (contex, index) {
+                              return ChangeNotifierProvider.value(
+                                value: beritaList[index],
+                                child: BeritaTeratasUntukAnda(),
+                              );
+                            }),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              // aksi saat tombol ditekan
+                              print("Tombol ditekan");
+                            },
+                            child: const Text(
+                              "Selengkapnya >>",
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],

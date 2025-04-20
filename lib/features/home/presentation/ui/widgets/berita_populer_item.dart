@@ -81,9 +81,9 @@ class BeritaPopulerItem extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(
-                width:30,
-              )
+              // const SizedBox(
+              //   width:30,
+              // )
             ],
           ),
 
@@ -133,22 +133,22 @@ class BeritaPopulerItem extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            right: 0,
-            top: 0,
-            child: IconButton(
-              icon: (berita.isBookmark)
-                  ? const Icon(Icons.bookmark)
-                  : const Icon(Icons.bookmark_outline),
-              color: Colors.black54,
-              onPressed: () {
-                bookmarkProvider.toggleBookmark(
-                    userId: "ovPHOkUBw3FHrq6PeQkg1McfBqkF",
-                    beritaId: berita.idBerita,
-                    berita: berita);
-              },
-            ),
-          )
+          // Positioned(
+          //   right: 0,
+          //   top: 0,
+          //   child: IconButton(
+          //     icon: (berita.isBookmark)
+          //         ? const Icon(Icons.bookmark)
+          //         : const Icon(Icons.bookmark_outline),
+          //     color: Colors.black54,
+          //     onPressed: () {
+          //       bookmarkProvider.toggleBookmark(
+          //           userId: "ovPHOkUBw3FHrq6PeQkg1McfBqkF",
+          //           beritaId: berita.idBerita,
+          //           berita: berita);
+          //     },
+          //   ),
+          // )
         ],
       ),
     );

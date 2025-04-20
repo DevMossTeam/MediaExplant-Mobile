@@ -125,31 +125,31 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            top: 15,
-            right: 15,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.black.withAlpha(100),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: () {
-                  // Toggle bookmark melalui provider
-                  bookmarkProvider.toggleBookmark(
-                      userId: "ovPHOkUBw3FHrq6PeQkg1McfBqkF",
-                      beritaId: berita.idBerita,
-                      berita: berita);
-                },
-                icon: (berita.isBookmark)
-                    ? const Icon(Icons.bookmark)
-                    : const Icon(Icons.bookmark_outline),
-                color: Colors.white,
-              ),
-            ),
-          ),
+          // Positioned(
+          //   top: 15,
+          //   right: 15,
+          //   child: Container(
+          //     width: 40,
+          //     height: 40,
+          //     decoration: BoxDecoration(
+          //       color: Colors.black.withAlpha(100),
+          //       shape: BoxShape.circle,
+          //     ),
+          //     child: IconButton(
+          //       onPressed: () {
+          //         // Toggle bookmark melalui provider
+          //         bookmarkProvider.toggleBookmark(
+          //             userId: "ovPHOkUBw3FHrq6PeQkg1McfBqkF",
+          //             beritaId: berita.idBerita,
+          //             berita: berita);
+          //       },
+          //       icon: (berita.isBookmark)
+          //           ? const Icon(Icons.bookmark)
+          //           : const Icon(Icons.bookmark_outline),
+          //       color: Colors.white,
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
