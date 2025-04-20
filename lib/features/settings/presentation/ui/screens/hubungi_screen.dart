@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart'; // Pastikan path sudah sesuai
+import 'package:mediaexplant/features/settings/logic/hubungi_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 /// Entry point of the application.
 void main() {
@@ -250,128 +252,132 @@ class _ContactForm extends StatefulWidget {
   State<_ContactForm> createState() => _ContactFormState();
 }
 
-/// State class for [_ContactForm] that manages form inputs and submission logic.
 class _ContactFormState extends State<_ContactForm> {
-  // Global key for the form.
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  // Controllers for the text fields.
-  final TextEditingController _namaController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _pesanController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _namaController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _pesanController = TextEditingController();
 
   @override
   void dispose() {
-    // Dispose controllers when no longer needed.
     _namaController.dispose();
     _emailController.dispose();
     _pesanController.dispose();
     super.dispose();
   }
 
-  /// Simulates sending a message. If the form is valid, displays a SnackBar and clears the fields.
-  void _sendMessage() {
-    if (_formKey.currentState!.validate()) {
-      // Simulate a delay for sending a message (e.g., API call).
-      Future.delayed(const Duration(milliseconds: 500), () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pesan telah terkirim!')),
-        );
-        // Clear the fields after sending.
-        _namaController.clear();
-        _emailController.clear();
-        _pesanController.clear();
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Build the contact form.
+    final vm = Provider.of<HubungiViewModel>(context);
+
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Form header text.
+          // Judul
           const Text(
-            'Kirim Pesan',
+            'Form Kirim Pesan',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppColors.text,
+              color: AppColors.primary,
             ),
-          ),
-          const SizedBox(height: 16),
-          // Input field for name.
-          TextFormField(
-            controller: _namaController,
-            decoration: const InputDecoration(
-              labelText: 'Nama',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Mohon masukkan nama Anda';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          // Input field for email.
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Mohon masukkan email Anda';
-              }
-              // Simple email validation.
-              if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                return 'Email tidak valid';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          // Input field for the message.
-          TextFormField(
-            controller: _pesanController,
-            maxLines: 4,
-            decoration: const InputDecoration(
-              labelText: 'Pesan',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Mohon masukkan pesan Anda';
-              }
-              return null;
-            },
           ),
           const SizedBox(height: 24),
-          // Button to submit the form.
+
+          // Nama
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: TextFormField(
+                controller: _namaController,
+                decoration: const InputDecoration(
+                  labelText: 'Nama',
+                  border: InputBorder.none,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Nama tidak boleh kosong';
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Email
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: InputBorder.none,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Email tidak boleh kosong';
+                  }
+                  if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                    return 'Format email tidak valid';
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Pesan
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: TextFormField(
+                controller: _pesanController,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  labelText: 'Pesan',
+                  border: InputBorder.none,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Pesan tidak boleh kosong';
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Tombol Kirim
           SizedBox(
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: _sendMessage,
+              onPressed: vm.isLoading
+                  ? null
+                  : () {
+                      if (_formKey.currentState!.validate()) {
+                        vm.sendMessage(
+                          nama: _namaController.text,
+                          email: _emailController.text,
+                          pesan: _pesanController.text,
+                        );
+                      }
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text(
-                'Kirim Pesan',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
+              child: vm.isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text('Kirim Pesan', style: TextStyle(fontSize: 16, color: Colors.white)),
             ),
           ),
         ],

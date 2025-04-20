@@ -15,6 +15,7 @@ import 'package:mediaexplant/features/profile/domain/repositories/profile_reposi
 import 'package:mediaexplant/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:mediaexplant/features/profile/domain/usecases/get_profile.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
+import 'package:mediaexplant/features/settings/logic/hubungi_viewmodel.dart';
 
 void main() {
   runApp(
@@ -28,7 +29,7 @@ void main() {
         Provider<ProfileRemoteDataSource>(
           create: (_) => ProfileRemoteDataSource(),
         ),
-        // Provider untuk ProfileRepository (menggunakan implementasi ProfileRepositoryImpl)
+        // Provider untuk ProfileRepository
         Provider<ProfileRepository>(
           create: (ctx) => ProfileRepositoryImpl(
             remoteDataSource: ctx.read<ProfileRemoteDataSource>(),
@@ -38,7 +39,7 @@ void main() {
         Provider<GetProfile>(
           create: (ctx) => GetProfile(ctx.read<ProfileRepository>()),
         ),
-        // Provider global untuk ProfileViewModel, dengan parameter required getProfile.
+        // Provider untuk ProfileViewModel
         ChangeNotifierProvider<ProfileViewModel>(
           create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>())
             ..refreshUserData(),
@@ -47,13 +48,19 @@ void main() {
         ChangeNotifierProvider(
           create: (_) => BeritaTerkiniViewmodel(),
         ),
-        // Provider untuk bookamark
+        // Provider untuk Bookmark
         ChangeNotifierProvider(create: (ctx) => BookmarkProvider()),
+
+        // ✅ Provider untuk HubungiViewModel
+        ChangeNotifierProvider<HubungiViewModel>(
+          create: (ctx) => HubungiViewModel(apiClient: ctx.read<ApiClient>()),
+        ),
       ],
       child: const MyApp(),
     ),
   );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
