@@ -8,7 +8,6 @@ import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/navigation/app_router.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
-import 'package:mediaexplant/features/settings/logic/keamanan_viewmodel.dart';
 
 // Pastikan Anda mengimpor kelas-kelas berikut:
 import 'package:mediaexplant/features/profile/data/datasources/profile_remote_data_source.dart';
@@ -28,12 +27,6 @@ void main() {
         // Provider untuk ProfileRemoteDataSource
         Provider<ProfileRemoteDataSource>(
           create: (_) => ProfileRemoteDataSource(),
-        ),
-        // KeamananViewModel (untuk ganti email & forgot password)
-        ChangeNotifierProvider<KeamananViewModel>(
-          create: (ctx) => KeamananViewModel(
-            apiClient: ctx.read<ApiClient>(),
-          ),
         ),
         // Provider untuk ProfileRepository (menggunakan implementasi ProfileRepositoryImpl)
         Provider<ProfileRepository>(
