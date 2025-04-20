@@ -8,20 +8,31 @@ class KeamananViewModel extends ChangeNotifier {
   KeamananViewModel({required ApiClient apiClient})
       : _apiClient = apiClient;
 
+  // General state
   bool _isLoading = false;
   String? _errorMessage;
   String? _successMessage;
-  String? _sentOtpEmail;     // email lama utk ganti email
-  String? _pendingNewEmail;  // simpan email baru sementara
-  String? _sentResetEmail;   // email utk reset password
 
+  // CHANGE EMAIL state
+  String? _sentOtpEmail;     // email lama untuk ganti email
+  String? _pendingNewEmail;  // email baru sementara
+
+  // FORGOT PASSWORD state
+  String? _pendingResetEmail;       // email yang user input di step 1
+  bool _isResetOtpVerified = false; // flag OTP sudah diverifikasi
+
+  // Getters
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String? get successMessage => _successMessage;
+
   String? get sentOtpEmail => _sentOtpEmail;
   String? get pendingNewEmail => _pendingNewEmail;
-  String? get sentResetEmail => _sentResetEmail;
 
+  String? get pendingResetEmail => _pendingResetEmail;
+  bool get isResetOtpVerified => _isResetOtpVerified;
+
+  // Internal setters
   void _setLoading(bool v) {
     _isLoading = v;
     notifyListeners();
@@ -39,6 +50,7 @@ class KeamananViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Clear both success and error messages
   void clearMessages() {
     _errorMessage = null;
     _successMessage = null;
@@ -46,7 +58,7 @@ class KeamananViewModel extends ChangeNotifier {
   }
 
   //────────────────────────────────────────────────
-  // 1) CHANGE PASSWORD (sudah OK)
+  // 1) CHANGE PASSWORD
   //────────────────────────────────────────────────
 
   Future<bool> changePassword({
@@ -81,10 +93,9 @@ class KeamananViewModel extends ChangeNotifier {
   }
 
   //────────────────────────────────────────────────
-  // 2) GANTI EMAIL – STEP 1: Verifikasi email lama
+  // 2) CHANGE EMAIL – STEP 1: Verifikasi email lama
   //────────────────────────────────────────────────
 
-  /// Kirim OTP ke email lama
   Future<bool> sendChangeEmailOtp() async {
     clearMessages();
     _setLoading(true);
@@ -111,7 +122,6 @@ class KeamananViewModel extends ChangeNotifier {
     return false;
   }
 
-  /// Verifikasi OTP email lama
   Future<bool> verifyOldEmailOtp(String otp) async {
     clearMessages();
     _setLoading(true);
@@ -138,10 +148,9 @@ class KeamananViewModel extends ChangeNotifier {
   }
 
   //────────────────────────────────────────────────
-  // 3) GANTI EMAIL – STEP 2: Input & verifikasi email baru
+  // 3) CHANGE EMAIL – STEP 2: Input & verifikasi email baru
   //────────────────────────────────────────────────
 
-  /// Kirim OTP ke email baru yang di-input user
   Future<bool> sendNewEmailOtp(String newEmail) async {
     clearMessages();
     _setLoading(true);
@@ -168,7 +177,6 @@ class KeamananViewModel extends ChangeNotifier {
     return false;
   }
 
-  /// Verifikasi OTP email baru & simpan email baru
   Future<bool> verifyNewEmailOtp(String otp) async {
     clearMessages();
     _setLoading(true);
@@ -195,10 +203,9 @@ class KeamananViewModel extends ChangeNotifier {
   }
 
   //────────────────────────────────────────────────
-  // 4) LUPA PASSWORD: send OTP, verify OTP, reset pw
+  // 4) LUPA PASSWORD – STEP 1: Kirim OTP
   //────────────────────────────────────────────────
 
-  /// Kirim OTP untuk reset password
   Future<bool> sendResetPasswordOtp(String email) async {
     clearMessages();
     _setLoading(true);
@@ -208,7 +215,8 @@ class KeamananViewModel extends ChangeNotifier {
         {'email': email},
       );
       if (resp['success'] == true) {
-        _sentResetEmail = email;
+        _pendingResetEmail = email;
+        _isResetOtpVerified = false;
         _setSuccess(resp['message'] ?? 'OTP reset password terkirim.');
         return true;
       } else {
@@ -222,19 +230,27 @@ class KeamananViewModel extends ChangeNotifier {
     return false;
   }
 
-  /// Verifikasi OTP reset password
+  //────────────────────────────────────────────────
+  // 5) LUPA PASSWORD – STEP 2: Verifikasi OTP
+  //────────────────────────────────────────────────
+
   Future<bool> verifyResetPasswordOtp(String otp) async {
+    if (_pendingResetEmail == null) {
+      _setError('Silakan kirim OTP ke email terlebih dahulu.');
+      return false;
+    }
     clearMessages();
     _setLoading(true);
     try {
       final resp = await _apiClient.postData(
         'password/verify-reset-otp',
         {
-          'email': _sentResetEmail,
+          'email': _pendingResetEmail,
           'otp': otp,
         },
       );
       if (resp['success'] == true) {
+        _isResetOtpVerified = true;
         _setSuccess(resp['message'] ?? 'OTP reset valid.');
         return true;
       } else {
@@ -248,19 +264,30 @@ class KeamananViewModel extends ChangeNotifier {
     return false;
   }
 
-  /// Reset password setelah OTP terverifikasi
+  //────────────────────────────────────────────────
+  // 6) LUPA PASSWORD – STEP 3: Reset Password
+  //────────────────────────────────────────────────
+
   Future<bool> resetPassword({
     required String otp,
     required String newPassword,
     required String newPasswordConfirmation,
   }) async {
+    if (_pendingResetEmail == null) {
+      _setError('Silakan kirim OTP ke email terlebih dahulu.');
+      return false;
+    }
+    if (!_isResetOtpVerified) {
+      _setError('Silakan verifikasi OTP terlebih dahulu.');
+      return false;
+    }
     clearMessages();
     _setLoading(true);
     try {
       final resp = await _apiClient.postData(
         'password/reset',
         {
-          'email': _sentResetEmail,
+          'email': _pendingResetEmail,
           'otp': otp,
           'new_password': newPassword,
           'new_password_confirmation': newPasswordConfirmation,
@@ -268,6 +295,9 @@ class KeamananViewModel extends ChangeNotifier {
       );
       if (resp['success'] == true) {
         _setSuccess(resp['message'] ?? 'Password berhasil direset.');
+        // Reset forgot-password state
+        _pendingResetEmail = null;
+        _isResetOtpVerified = false;
         return true;
       } else {
         _setError(resp['message'] ?? 'Gagal reset password.');

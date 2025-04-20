@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/features/settings/logic/keamanan_viewmodel.dart';
 
-/// Layar verifikasi OTP untuk reset password.
-/// Setelah OTP berhasil diverifikasi, pengguna akan dinavigasikan ke halaman reset password.
+/// Halaman Verifikasi OTP & Reset Password (Forgot Password)
 class ForgotPasswordVerifyEmailScreen extends StatefulWidget {
   const ForgotPasswordVerifyEmailScreen({Key? key}) : super(key: key);
 
@@ -13,107 +16,140 @@ class ForgotPasswordVerifyEmailScreen extends StatefulWidget {
 
 class _ForgotPasswordVerifyEmailScreenState
     extends State<ForgotPasswordVerifyEmailScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _otpFormKey = GlobalKey<FormState>();
+  final _passwordFormKey = GlobalKey<FormState>();
+
   final TextEditingController _otpController = TextEditingController();
-  bool _isVerifying = false;
+  final TextEditingController _newPasswordController =
+      TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
-  /// Fungsi simulasi verifikasi OTP.
-  /// Pada contoh, OTP yang valid adalah "654321".
-  Future<void> _verifyOtp() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isVerifying = true;
-      });
-      // Simulasi delay verifikasi OTP (gantikan dengan pemanggilan API jika perlu)
-      await Future.delayed(const Duration(seconds: 2));
-      setState(() {
-        _isVerifying = false;
-      });
-
-      if (_otpController.text.trim() == "654321") {
-        // Jika OTP valid, navigasi ke halaman reset password.
-        Navigator.pushReplacementNamed(context, '/reset_password_input');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Invalid OTP, please try again.")),
-        );
-      }
-    }
-  }
+  bool _verifyingOtp = false;
+  bool _resettingPassword = false;
+  bool _otpVerified = false;
 
   @override
   void dispose() {
     _otpController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _verifyOtp() async {
+    if (!_otpFormKey.currentState!.validate()) return;
+    setState(() => _verifyingOtp = true);
+    final vm = context.read<KeamananViewModel>();
+    final ok = await vm.verifyResetPasswordOtp(_otpController.text.trim());
+    setState(() => _verifyingOtp = false);
+
+    if (ok) {
+      Fluttertoast.showToast(
+        msg: vm.successMessage ?? 'OTP valid, silakan buat password baru.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      setState(() => _otpVerified = true);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(vm.errorMessage ?? 'OTP tidak valid'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _resetPassword() async {
+    if (!_passwordFormKey.currentState!.validate()) return;
+    setState(() => _resettingPassword = true);
+    final vm = context.read<KeamananViewModel>();
+    final ok = await vm.resetPassword(
+      otp: _otpController.text.trim(),
+      newPassword: _newPasswordController.text,
+      newPasswordConfirmation: _confirmPasswordController.text,
+    );
+    setState(() => _resettingPassword = false);
+
+    if (ok) {
+      Fluttertoast.showToast(
+        msg: vm.successMessage ?? 'Password berhasil direset.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      Navigator.pushNamedAndRemoveUntil(
+          context, '/home', (route) => false);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(vm.errorMessage ?? 'Gagal reset password'),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final vmLoading = context.watch<KeamananViewModel>().isLoading;
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      // Background gradient konsisten dengan tema aplikasi.
       body: Container(
-        height: double.infinity,
         width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              AppColors.primary,
-              Colors.red.shade900,
-            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
+            colors: [AppColors.primary, Colors.red.shade900],
           ),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: size.width * 0.08,
-                vertical: size.height * 0.1,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const _VerifyHeader(),
-                  const SizedBox(height: 40),
+            padding: EdgeInsets.symmetric(
+              horizontal: size.width * 0.08,
+              vertical: size.height * 0.10,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const _Header(),
+                const SizedBox(height: 30),
+
+                // STEP 1: Verifikasi OTP
+                if (!_otpVerified) ...[
                   Card(
-                    elevation: 8,
+                    elevation: 6,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    color: Colors.white,
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
                       child: Form(
-                        key: _formKey,
+                        key: _otpFormKey,
                         child: Column(
                           children: [
                             Text(
-                              "Enter OTP",
+                              'Masukkan Kode OTP',
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineSmall
                                   ?.copyWith(
-                                    color: Colors.black87,
                                     fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
                                   ),
-                              textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 20),
                             TextFormField(
                               controller: _otpController,
                               keyboardType: TextInputType.number,
-                              style: const TextStyle(color: Colors.black87),
                               decoration: InputDecoration(
                                 prefixIcon: const Icon(
                                   Icons.confirmation_number,
                                   color: AppColors.primary,
                                 ),
-                                labelText: "OTP",
-                                labelStyle:
-                                    const TextStyle(color: Colors.black54),
+                                labelText: 'OTP',
                                 enabledBorder: OutlineInputBorder(
                                   borderSide:
                                       const BorderSide(color: Colors.black38),
@@ -128,12 +164,12 @@ class _ForgotPasswordVerifyEmailScreenState
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return "OTP is required";
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return 'OTP wajib diisi';
                                 }
-                                if (value.trim().length != 6) {
-                                  return "OTP must be 6 digits";
+                                if (val.trim().length != 6) {
+                                  return 'OTP terdiri dari 6 digit';
                                 }
                                 return null;
                               },
@@ -143,21 +179,23 @@ class _ForgotPasswordVerifyEmailScreenState
                               width: double.infinity,
                               height: 50,
                               child: ElevatedButton(
-                                onPressed: _isVerifying ? null : _verifyOtp,
+                                onPressed: (vmLoading || _verifyingOtp)
+                                    ? null
+                                    : _verifyOtp,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                                child: _isVerifying
+                                child: _verifyingOtp
                                     ? const CircularProgressIndicator(
                                         color: Colors.white,
                                       )
                                     : const Text(
-                                        "Verify OTP",
+                                        'Verifikasi OTP',
                                         style: TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
                                         ),
@@ -169,10 +207,137 @@ class _ForgotPasswordVerifyEmailScreenState
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
-                  const _FooterWidget(),
                 ],
-              ),
+
+                // STEP 2: Buat Password Baru
+                if (_otpVerified) ...[
+                  Card(
+                    elevation: 6,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Form(
+                        key: _passwordFormKey,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Buat Password Baru',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                            ),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: _newPasswordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(
+                                  Icons.lock_outline,
+                                  color: AppColors.primary,
+                                ),
+                                labelText: 'Password Baru',
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                      const BorderSide(color: Colors.black38),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                      color: AppColors.primary, width: 2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              validator: (val) {
+                                if (val == null || val.isEmpty) {
+                                  return 'Password baru wajib diisi';
+                                }
+                                if (val.length < 6) {
+                                  return 'Password minimal 6 karakter';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: _confirmPasswordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(
+                                  Icons.lock_outline,
+                                  color: AppColors.primary,
+                                ),
+                                labelText: 'Konfirmasi Password',
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                      const BorderSide(color: Colors.black38),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                      color: AppColors.primary, width: 2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              validator: (val) {
+                                if (val == null || val.isEmpty) {
+                                  return 'Konfirmasi password wajib diisi';
+                                }
+                                if (val != _newPasswordController.text) {
+                                  return 'Password tidak cocok';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 30),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: (vmLoading || _resettingPassword)
+                                    ? null
+                                    : _resetPassword,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: _resettingPassword
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                    : const Text(
+                                        'Reset Password',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 40),
+                const _Footer(),
+              ],
             ),
           ),
         ),
@@ -181,75 +346,64 @@ class _ForgotPasswordVerifyEmailScreenState
   }
 }
 
-/// Widget header untuk layar verifikasi OTP.
-class _VerifyHeader extends StatelessWidget {
-  const _VerifyHeader({Key? key}) : super(key: key);
-
+/// Header dengan ikon dan judul
+class _Header extends StatelessWidget {
+  const _Header({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          // Logo menggunakan Hero untuk transisi halus.
-          Hero(
-            tag: 'forgot_password_logo',
-            child: CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.white,
-              child: Image.asset(
-                'assets/logo.png',
-                width: 80,
-                height: 80,
-                fit: BoxFit.contain,
-              ),
+    return Column(
+      children: [
+        Hero(
+          tag: 'forgot_password_logo',
+          child: CircleAvatar(
+            radius: 48,
+            backgroundColor: Colors.white,
+            child: Icon(
+              Icons.lock_reset,
+              size: 48,
+              color: AppColors.primary,
             ),
           ),
-          const SizedBox(height: 16),
-          const Text(
-            "Reset Password",
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'Lupa Password',
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-          const SizedBox(height: 8),
-          const Text(
-            "Enter the OTP sent to your email",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white70,
-            ),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Masukkan kode OTP & buat password baru',
+          style: TextStyle(color: Colors.white70),
+        ),
+      ],
     );
   }
 }
 
-/// Widget footer dengan informasi hak cipta.
-class _FooterWidget extends StatelessWidget {
-  const _FooterWidget({Key? key}) : super(key: key);
-
+/// Footer dengan copyright
+class _Footer extends StatelessWidget {
+  const _Footer({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return const Column(
       children: [
-        SizedBox(height: 10),
+        SizedBox(height: 20),
         Text(
-          "© 2025 MediaExPlant. All rights reserved.",
+          '© 2025 MediaExPlant',
           style: TextStyle(color: Colors.white70, fontSize: 12),
-          textAlign: TextAlign.center,
         ),
-        SizedBox(height: 5),
+        SizedBox(height: 4),
         Text(
-          "Privacy Policy | Terms of Service",
+          'Privacy Policy | Terms of Service',
           style: TextStyle(
             color: Colors.white70,
             fontSize: 12,
             decoration: TextDecoration.underline,
           ),
-          textAlign: TextAlign.center,
         ),
       ],
     );

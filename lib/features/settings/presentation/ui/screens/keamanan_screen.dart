@@ -3,6 +3,7 @@ import 'package:mediaexplant/core/constants/app_colors.dart'; // Ganti dengan pa
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/settings/logic/keamanan_viewmodel.dart'; // import ViewModel
+import 'package:mediaexplant/features/auth/presentation/ui/otp/forgot_password_verify_email.dart'; // import ViewModel
 import 'dart:async';
 import 'package:fluttertoast/fluttertoast.dart'; // <-- import fluttertoast
 
@@ -211,21 +212,28 @@ Future<void> _sendOtp() async {
   final email = _forgotEmailController.text.trim();
   final ok = await vm.sendResetPasswordOtp(email);
 
-  // Matikan loading dulu
   if (mounted) setState(() => _loading = false);
 
   if (ok) {
+    // tutup bottom sheet
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(vm.successMessage ?? "OTP sent to $email")),
+    // langsung push ke layar verifikasi, TAPI bungkus dengan provider
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider.value(
+          value: vm,
+          child: const ForgotPasswordVerifyEmailScreen(),
+        ),
+      ),
     );
-    Navigator.pushNamed(context, '/forgot_password_verify_email');
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(vm.errorMessage ?? "Gagal mengirim OTP")),
     );
   }
 }
+
 
   @override
   Widget build(BuildContext context) {
