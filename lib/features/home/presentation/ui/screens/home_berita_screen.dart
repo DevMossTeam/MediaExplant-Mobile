@@ -30,22 +30,22 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
           Provider.of<BeritaTerkiniViewmodel>(context, listen: false);
 
       // // Cek apakah data sudah pernah dimuat
-      // if (!beritaProvider.isLoaded) {
-      //   setState(() {
-      //     _isLoading = true;
-      //   });
+      if (!beritaProvider.isLoaded) {
+        setState(() {
+          _isLoading = true;
+        });
 
-      //   beritaProvider.getBerita().then((_) {
-      //     setState(() {
-      //       _isLoading = false;
-      //     });
-      //   }).catchError((error) {
-      //     print("Error saat get berita: $error");
-      //     setState(() {
-      //       _isLoading = false;
-      //     });
-      //   });
-      // }
+        beritaProvider.getBerita().then((_) {
+          setState(() {
+            _isLoading = false;
+          });
+        }).catchError((error) {
+          print("Error saat get berita: $error");
+          setState(() {
+            _isLoading = false;
+          });
+        });
+      }
 
       _isInit = false;
     }

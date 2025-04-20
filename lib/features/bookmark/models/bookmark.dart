@@ -8,6 +8,7 @@ part 'bookmark.g.dart';
 class Bookmark with ChangeNotifier {
   final String? id;
   final String? userId;
+  @JsonKey(name: 'item_id')
   final String? beritaId;
   final String? tanggalBookmark;
   Bookmark({
@@ -17,7 +18,7 @@ class Bookmark with ChangeNotifier {
     required this.tanggalBookmark,
   });
 
-   // Factory method untuk konversi dari JSON
+  // Factory method untuk konversi dari JSON
   factory Bookmark.fromJson(Map<String, dynamic> json) =>
       _$BookmarkFromJson(json);
 

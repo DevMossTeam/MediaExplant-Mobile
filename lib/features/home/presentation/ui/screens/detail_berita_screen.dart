@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
@@ -44,6 +45,8 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
 
     final beritaProvider = Provider.of<BeritaTerkiniViewmodel>(context);
     final beritaList = beritaProvider.allBerita;
+    final bookmarkProvider =
+        Provider.of<BookmarkProvider>(context, listen: false);
 
     String kontenTanpaGambar =
         removeFirstImageFromKonten(widget.berita.kontenBerita);
@@ -101,7 +104,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                 },
               ),
             ),
-            actions: [
+            actions: [  
               Container(
                 margin: const EdgeInsets.only(right: 20),
                 width: 40,
@@ -111,9 +114,13 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    bookmarkProvider.toggleBookmark(
+                        userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                        beritaId: widget.berita.idBerita,
+                        berita: widget.berita);
                     setState(() {
-                      widget.berita.statusBookmark();
+                      widget.berita.isBookmark = !widget.berita.isBookmark;
                     });
                   },
                   icon: (widget.berita.isBookmark)
