@@ -15,88 +15,103 @@ class SettingsScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 4,
         backgroundColor: AppColors.primary,
-        title: const Text("Settings"),
+        title: const Text('Settings'),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.background,
-              Color.lerp(AppColors.background, Colors.grey, 0.05)!
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          children: [
-            // Section: Pengaturan (hanya jika login)
-            if (vm.isLoggedIn) ...[
-              const SectionHeader(title: "Pengaturan"),
-              const SizedBox(height: 8),
-              const SettingItem(
-                icon: Icons.settings,
-                title: "Umum",
-                routeName: '/settings/umum',
-              ),
-              const SettingItem(
-                icon: Icons.lock,
-                title: "Keamanan",
-                routeName: '/settings/keamanan',
-              ),
-              const SettingItem(
-                icon: Icons.notifications,
-                title: "Notifikasi",
-                routeName: '/settings/setting_notifikasi',
-              ),
-              const SizedBox(height: 24),
-            ],
+      body: AnimatedBuilder(
+        animation: vm,
+        builder: (context, _) {
+          // Show loading indicator while checking auth state
+          if (vm.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            // Section: Pusat Informasi (selalu tampil)
-            const SectionHeader(title: "Pusat Informasi"),
-            const SizedBox(height: 8),
-            const SettingItem(
-              icon: Icons.info,
-              title: "Tentang",
-              routeName: '/settings/tentang',
-            ),
-            const SettingItem(
-              icon: Icons.help,
-              title: "Pusat Bantuan",
-              routeName: '/settings/pusat_bantuan',
-            ),
-            const SettingItem(
-              icon: Icons.contact_mail,
-              title: "Hubungi",
-              routeName: '/settings/hubungi',
-            ),
-            const SizedBox(height: 24),
-
-            // Section: Lainnya (Logout hanya jika login)
-            const SectionHeader(title: "Lainnya"),
-            const SizedBox(height: 8),
-            if (vm.isLoggedIn)
-              SettingItem(
-                icon: Icons.logout,
-                title: "Logout",
-                onTap: () => vm.logout(context),
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.background,
+                  Color.lerp(AppColors.background, Colors.grey, 0.05)!,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
-            const SizedBox(height: 24),
-
-            // Footer: Versi Aplikasi
-            Center(
-              child: Text(
-                "Versi 1.0.0",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.text.withOpacity(0.6),
+            ),
+            child: ListView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+              children: [
+                // Section Pengaturan (both cases)
+                const SectionHeader(title: 'Pengaturan'),
+                const SizedBox(height: 8),
+                if (vm.isLoggedIn) ...[
+                  const SettingItem(
+                    icon: Icons.settings,
+                    title: 'Umum',
+                    routeName: '/settings/umum',
+                  ),
+                  const SettingItem(
+                    icon: Icons.lock,
+                    title: 'Keamanan',
+                    routeName: '/settings/keamanan',
+                  ),
+                ],
+                // Always show notifications
+                const SettingItem(
+                  icon: Icons.notifications,
+                  title: 'Notifikasi',
+                  routeName: '/settings/setting_notifikasi',
                 ),
-              ),
+                const SizedBox(height: 24),
+
+                // Section Pusat Informasi
+                const SectionHeader(title: 'Pusat Informasi'),
+                const SizedBox(height: 8),
+                const SettingItem(
+                  icon: Icons.info,
+                  title: 'Tentang',
+                  routeName: '/settings/tentang',
+                ),
+                const SettingItem(
+                  icon: Icons.help,
+                  title: 'Pusat Bantuan',
+                  routeName: '/settings/pusat_bantuan',
+                ),
+                const SettingItem(
+                  icon: Icons.contact_mail,
+                  title: 'Hubungi',
+                  routeName: '/settings/hubungi',
+                ),
+                const SizedBox(height: 24),
+
+                // Section Lainnya (Logout jika login)
+                if (vm.isLoggedIn) ...[
+                  const SectionHeader(title: 'Lainnya'),
+                  const SizedBox(height: 8),
+                  SettingItem(
+                    icon: Icons.logout,
+                    title: 'Logout',
+                    onTap: () => vm.logout(context),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+
+                // Footer: Versi Aplikasi
+                Center(
+                  child: Text(
+                    'Versi 1.0.0',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.text.withOpacity(0.6),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
-            const SizedBox(height: 16),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -157,15 +172,15 @@ class SettingItem extends StatelessWidget {
           ),
         ),
         trailing: onTap == null && routeName != null
-            ? Icon(Icons.arrow_forward_ios,
-                size: 16, color: AppColors.text.withOpacity(0.6))
+            ? Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: AppColors.text.withOpacity(0.6),
+              )
             : null,
-        onTap: onTap ??
-            () {
-              if (routeName != null) {
-                Navigator.pushNamed(context, routeName!);
-              }
-            },
+        onTap: onTap ?? () {
+          if (routeName != null) Navigator.pushNamed(context, routeName!);
+        },
       ),
     );
   }

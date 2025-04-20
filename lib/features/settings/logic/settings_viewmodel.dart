@@ -5,12 +5,14 @@ import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/core/utils/auth_storage.dart';
 
 /// ViewModel untuk Settings: handle login state dan logout
+typedef VoidContextCallback = void Function(BuildContext context);
 class SettingsViewModel extends ChangeNotifier {
   final ApiClient _apiClient;
 
   SettingsViewModel({ApiClient? apiClient})
       : _apiClient = apiClient ?? ApiClient() {
-    _loadAuthState();
+    // Inisiasi dan langganan perubahan auth
+    loadAuthState();
   }
 
   bool _isLoading = false;
@@ -22,11 +24,26 @@ class SettingsViewModel extends ChangeNotifier {
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
 
-  Future<void> _loadAuthState() async {
-    final data = await AuthStorage.getUserData();
-    _isLoggedIn = data['token'] != null && data['token']!.isNotEmpty;
-    notifyListeners();
+  /// Load dan update status login dari storage
+  Future<void> loadAuthState() async {
+    _setLoading(true);
+    try {
+      final data = await AuthStorage.getUserData();
+      final token = data['token'];
+      final newLoggedIn = token != null && token.isNotEmpty;
+      if (newLoggedIn != _isLoggedIn) {
+        _isLoggedIn = newLoggedIn;
+        notifyListeners();
+      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('Error loading auth state: $e');
+    } finally {
+      _setLoading(false);
+    }
   }
+
+  /// Panggil untuk refresh manual status login jika diperlukan
+  Future<void> refreshLoginState() => loadAuthState();
 
   /// Logout user: panggil endpoint /logout dan hapus data lokal
   Future<void> logout(BuildContext context) async {
@@ -35,29 +52,24 @@ class SettingsViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Ambil token dari storage
       final data = await AuthStorage.getUserData();
       final token = data['token'] ?? '';
 
-      // Kirim request logout dengan header Authorization
       await _apiClient.postData(
         'logout',
         {},
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
-      // Bersihkan local storage
       await AuthStorage.clearUserData();
       _isLoggedIn = false;
       notifyListeners();
 
-      // Navigasi ke halaman login/splash
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
-      _errorMessage = 'Gagal logout: \$e';
-      if (kDebugMode) debugPrint('Logout error: \$e');
+      _errorMessage = 'Gagal logout: $e';
+      if (kDebugMode) debugPrint('Logout error: $e');
+      notifyListeners();
     } finally {
       _setLoading(false);
     }
