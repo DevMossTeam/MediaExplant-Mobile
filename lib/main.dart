@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
+import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -52,6 +53,8 @@ void main() {
         ),
         // Provider untuk Bookmark
         ChangeNotifierProvider(create: (ctx) => BookmarkProvider()),
+            // provider untuk Reaksi
+        ChangeNotifierProvider(create: (_) => ReaksiProvider()),
         // ✅ Provider untuk HubungiViewModel
         ChangeNotifierProvider<HubungiViewModel>(
           create: (ctx) => HubungiViewModel(apiClient: ctx.read<ApiClient>()),
