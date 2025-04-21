@@ -143,31 +143,31 @@ class BeritaTerkiniItem extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
-              top: 30,
-              right: 30,
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(100),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    // Toggle bookmark melalui provider
-                    bookmarkProvider.toggleBookmark(
-                        userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                        beritaId: berita.idBerita,
-                        berita: berita);
-                  },
-                  icon: (berita.isBookmark)
-                      ? const Icon(Icons.bookmark)
-                      : const Icon(Icons.bookmark_outline),
-                  color: Colors.white,
-                ),
-              ),
-            ),
+            // Positioned(
+            //   top: 30,
+            //   right: 30,
+            //   child: Container(
+            //     width: 40,
+            //     height: 40,
+            //     decoration: BoxDecoration(
+            //       color: Colors.black.withAlpha(100),
+            //       shape: BoxShape.circle,
+            //     ),
+            //     child: IconButton(
+            //       onPressed: () {
+            //         // Toggle bookmark melalui provider
+            //         bookmarkProvider.toggleBookmark(
+            //             userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+            //             beritaId: berita.idBerita,
+            //             berita: berita);
+            //       },
+            //       icon: (berita.isBookmark)
+            //           ? const Icon(Icons.bookmark)
+            //           : const Icon(Icons.bookmark_outline),
+            //       color: Colors.white,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

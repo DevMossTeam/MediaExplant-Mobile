@@ -2,12 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_terbaru_item.dart';
+import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
+import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:provider/provider.dart';
 
 class DetailBeritaScreen extends StatefulWidget {
@@ -35,18 +38,11 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // // Mengubah warna status bar
-    // SystemChrome.setSystemUIOverlayStyle(
-    //   const SystemUiOverlayStyle(
-    //     statusBarColor: AppColors.background,
-    //     statusBarIconBrightness: Brightness.dark,
-    //   ),
-    // );
-
     final beritaProvider = Provider.of<BeritaTerkiniViewmodel>(context);
     final beritaList = beritaProvider.allBerita;
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
+    final reaksiProvider = Provider.of<ReaksiProvider>(context, listen: false);
 
     String kontenTanpaGambar =
         removeFirstImageFromKonten(widget.berita.kontenBerita);
@@ -104,7 +100,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                 },
               ),
             ),
-            actions: [  
+            actions: [
               Container(
                 margin: const EdgeInsets.only(right: 20),
                 width: 40,
@@ -115,10 +111,10 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                 ),
                 child: IconButton(
                   onPressed: () async {
-                    bookmarkProvider.toggleBookmark(
+                    bookmarkProvider.toggleBookmark(Bookmark(
                         userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
                         beritaId: widget.berita.idBerita,
-                        berita: widget.berita);
+                        bookmarkType: "Berita"));
                     setState(() {
                       widget.berita.isBookmark = !widget.berita.isBookmark;
                     });
@@ -207,18 +203,50 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                         // Tombol interaksi
                         Row(
                           children: [
+                            // Tombol Like
                             IconButton(
+                              onPressed: () async {
+                                final isCurrentlyLiked = widget.berita.isLike;
+                                final isCurrentlyDisliked =
+                                    widget.berita.isDislike;
+
+                                await reaksiProvider.toggleReaksi(Reaksi(
+                                  userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                                  beritaId: widget.berita.idBerita,
+                                  jenisReaksi: "Suka",
+                                  reaksiType: "Berita",
+                                ));
+
+                                setState(() {
+                                  if (isCurrentlyLiked) {
+                                    // Batal like
+                                    widget.berita.isLike = false;
+                                    widget.berita.jumlahLike =
+                                        (widget.berita.jumlahLike - 1)
+                                            .clamp(0, double.infinity)
+                                            .toInt();
+                                  } else {
+                                    // Like baru
+                                    widget.berita.isLike = true;
+                                    widget.berita.jumlahLike += 1;
+
+                                    // Jika sebelumnya dislike, batalkan
+                                    if (isCurrentlyDisliked) {
+                                      widget.berita.isDislike = false;
+                                      widget.berita.jumlahDislike =
+                                          (widget.berita.jumlahDislike - 1)
+                                              .clamp(0, double.infinity)
+                                              .toInt();
+                                    }
+                                  }
+                                });
+                              },
                               icon: Icon(
                                 Icons.thumb_up,
                                 color: widget.berita.isLike
                                     ? Colors.blue
                                     : Colors.grey,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  widget.berita.statusLike();
-                                });
-                              },
                             ),
                             Text(
                               '${widget.berita.jumlahLike}',
@@ -228,17 +256,48 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
 
                             // Tombol Dislike
                             IconButton(
+                              onPressed: () async {
+                                final isCurrentlyLiked = widget.berita.isLike;
+                                final isCurrentlyDisliked =
+                                    widget.berita.isDislike;
+
+                                await reaksiProvider.toggleReaksi(Reaksi(
+                                  userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                                  beritaId: widget.berita.idBerita,
+                                  jenisReaksi: "Tidak Suka",
+                                  reaksiType: "Berita",
+                                ));
+
+                                setState(() {
+                                  if (isCurrentlyDisliked) {
+                                    // Batal dislike
+                                    widget.berita.isDislike = false;
+                                    widget.berita.jumlahDislike =
+                                        (widget.berita.jumlahDislike - 1)
+                                            .clamp(0, double.infinity)
+                                            .toInt();
+                                  } else {
+                                    // Dislike baru
+                                    widget.berita.isDislike = true;
+                                    widget.berita.jumlahDislike += 1;
+
+                                    // Jika sebelumnya like, batalkan
+                                    if (isCurrentlyLiked) {
+                                      widget.berita.isLike = false;
+                                      widget.berita.jumlahLike =
+                                          (widget.berita.jumlahLike - 1)
+                                              .clamp(0, double.infinity)
+                                              .toInt();
+                                    }
+                                  }
+                                });
+                              },
                               icon: Icon(
                                 Icons.thumb_down,
                                 color: widget.berita.isDislike
                                     ? Colors.red
                                     : Colors.grey,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  widget.berita.statusDislike();
-                                });
-                              },
                             ),
                             Text(
                               '${widget.berita.jumlahDislike}',
