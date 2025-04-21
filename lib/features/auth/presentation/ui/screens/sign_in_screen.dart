@@ -6,6 +6,8 @@ import 'package:mediaexplant/core/utils/auth_storage.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import '../../logic/sign_in_viewmodel.dart';
+import '../otp/forgot_password_verify_email.dart';
+import '../../../../settings/logic/keamanan_viewmodel.dart';
 
 /// Halaman Sign In dengan background gradient gelap dan card login terang.
 /// Jika tombol back ditekan, akan langsung menuju halaman profile.
@@ -429,11 +431,11 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
   final GlobalKey<FormState> _forgotFormKey = GlobalKey<FormState>();
   final TextEditingController _forgotEmailController = TextEditingController();
   final FocusNode _emailFocus = FocusNode();
+  bool _loading = false;
 
   @override
   void initState() {
     super.initState();
-    // Meminta fokus segera ketika bottom sheet muncul.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).requestFocus(_emailFocus);
     });
@@ -446,30 +448,44 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
     super.dispose();
   }
 
-  void _sendOtp() {
-    if (_forgotFormKey.currentState!.validate()) {
-      Navigator.pop(context);
-      // Navigasi ke halaman verifikasi OTP untuk reset password.
-      Navigator.pushNamed(context, '/forgot_password_verify_email');
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("OTP sent to ${_forgotEmailController.text}"),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
+/// ForgotPasswordSheet
+Future<void> _sendOtp() async {
+  if (!_forgotFormKey.currentState!.validate()) return;
+  setState(() => _loading = true);
+
+  final vm = context.read<KeamananViewModel>();
+  final email = _forgotEmailController.text.trim();
+  final ok = await vm.sendResetPasswordOtp(email);
+
+  if (mounted) setState(() => _loading = false);
+
+  if (ok) {
+    // tutup bottom sheet
+    Navigator.pop(context);
+    // langsung push ke layar verifikasi, TAPI bungkus dengan provider
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (_) => ChangeNotifierProvider.value(
+      value: vm,
+      child: const ForgotPasswordVerifyEmailScreen(),
+    ),
+  ),
+);
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(vm.errorMessage ?? "Gagal mengirim OTP")),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      // Menggunakan MediaQuery untuk menghindari overlay keyboard
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
-        top: 16,
-        left: 16,
-        right: 16,
+        top: 16, left: 16, right: 16,
       ),
       child: Form(
         key: _forgotFormKey,
@@ -504,12 +520,8 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                 ),
               ),
               validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return "Email is required";
-                }
-                if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                  return "Enter a valid email";
-                }
+                if (value == null || value.trim().isEmpty) return "Email is required";
+                if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) return "Enter a valid email";
                 return null;
               },
             ),
@@ -518,21 +530,23 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: _sendOtp,
+                onPressed: _loading ? null : _sendOtp,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  "Send OTP",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                child: _loading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        "Send OTP",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 16),

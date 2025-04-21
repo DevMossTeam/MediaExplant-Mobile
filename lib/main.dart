@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
+import 'package:mediaexplant/features/settings/logic/keamanan_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -60,8 +61,11 @@ void main() {
         ChangeNotifierProvider<SettingsViewModel>(
           create: (ctx) => SettingsViewModel(apiClient: ctx.read<ApiClient>()),
         ),
-                ChangeNotifierProvider<UmumViewModel>(
+        ChangeNotifierProvider<UmumViewModel>(
           create: (ctx) => UmumViewModel(apiClient: ctx.read<ApiClient>()),
+        ),
+        ChangeNotifierProvider<KeamananViewModel>(
+          create: (ctx) => KeamananViewModel(apiClient: ctx.read<ApiClient>()),
         ),
       ],
       child: const MyApp(),
