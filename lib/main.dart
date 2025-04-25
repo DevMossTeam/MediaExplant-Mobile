@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita_populer_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita_dari_kami_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita_rekomendasi_lain_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
@@ -48,14 +51,6 @@ void main() {
           create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>())
             ..refreshUserData(),
         ),
-        // Provider untuk Berita
-        ChangeNotifierProvider(
-          create: (_) => BeritaTerkiniViewmodel(),
-        ),
-        // Provider untuk Bookmark
-        ChangeNotifierProvider(create: (ctx) => BookmarkProvider()),
-            // provider untuk Reaksi
-        ChangeNotifierProvider(create: (_) => ReaksiProvider()),
         // ✅ Provider untuk HubungiViewModel
         ChangeNotifierProvider<HubungiViewModel>(
           create: (ctx) => HubungiViewModel(apiClient: ctx.read<ApiClient>()),
@@ -70,12 +65,30 @@ void main() {
         ChangeNotifierProvider<KeamananViewModel>(
           create: (ctx) => KeamananViewModel(apiClient: ctx.read<ApiClient>()),
         ),
+
+        // Provider untuk Berita
+        ChangeNotifierProvider(
+          create: (_) => BeritaTerkiniViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BeritaPopulerViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BeritaDariKamiViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BeritaRekomendasiLainViewModel(),
+        ),
+
+        // Provider untuk Bookmark
+        ChangeNotifierProvider(create: (ctx) => BookmarkProvider()),
+        // provider untuk Reaksi
+        ChangeNotifierProvider(create: (_) => ReaksiProvider()),
       ],
       child: const MyApp(),
     ),
   );
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

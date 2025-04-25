@@ -19,6 +19,7 @@ class Berita with ChangeNotifier {
   int jumlahDislike;
   final int jumlahKomentar;
   final List<String> tags;
+  @JsonKey(name: 'isBookmark')
   bool isBookmark;
   bool isLike;
   bool isDislike;
@@ -26,19 +27,20 @@ class Berita with ChangeNotifier {
     required this.idBerita,
     required this.judul,
     required this.kontenBerita,
-    required this.gambar,
+    this.gambar,
     required this.tanggalDibuat,
     required this.penulis,
-    required this.profil,
+    this.profil,
     required this.kategori,
     required this.jumlahLike,
     required this.jumlahDislike,
     required this.jumlahKomentar,
     required this.tags,
-    this.isBookmark = false,
-    this.isLike = false,
-    this.isDislike = false,
+    required this.isBookmark,
+    required this.isLike,
+    required this.isDislike,
   });
+  
 
   // Fungsi untuk mengambil gambar pertama dari konten HTML
   String? get firstImageFromKonten {
@@ -49,6 +51,7 @@ class Berita with ChangeNotifier {
 
   void statusBookmark() {
     isBookmark = !isBookmark;
+    print('isBookmark (setelah toggle): $isBookmark'); // Cek di sini
     notifyListeners();
   }
 

@@ -6,8 +6,8 @@ import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:provider/provider.dart';
 
-class BeritaMungkinDisukai extends StatelessWidget {
-  const BeritaMungkinDisukai({super.key});
+class BeritaDariKami extends StatelessWidget {
+  const BeritaDariKami({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +104,9 @@ class BeritaMungkinDisukai extends StatelessWidget {
                         reverseTransitionDuration: const Duration(
                             milliseconds: 500), // Durasi animasi balik
                         pageBuilder: (context, animation, secondaryAnimation) =>
-                            DetailBeritaScreen(berita: berita),
+                            ChangeNotifierProvider.value(
+                              value: berita,
+                              child: DetailBeritaScreen()),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
                           // Animasi geser + fade

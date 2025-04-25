@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 
-class BeritaPopulerViewmodel with ChangeNotifier {
+class BeritaDariKamiViewmodel with ChangeNotifier {
   List<Berita> _allBerita = [];
   bool _isLoaded = false;
 
@@ -14,7 +14,7 @@ class BeritaPopulerViewmodel with ChangeNotifier {
   Future<void> fetchBeritaTerkini(String userId) async {
     if (_isLoaded) return;
 
-    final url = Uri.parse('http://10.0.2.2:8000/api/berita/populer?user_id=$userId');
+    final url = Uri.parse('http://10.0.2.2:8000/api/berita/rekomendasi?user_id=$userId');
 
     try {
       final response = await http.get(url);

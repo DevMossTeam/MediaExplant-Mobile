@@ -29,7 +29,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
           _isLoading = true;
         });
 
-        beritaProvider.getBerita().then((_) {
+        beritaProvider.fetchBeritaTerkini("4FUD7QhJ0hMLMMlF6VQHjvkXad4L").then((_) {
           setState(() {
             _isLoading = false;
           });

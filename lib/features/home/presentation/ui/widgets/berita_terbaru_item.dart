@@ -85,7 +85,9 @@ class BeritaTerbaruItem extends StatelessWidget {
                             milliseconds: 500), // Durasi animasi balik
                         pageBuilder:
                             (context, animation, secondaryAnimation) =>
-                                DetailBeritaScreen(berita: berita),
+                                ChangeNotifierProvider.value(
+                              value: berita,
+                              child: DetailBeritaScreen()),
                         transitionsBuilder: (context, animation,
                             secondaryAnimation, child) {
                           // Animasi geser + fade

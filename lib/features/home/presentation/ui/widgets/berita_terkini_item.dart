@@ -109,9 +109,11 @@ class BeritaTerkiniItem extends StatelessWidget {
                                 milliseconds: 1000), // Durasi animasi masuk
                             reverseTransitionDuration: const Duration(
                                 milliseconds: 500), // Durasi animasi balik
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    DetailBeritaScreen(berita: berita),
+                            pageBuilder: (context, animation,
+                                    secondaryAnimation) =>
+                                ChangeNotifierProvider.value(
+                                    value: berita, child:
+                                    DetailBeritaScreen()),
                             transitionsBuilder: (context, animation,
                                 secondaryAnimation, child) {
                               // Animasi geser + fade

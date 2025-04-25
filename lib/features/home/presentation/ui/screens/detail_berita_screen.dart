@@ -8,14 +8,14 @@ import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_rekomandasi_lain_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_terbaru_item.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:provider/provider.dart';
 
 class DetailBeritaScreen extends StatefulWidget {
-  final Berita berita;
-  const DetailBeritaScreen({super.key, required this.berita});
+  const DetailBeritaScreen({super.key});
 
   @override
   State<DetailBeritaScreen> createState() => _DetailBeritaScreenState();
@@ -40,18 +40,12 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
   Widget build(BuildContext context) {
     final beritaProvider = Provider.of<BeritaTerkiniViewmodel>(context);
     final beritaList = beritaProvider.allBerita;
+
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
     final reaksiProvider = Provider.of<ReaksiProvider>(context, listen: false);
-
-    String kontenTanpaGambar =
-        removeFirstImageFromKonten(widget.berita.kontenBerita);
-
-    // String removeFirstImageFromKonten(String konten) {
-    //   final RegExp regExp = RegExp(r'<img[^>]*src="[^"]*"[^>]*>');
-    //   return konten.replaceFirst(regExp, '');
-    // }
-
+    final berita = Provider.of<Berita>(context); // Ambil berita dari Provider
+    String kontenTanpaGambar = removeFirstImageFromKonten(berita.kontenBerita);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
@@ -69,8 +63,8 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                   fit: StackFit.expand,
                   children: [
                     CachedNetworkImage(
-                      imageUrl: widget.berita.gambar ??
-                          widget.berita.firstImageFromKonten ??
+                      imageUrl: berita.gambar ??
+                          berita.firstImageFromKonten ??
                           'https://via.placeholder.com/150',
                       fit: BoxFit.cover,
                       placeholder: (context, url) => const Center(
@@ -111,17 +105,20 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                 ),
                 child: IconButton(
                   onPressed: () async {
-                    bookmarkProvider.toggleBookmark(Bookmark(
+                    await bookmarkProvider.toggleBookmark(
+                      Bookmark(
                         userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                        beritaId: widget.berita.idBerita,
-                        bookmarkType: "Berita"));
-                    setState(() {
-                      widget.berita.isBookmark = !widget.berita.isBookmark;
-                    });
+                        beritaId: berita.idBerita,
+                        bookmarkType: "Berita",
+                      ),
+                    );
+                    // Ubah status lewat model, biar notifyListeners terpanggil
+                    berita.statusBookmark();
                   },
-                  icon: (widget.berita.isBookmark)
-                      ? const Icon(Icons.bookmark, color: Colors.white)
-                      : const Icon(Icons.bookmark_outline, color: Colors.white),
+                  icon: Icon(
+                    berita.isBookmark ? Icons.bookmark : Icons.bookmark_outline,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
@@ -139,14 +136,14 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.berita.kategori,
+                          berita.kategori,
                           style: const TextStyle(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          widget.berita.judul,
+                          berita.judul,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -157,7 +154,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                           height: 10,
                         ),
                         Text(
-                          'Oleh: ${widget.berita.penulis}  |  ${widget.berita.tanggalDibuat}',
+                          'Oleh: ${berita.penulis}  |  ${berita.tanggalDibuat}',
                           style: const TextStyle(color: Colors.grey),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -206,13 +203,12 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             // Tombol Like
                             IconButton(
                               onPressed: () async {
-                                final isCurrentlyLiked = widget.berita.isLike;
-                                final isCurrentlyDisliked =
-                                    widget.berita.isDislike;
+                                final isCurrentlyLiked = berita.isLike;
+                                final isCurrentlyDisliked = berita.isDislike;
 
                                 await reaksiProvider.toggleReaksi(Reaksi(
                                   userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                                  beritaId: widget.berita.idBerita,
+                                  beritaId: berita.idBerita,
                                   jenisReaksi: "Suka",
                                   reaksiType: "Berita",
                                 ));
@@ -220,21 +216,20 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                                 setState(() {
                                   if (isCurrentlyLiked) {
                                     // Batal like
-                                    widget.berita.isLike = false;
-                                    widget.berita.jumlahLike =
-                                        (widget.berita.jumlahLike - 1)
-                                            .clamp(0, double.infinity)
-                                            .toInt();
+                                    berita.isLike = false;
+                                    berita.jumlahLike = (berita.jumlahLike - 1)
+                                        .clamp(0, double.infinity)
+                                        .toInt();
                                   } else {
                                     // Like baru
-                                    widget.berita.isLike = true;
-                                    widget.berita.jumlahLike += 1;
+                                    berita.isLike = true;
+                                    berita.jumlahLike += 1;
 
                                     // Jika sebelumnya dislike, batalkan
                                     if (isCurrentlyDisliked) {
-                                      widget.berita.isDislike = false;
-                                      widget.berita.jumlahDislike =
-                                          (widget.berita.jumlahDislike - 1)
+                                      berita.isDislike = false;
+                                      berita.jumlahDislike =
+                                          (berita.jumlahDislike - 1)
                                               .clamp(0, double.infinity)
                                               .toInt();
                                     }
@@ -243,13 +238,12 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                               },
                               icon: Icon(
                                 Icons.thumb_up,
-                                color: widget.berita.isLike
-                                    ? Colors.blue
-                                    : Colors.grey,
+                                color:
+                                    berita.isLike ? Colors.blue : Colors.grey,
                               ),
                             ),
                             Text(
-                              '${widget.berita.jumlahLike}',
+                              '${berita.jumlahLike}',
                               style: const TextStyle(color: Colors.blue),
                             ),
                             const SizedBox(width: 10),
@@ -257,13 +251,12 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             // Tombol Dislike
                             IconButton(
                               onPressed: () async {
-                                final isCurrentlyLiked = widget.berita.isLike;
-                                final isCurrentlyDisliked =
-                                    widget.berita.isDislike;
+                                final isCurrentlyLiked = berita.isLike;
+                                final isCurrentlyDisliked = berita.isDislike;
 
                                 await reaksiProvider.toggleReaksi(Reaksi(
                                   userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                                  beritaId: widget.berita.idBerita,
+                                  beritaId: berita.idBerita,
                                   jenisReaksi: "Tidak Suka",
                                   reaksiType: "Berita",
                                 ));
@@ -271,21 +264,21 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                                 setState(() {
                                   if (isCurrentlyDisliked) {
                                     // Batal dislike
-                                    widget.berita.isDislike = false;
-                                    widget.berita.jumlahDislike =
-                                        (widget.berita.jumlahDislike - 1)
+                                    berita.isDislike = false;
+                                    berita.jumlahDislike =
+                                        (berita.jumlahDislike - 1)
                                             .clamp(0, double.infinity)
                                             .toInt();
                                   } else {
                                     // Dislike baru
-                                    widget.berita.isDislike = true;
-                                    widget.berita.jumlahDislike += 1;
+                                    berita.isDislike = true;
+                                    berita.jumlahDislike += 1;
 
                                     // Jika sebelumnya like, batalkan
                                     if (isCurrentlyLiked) {
-                                      widget.berita.isLike = false;
-                                      widget.berita.jumlahLike =
-                                          (widget.berita.jumlahLike - 1)
+                                      berita.isLike = false;
+                                      berita.jumlahLike =
+                                          (berita.jumlahLike - 1)
                                               .clamp(0, double.infinity)
                                               .toInt();
                                     }
@@ -294,13 +287,12 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                               },
                               icon: Icon(
                                 Icons.thumb_down,
-                                color: widget.berita.isDislike
-                                    ? Colors.red
-                                    : Colors.grey,
+                                color:
+                                    berita.isDislike ? Colors.red : Colors.grey,
                               ),
                             ),
                             Text(
-                              '${widget.berita.jumlahDislike}',
+                              '${berita.jumlahDislike}',
                               style: const TextStyle(color: Colors.red),
                             ),
                             const SizedBox(width: 10),
@@ -323,7 +315,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                         Wrap(
                           spacing: 8.0,
                           runSpacing: 8.0,
-                          children: widget.berita.tags.map((tag) {
+                          children: berita.tags.map((tag) {
                             return ActionChip(
                               onPressed: () {},
                               label: Text(
@@ -347,53 +339,6 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
               ),
             ]),
           ),
-
-          // // Berita Terkait
-          // SliverList(
-          //   delegate: SliverChildListDelegate([
-          //     Padding(
-          //       padding: const EdgeInsets.all(15),
-          //       child: Column(
-          //         crossAxisAlignment: CrossAxisAlignment.start,
-          //         children: [
-          //           const Text(
-          //             'Berita Terkait',
-          //             style:
-          //                 TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          //           ),
-          //           const SizedBox(height: 10),
-          //           SizedBox(
-          //             height: 150,
-          //             child: ListView.builder(
-          //               scrollDirection: Axis.horizontal,
-          //               itemCount: beritaList.length,
-          //               itemBuilder: (context, index) {
-          //                 return ChangeNotifierProvider.value(
-          //                   value: beritaList[index],
-          //                   child: BeritaTerkaitItem(),
-          //                 );
-          //               },
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //     const Divider(color: Colors.grey, thickness: 0.5),
-          //   ]),
-          // ),
-
-          // rekomendasi Lainnya
-          // SliverPadding(
-          //   padding: const EdgeInsets.all(15),
-          //   sliver: SliverList(
-          //     delegate: SliverChildListDelegate([
-          //       const Text(
-          //         'Rekomendasi Lainnya',
-          //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          //       ),
-          //     ]),
-          //   ),
-          // ),
 
           const SliverToBoxAdapter(
             child: Padding(
@@ -422,7 +367,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
               ),
             ),
           ),
-
+          // BERITA rekomendasi lainnya
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             sliver: SliverList(
@@ -474,6 +419,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                           ],
                         ),
                         const SizedBox(height: 10),
+                        // BERITA TERBARU
                         Container(
                           height: 150,
                           child: ListView.builder(
@@ -482,7 +428,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             itemBuilder: (context, index) {
                               return ChangeNotifierProvider.value(
                                 value: beritaList[index],
-                                child: BeritaTerbaruItem(),
+                                child: BeritaRekomandasiLainItem(),
                               );
                             },
                           ),
@@ -505,6 +451,10 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             ),
                           ],
                         ),
+                         const SizedBox(
+                            height: 50,
+                          ),
+                          
                       ],
                     ),
                   ),

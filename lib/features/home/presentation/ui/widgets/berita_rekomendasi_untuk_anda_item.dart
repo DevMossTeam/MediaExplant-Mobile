@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/data/models/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
@@ -14,7 +15,8 @@ class BeritaRekomendasiUntukAndaItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final berita = Provider.of<Berita>(context);
-    final bookmarkProvider = Provider.of<BookmarkProvider>(context, listen: false);
+    final bookmarkProvider =
+        Provider.of<BookmarkProvider>(context, listen: false);
     return Container(
       margin: EdgeInsets.only(right: 10),
       // color: Colors.amber,
@@ -23,25 +25,23 @@ class BeritaRekomendasiUntukAndaItem extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: Container(
+            child: AspectRatio(
+              aspectRatio: 16 / 9, // Sesuai kebutuhan
               child: CachedNetworkImage(
-                height: double.infinity,
-                width: double.infinity,
                 imageUrl: berita.gambar ??
                     berita.firstImageFromKonten ??
                     'https://via.placeholder.com/150',
                 fit: BoxFit.cover,
                 placeholder: (context, url) => const Center(
-                  child: CircularProgressIndicator(), // Indikator loading
+                  child: CircularProgressIndicator(),
                 ),
                 errorWidget: (context, url, error) => const Center(
-                  child:
-                      Icon(Icons.broken_image, size: 50, color: Colors.red),
+                  child: Icon(Icons.broken_image, size: 50, color: Colors.red),
                 ),
               ),
             ),
           ),
-      
+
           // konten
           Positioned(
             bottom: 0,
@@ -50,8 +50,7 @@ class BeritaRekomendasiUntukAndaItem extends StatelessWidget {
             child: Container(
               height: 200,
               decoration: const BoxDecoration(
-                borderRadius:
-                    BorderRadius.vertical(bottom: Radius.circular(5)),
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(5)),
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
@@ -66,8 +65,7 @@ class BeritaRekomendasiUntukAndaItem extends StatelessWidget {
                   children: [
                     Text(
                       "${berita.kategori} | ${berita.tanggalDibuat} yang lalu",
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: 12),
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                     Text(
                       berita.judul,
@@ -98,16 +96,18 @@ class BeritaRekomendasiUntukAndaItem extends StatelessWidget {
                             milliseconds: 1000), // Durasi animasi masuk
                         reverseTransitionDuration: const Duration(
                             milliseconds: 500), // Durasi animasi balik
-                        pageBuilder:
-                            (context, animation, secondaryAnimation) =>
-                                DetailBeritaScreen(berita: berita),
-                        transitionsBuilder: (context, animation,
-                            secondaryAnimation, child) {
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            ChangeNotifierProvider.value(
+                          value:
+                              berita, // Berita yang sudah menggunakan ChangeNotifier
+                          child: DetailBeritaScreen(),
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
                           // Animasi geser + fade
                           return SlideTransition(
                             position: Tween<Offset>(
-                              begin: const Offset(
-                                  1.0, 0.0), // Mulai dari kanan
+                              begin: const Offset(1.0, 0.0), // Mulai dari kanan
                               end: Offset.zero, // Berhenti di tengah
                             ).animate(CurvedAnimation(
                               parent: animation,
@@ -131,31 +131,36 @@ class BeritaRekomendasiUntukAndaItem extends StatelessWidget {
               ),
             ),
           ),
-          // Positioned(
-          //   top: 15,
-          //   right: 15,
-          //   child: Container(
-          //     width: 40,
-          //     height: 40,
-          //     decoration: BoxDecoration(
-          //       color: Colors.black.withAlpha(100),
-          //       shape: BoxShape.circle,
-          //     ),
-          //     child: IconButton(
-          //       onPressed: () {
-          //         // Toggle bookmark melalui provider
-          //         bookmarkProvider.toggleBookmark(
-          //             userId: "ovPHOkUBw3FHrq6PeQkg1McfBqkF",
-          //             beritaId: berita.idBerita,
-          //             berita: berita);
-          //       },
-          //       icon: (berita.isBookmark)
-          //           ? const Icon(Icons.bookmark)
-          //           : const Icon(Icons.bookmark_outline),
-          //       color: Colors.white,
-          //     ),
-          //   ),
-          // ),
+          Positioned(
+            top: 15,
+            right: 15,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(100),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                onPressed: () async {
+                  await bookmarkProvider.toggleBookmark(
+                    Bookmark(
+                      userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                      beritaId: berita.idBerita,
+                      bookmarkType: "Berita",
+                    ),
+                  );
+
+                  // Ubah status lewat model, biar notifyListeners terpanggil
+                  berita.statusBookmark();
+                },
+                icon: (berita.isBookmark)
+                    ? const Icon(Icons.bookmark)
+                    : const Icon(Icons.bookmark_outline),
+                color: Colors.white,
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -45,7 +45,7 @@ class AppRouter {
         if (settings.arguments is Berita) {
           final berita = settings.arguments as Berita;
           return MaterialPageRoute(
-            builder: (_) => DetailBeritaScreen(berita: berita),
+            builder: (_) => DetailBeritaScreen(),
           );
         }
         return _errorRoute(settings.name);

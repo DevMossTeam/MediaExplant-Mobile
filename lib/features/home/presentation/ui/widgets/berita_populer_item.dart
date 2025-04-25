@@ -17,7 +17,7 @@ class BeritaPopulerItem extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 60,
-      margin: const EdgeInsets.symmetric(vertical: 5 ,horizontal: 5),
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
       child: Stack(
         children: [
           Row(
@@ -58,7 +58,8 @@ class BeritaPopulerItem extends StatelessWidget {
                           "${berita.kategori} | ",
                           style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 12, color: AppColors.primary),
+                              fontSize: 12,
+                              color: AppColors.primary),
                         ),
                         Text(
                           maxLines: 1,
@@ -103,7 +104,8 @@ class BeritaPopulerItem extends StatelessWidget {
                         reverseTransitionDuration: const Duration(
                             milliseconds: 500), // Durasi animasi balik
                         pageBuilder: (context, animation, secondaryAnimation) =>
-                            DetailBeritaScreen(berita: berita),
+                            ChangeNotifierProvider.value(
+                                value: berita, child: DetailBeritaScreen()),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
                           // Animasi geser + fade
