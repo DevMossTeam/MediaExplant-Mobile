@@ -27,18 +27,20 @@ class BeritaPopulerItem extends StatelessWidget {
               // Gambar Berita
               ClipRRect(
                 borderRadius: BorderRadius.circular(5),
-                child: CachedNetworkImage(
-                  imageUrl: berita.gambar ??
-                      berita.firstImageFromKonten ??
-                      'https://via.placeholder.com/150',
-                  width: 120,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(), // Indikator loading
-                  ),
-                  errorWidget: (context, url, error) => const Center(
-                    child:
-                        Icon(Icons.broken_image, size: 50, color: Colors.red),
+                child: AspectRatio(
+                  aspectRatio: 16 / 8,
+                  child: CachedNetworkImage(
+                    imageUrl: berita.gambar ??
+                        berita.firstImageFromKonten ??
+                        'https://via.placeholder.com/150',
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(), // Indikator loading
+                    ),
+                    errorWidget: (context, url, error) => const Center(
+                      child:
+                          Icon(Icons.broken_image, size: 50, color: Colors.red),
+                    ),
                   ),
                 ),
               ),

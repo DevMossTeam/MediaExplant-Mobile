@@ -40,7 +40,6 @@ class Berita with ChangeNotifier {
     required this.isLike,
     required this.isDislike,
   });
-  
 
   // Fungsi untuk mengambil gambar pertama dari konten HTML
   String? get firstImageFromKonten {
@@ -51,7 +50,6 @@ class Berita with ChangeNotifier {
 
   void statusBookmark() {
     isBookmark = !isBookmark;
-    print('isBookmark (setelah toggle): $isBookmark'); // Cek di sini
     notifyListeners();
   }
 

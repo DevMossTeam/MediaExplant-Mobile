@@ -203,9 +203,6 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             // Tombol Like
                             IconButton(
                               onPressed: () async {
-                                final isCurrentlyLiked = berita.isLike;
-                                final isCurrentlyDisliked = berita.isDislike;
-
                                 await reaksiProvider.toggleReaksi(Reaksi(
                                   userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
                                   beritaId: berita.idBerita,
@@ -213,28 +210,8 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                                   reaksiType: "Berita",
                                 ));
 
-                                setState(() {
-                                  if (isCurrentlyLiked) {
-                                    // Batal like
-                                    berita.isLike = false;
-                                    berita.jumlahLike = (berita.jumlahLike - 1)
-                                        .clamp(0, double.infinity)
-                                        .toInt();
-                                  } else {
-                                    // Like baru
-                                    berita.isLike = true;
-                                    berita.jumlahLike += 1;
-
-                                    // Jika sebelumnya dislike, batalkan
-                                    if (isCurrentlyDisliked) {
-                                      berita.isDislike = false;
-                                      berita.jumlahDislike =
-                                          (berita.jumlahDislike - 1)
-                                              .clamp(0, double.infinity)
-                                              .toInt();
-                                    }
-                                  }
-                                });
+                                berita
+                                    .statusLike(); // Gunakan method dari model
                               },
                               icon: Icon(
                                 Icons.thumb_up,
@@ -247,13 +224,8 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                               style: const TextStyle(color: Colors.blue),
                             ),
                             const SizedBox(width: 10),
-
-                            // Tombol Dislike
                             IconButton(
                               onPressed: () async {
-                                final isCurrentlyLiked = berita.isLike;
-                                final isCurrentlyDisliked = berita.isDislike;
-
                                 await reaksiProvider.toggleReaksi(Reaksi(
                                   userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
                                   beritaId: berita.idBerita,
@@ -261,29 +233,8 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                                   reaksiType: "Berita",
                                 ));
 
-                                setState(() {
-                                  if (isCurrentlyDisliked) {
-                                    // Batal dislike
-                                    berita.isDislike = false;
-                                    berita.jumlahDislike =
-                                        (berita.jumlahDislike - 1)
-                                            .clamp(0, double.infinity)
-                                            .toInt();
-                                  } else {
-                                    // Dislike baru
-                                    berita.isDislike = true;
-                                    berita.jumlahDislike += 1;
-
-                                    // Jika sebelumnya like, batalkan
-                                    if (isCurrentlyLiked) {
-                                      berita.isLike = false;
-                                      berita.jumlahLike =
-                                          (berita.jumlahLike - 1)
-                                              .clamp(0, double.infinity)
-                                              .toInt();
-                                    }
-                                  }
-                                });
+                                berita
+                                    .statusDislike(); // Gunakan method dari model
                               },
                               icon: Icon(
                                 Icons.thumb_down,
@@ -291,6 +242,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                                     berita.isDislike ? Colors.red : Colors.grey,
                               ),
                             ),
+
                             Text(
                               '${berita.jumlahDislike}',
                               style: const TextStyle(color: Colors.red),
@@ -428,7 +380,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             itemBuilder: (context, index) {
                               return ChangeNotifierProvider.value(
                                 value: beritaList[index],
-                                child: BeritaRekomandasiLainItem(),
+                                child: BeritaTerbaruItem(),
                               );
                             },
                           ),
@@ -451,10 +403,9 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             ),
                           ],
                         ),
-                         const SizedBox(
-                            height: 50,
-                          ),
-                          
+                        const SizedBox(
+                          height: 50,
+                        ),
                       ],
                     ),
                   ),

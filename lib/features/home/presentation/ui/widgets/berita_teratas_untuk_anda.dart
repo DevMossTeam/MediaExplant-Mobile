@@ -29,22 +29,24 @@ class BeritaTeratasUntukAnda extends StatelessWidget {
                 // Gambar Berita
                 ClipRRect(
                   borderRadius: BorderRadius.circular(5),
-                  child: CachedNetworkImage(
-                    imageUrl: berita.gambar ??
-                        berita.firstImageFromKonten ??
-                        'https://via.placeholder.com/150',
-                    width: 94,
-                    height: 70,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(), // Indikator loading
-                    ),
-                    errorWidget: (context, url, error) => const Center(
-                      child:
-                          Icon(Icons.broken_image, size: 50, color: Colors.red),
+                  child: AspectRatio(
+                    aspectRatio: 4 / 3, // Misalnya 4:3, bisa disesuaikan
+                    child: CachedNetworkImage(
+                      imageUrl: berita.gambar ??
+                          berita.firstImageFromKonten ??
+                          'https://via.placeholder.com/150',
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(), // Indikator loading
+                      ),
+                      errorWidget: (context, url, error) => const Center(
+                        child: Icon(Icons.broken_image,
+                            size: 50, color: Colors.red),
+                      ),
                     ),
                   ),
                 ),
+
                 const SizedBox(width: 10),
 
                 // Judul & Tanggal
@@ -76,7 +78,7 @@ class BeritaTeratasUntukAnda extends StatelessWidget {
                       ),
                       Text(
                         berita.judul,
-                        maxLines: 2,
+                        maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -110,8 +112,8 @@ class BeritaTeratasUntukAnda extends StatelessWidget {
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>
                                   ChangeNotifierProvider.value(
-                                    value: berita,
-                                    child: DetailBeritaScreen()),
+                                      value: berita,
+                                      child: DetailBeritaScreen()),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {
                             // Animasi geser + fade

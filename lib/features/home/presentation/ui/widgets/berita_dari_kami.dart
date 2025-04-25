@@ -17,7 +17,7 @@ class BeritaDariKami extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 60,
-      margin: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       child: Stack(
         children: [
           Row(
@@ -27,18 +27,20 @@ class BeritaDariKami extends StatelessWidget {
               // Gambar Berita
               ClipRRect(
                 borderRadius: BorderRadius.circular(5),
-                child: CachedNetworkImage(
-                  imageUrl: berita.gambar ??
-                      berita.firstImageFromKonten ??
-                      'https://via.placeholder.com/150',
-                  width: 120,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(), // Indikator loading
-                  ),
-                  errorWidget: (context, url, error) => const Center(
-                    child:
-                        Icon(Icons.broken_image, size: 50, color: Colors.red),
+                child: AspectRatio(
+                  aspectRatio: 16 / 7,
+                  child: CachedNetworkImage(
+                    imageUrl: berita.gambar ??
+                        berita.firstImageFromKonten ??
+                        'https://via.placeholder.com/150',
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(), // Indikator loading
+                    ),
+                    errorWidget: (context, url, error) => const Center(
+                      child:
+                          Icon(Icons.broken_image, size: 50, color: Colors.red),
+                    ),
                   ),
                 ),
               ),
@@ -105,8 +107,7 @@ class BeritaDariKami extends StatelessWidget {
                             milliseconds: 500), // Durasi animasi balik
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             ChangeNotifierProvider.value(
-                              value: berita,
-                              child: DetailBeritaScreen()),
+                                value: berita, child: DetailBeritaScreen()),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
                           // Animasi geser + fade

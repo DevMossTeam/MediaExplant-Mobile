@@ -23,18 +23,22 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child: Container(
-              child: CachedNetworkImage(
-                height: double.infinity,
-                width: double.infinity,
-                imageUrl: berita.gambar ??
-                    berita.firstImageFromKonten ??
-                    'https://via.placeholder.com/150',
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(
-                  child: CircularProgressIndicator(), // Indikator loading
-                ),
-                errorWidget: (context, url, error) => const Center(
-                  child: Icon(Icons.broken_image, size: 50, color: Colors.red),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: CachedNetworkImage(
+                  height: double.infinity,
+                  width: double.infinity,
+                  imageUrl: berita.gambar ??
+                      berita.firstImageFromKonten ??
+                      'https://via.placeholder.com/150',
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(), // Indikator loading
+                  ),
+                  errorWidget: (context, url, error) => const Center(
+                    child:
+                        Icon(Icons.broken_image, size: 50, color: Colors.red),
+                  ),
                 ),
               ),
             ),
@@ -96,8 +100,7 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
                             milliseconds: 500), // Durasi animasi balik
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             ChangeNotifierProvider.value(
-                              value: berita,
-                              child: DetailBeritaScreen()),
+                                value: berita, child: DetailBeritaScreen()),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
                           // Animasi geser + fade

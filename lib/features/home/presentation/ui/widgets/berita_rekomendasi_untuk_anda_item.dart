@@ -131,36 +131,36 @@ class BeritaRekomendasiUntukAndaItem extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            top: 15,
-            right: 15,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.black.withAlpha(100),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: () async {
-                  await bookmarkProvider.toggleBookmark(
-                    Bookmark(
-                      userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                      beritaId: berita.idBerita,
-                      bookmarkType: "Berita",
-                    ),
-                  );
+          // Positioned(
+          //   top: 15,
+          //   right: 15,
+          //   child: Container(
+          //     width: 40,
+          //     height: 40,
+          //     decoration: BoxDecoration(
+          //       color: Colors.black.withAlpha(100),
+          //       shape: BoxShape.circle,
+          //     ),
+          //     child: IconButton(
+          //       onPressed: () async {
+          //         await bookmarkProvider.toggleBookmark(
+          //           Bookmark(
+          //             userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+          //             beritaId: berita.idBerita,
+          //             bookmarkType: "Berita",
+          //           ),
+          //         );
 
-                  // Ubah status lewat model, biar notifyListeners terpanggil
-                  berita.statusBookmark();
-                },
-                icon: (berita.isBookmark)
-                    ? const Icon(Icons.bookmark)
-                    : const Icon(Icons.bookmark_outline),
-                color: Colors.white,
-              ),
-            ),
-          ),
+          //         // Ubah status lewat model, biar notifyListeners terpanggil
+          //         berita.statusBookmark();
+          //       },
+          //       icon: (berita.isBookmark)
+          //           ? const Icon(Icons.bookmark)
+          //           : const Icon(Icons.bookmark_outline),
+          //       color: Colors.white,
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

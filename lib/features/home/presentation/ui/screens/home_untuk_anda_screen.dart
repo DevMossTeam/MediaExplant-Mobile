@@ -115,7 +115,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 140,
+                        height: 170,
                         child: GridView.builder(
                             itemCount: beritaList.length,
                             shrinkWrap: true,
@@ -124,7 +124,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                                     mainAxisSpacing: 10,
                                     crossAxisSpacing: 10,
-                                    childAspectRatio: 0.25,
+                                    childAspectRatio: 0.3,
                                     crossAxisCount: 2),
                             itemBuilder: (contex, index) {
                               return ChangeNotifierProvider.value(

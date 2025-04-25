@@ -25,18 +25,20 @@ class BeritaTerbaruItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
                 child: Container(
                   width: double.infinity,
-                  height: 80,
-                  child: CachedNetworkImage(
-                    imageUrl: berita.gambar ??
-                        berita.firstImageFromKonten ??
-                        'https://via.placeholder.com/150',
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(), // Indikator loading
-                    ),
-                    errorWidget: (context, url, error) => const Center(
-                      child:
-                          Icon(Icons.broken_image, size: 50, color: Colors.red),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: CachedNetworkImage(
+                      imageUrl: berita.gambar ??
+                          berita.firstImageFromKonten ??
+                          'https://via.placeholder.com/150',
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(), // Indikator loading
+                      ),
+                      errorWidget: (context, url, error) => const Center(
+                        child: Icon(Icons.broken_image,
+                            size: 50, color: Colors.red),
+                      ),
                     ),
                   ),
                 ),
@@ -83,18 +85,15 @@ class BeritaTerbaruItem extends StatelessWidget {
                             milliseconds: 1000), // Durasi animasi masuk
                         reverseTransitionDuration: const Duration(
                             milliseconds: 500), // Durasi animasi balik
-                        pageBuilder:
-                            (context, animation, secondaryAnimation) =>
-                                ChangeNotifierProvider.value(
-                              value: berita,
-                              child: DetailBeritaScreen()),
-                        transitionsBuilder: (context, animation,
-                            secondaryAnimation, child) {
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            ChangeNotifierProvider.value(
+                                value: berita, child: DetailBeritaScreen()),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
                           // Animasi geser + fade
                           return SlideTransition(
                             position: Tween<Offset>(
-                              begin: const Offset(
-                                  1.0, 0.0), // Mulai dari kanan
+                              begin: const Offset(1.0, 0.0), // Mulai dari kanan
                               end: Offset.zero, // Berhenti di tengah
                             ).animate(CurvedAnimation(
                               parent: animation,
