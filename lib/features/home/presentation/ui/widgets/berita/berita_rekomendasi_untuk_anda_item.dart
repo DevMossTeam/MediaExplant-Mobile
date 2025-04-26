@@ -1,13 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
-import 'package:mediaexplant/features/home/data/models/berita.dart';
+import 'package:mediaexplant/features/home/models/berita.dart';
+
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:provider/provider.dart';
 
-class BeritaRekomandasiLainItem extends StatelessWidget {
-  const BeritaRekomandasiLainItem({super.key});
+class BeritaRekomendasiUntukAndaItem extends StatelessWidget {
+  const BeritaRekomendasiUntukAndaItem({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,30 +19,23 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
     return Container(
-      margin: const EdgeInsets.only(right: 10),
-      // color: Colors.amber,
-      width: 250,
+      margin: EdgeInsets.only(right: 10),
       child: Stack(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: Container(
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: CachedNetworkImage(
-                  height: double.infinity,
-                  width: double.infinity,
-                  imageUrl: berita.gambar ??
-                      berita.firstImageFromKonten ??
-                      'https://via.placeholder.com/150',
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(), // Indikator loading
-                  ),
-                  errorWidget: (context, url, error) => const Center(
-                    child:
-                        Icon(Icons.broken_image, size: 50, color: Colors.red),
-                  ),
+            child: AspectRatio(
+              aspectRatio: 16 / 9, // Sesuai kebutuhan
+              child: CachedNetworkImage(
+                imageUrl: berita.gambar ??
+                    berita.firstImageFromKonten ??
+                    'https://via.placeholder.com/150',
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                errorWidget: (context, url, error) => const Center(
+                  child: Icon(Icons.broken_image, size: 50, color: Colors.red),
                 ),
               ),
             ),
@@ -50,7 +47,7 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
             left: 0,
             right: 0,
             child: Container(
-              height: 120,
+              height: 200,
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.vertical(bottom: Radius.circular(5)),
                 gradient: LinearGradient(
@@ -66,17 +63,17 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      "${berita.kategori} | ${berita.tanggalDibuat}",
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
+                      "${berita.kategori} | ${berita.tanggalDibuat} yang lalu",
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                     Text(
                       berita.judul,
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                        fontSize: 16,
                       ),
-                      maxLines: 2,
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 5),
@@ -100,7 +97,10 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
                             milliseconds: 500), // Durasi animasi balik
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             ChangeNotifierProvider.value(
-                                value: berita, child: DetailBeritaScreen()),
+                          value:
+                              berita, // Berita yang sudah menggunakan ChangeNotifier
+                          child: DetailBeritaScreen(),
+                        ),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
                           // Animasi geser + fade
@@ -141,12 +141,17 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
           //       shape: BoxShape.circle,
           //     ),
           //     child: IconButton(
-          //       onPressed: () {
-          //         // Toggle bookmark melalui provider
-          //         bookmarkProvider.toggleBookmark(
-          //             userId: "ovPHOkUBw3FHrq6PeQkg1McfBqkF",
+          //       onPressed: () async {
+          //         await bookmarkProvider.toggleBookmark(
+          //           Bookmark(
+          //             userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
           //             beritaId: berita.idBerita,
-          //             berita: berita);
+          //             bookmarkType: "Berita",
+          //           ),
+          //         );
+
+          //         // Ubah status lewat model, biar notifyListeners terpanggil
+          //         berita.statusBookmark();
           //       },
           //       icon: (berita.isBookmark)
           //           ? const Icon(Icons.bookmark)

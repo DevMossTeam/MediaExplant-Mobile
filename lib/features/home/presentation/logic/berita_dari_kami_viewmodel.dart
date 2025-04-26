@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mediaexplant/features/home/data/models/berita.dart';
+import 'package:mediaexplant/features/home/models/berita.dart';
 
 class BeritaDariKamiViewmodel with ChangeNotifier {
   List<Berita> _allBerita = [];

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
-import 'package:mediaexplant/features/home/data/models/berita.dart';
+import 'package:mediaexplant/features/home/models/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:mediaexplant/features/notifications/presentation/ui/screens/notifications_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/settings_screen.dart';

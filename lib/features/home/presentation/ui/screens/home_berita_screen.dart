@@ -4,13 +4,13 @@ import 'package:mediaexplant/features/home/presentation/logic/berita_populer_vie
 import 'package:mediaexplant/features/home/presentation/logic/berita_dari_kami_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_rekomendasi_lain_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_dari_kami.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_rekomandasi_lain_item.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_terbaru_item.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_terkini_item.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/komentar_terbanyak_item.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/tag_populer_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_dari_kami.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomandasi_lain_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terbaru_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terkini_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/komentar_terbanyak_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/tag_populer_item.dart';
 import 'package:provider/provider.dart';
 
 class HomeBeritaScreen extends StatefulWidget {

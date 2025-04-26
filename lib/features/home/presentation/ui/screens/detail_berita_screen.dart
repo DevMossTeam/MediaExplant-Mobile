@@ -4,12 +4,12 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
-import 'package:mediaexplant/features/home/data/models/berita.dart';
+import 'package:mediaexplant/features/home/models/berita.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_populer_item.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_rekomandasi_lain_item.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_terbaru_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomandasi_lain_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terbaru_item.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:provider/provider.dart';
@@ -332,6 +332,26 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                 },
                 childCount: beritaList.length,
               ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    // aksi saat tombol ditekan
+                    print("Tombol ditekan");
+                  },
+                  child: const Text(
+                    "Selengkapnya >>",
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 

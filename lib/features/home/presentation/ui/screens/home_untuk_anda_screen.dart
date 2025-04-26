@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_rekomendasi_untuk_anda_item.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita_teratas_untuk_anda.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomendasi_untuk_anda_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_teratas_untuk_anda.dart';
 import 'package:provider/provider.dart';
 
 class HomeUntukAndaScreen extends StatefulWidget {

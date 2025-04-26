@@ -19,7 +19,6 @@ class Berita with ChangeNotifier {
   int jumlahDislike;
   final int jumlahKomentar;
   final List<String> tags;
-  @JsonKey(name: 'isBookmark')
   bool isBookmark;
   bool isLike;
   bool isDislike;
@@ -40,6 +39,7 @@ class Berita with ChangeNotifier {
     required this.isLike,
     required this.isDislike,
   });
+ 
 
   // Fungsi untuk mengambil gambar pertama dari konten HTML
   String? get firstImageFromKonten {
