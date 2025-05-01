@@ -1,5 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -37,6 +39,15 @@ class Majalah with ChangeNotifier {
     required this.isLike,
     required this.isDislike,
   });
+
+  Uint8List? _thumbnail;
+
+  Uint8List? get thumbnail => _thumbnail;
+
+  set thumbnail(Uint8List? value) {
+    _thumbnail = value;
+    notifyListeners();
+  }
 
   void statusBookmark() {
     isBookmark = !isBookmark;

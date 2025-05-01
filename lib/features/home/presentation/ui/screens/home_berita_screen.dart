@@ -217,7 +217,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
                     height: 180,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: beritaTerkiniList.length,
+                      itemCount: 10,
                       itemBuilder: (context, index) {
                         return ChangeNotifierProvider.value(
                           value: beritaTerkiniList[index],
@@ -289,7 +289,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: beritaRekomendasiList.length,
+              itemCount:10,
               itemBuilder: (context, index) {
                 return ChangeNotifierProvider.value(
                   value: beritaRekomendasiList[index],
@@ -447,7 +447,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
                     height: 150,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: beritaRekomendasiLainList.length,
+                      itemCount: 10,
                       itemBuilder: (context, index) {
                         return ChangeNotifierProvider.value(
                           value: beritaRekomendasiLainList[index],

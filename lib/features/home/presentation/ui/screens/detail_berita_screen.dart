@@ -409,7 +409,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                           height: 180,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: beritaTerbaruList.length,
+                            itemCount: 10,
                             itemBuilder: (context, index) {
                               return ChangeNotifierProvider.value(
                                 value: beritaTerbaruList[index],

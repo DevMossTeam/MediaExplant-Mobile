@@ -77,7 +77,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                     height: 180,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: beritaList.length,
+                      itemCount: 10,
                       itemBuilder: (context, index) {
                         return ChangeNotifierProvider.value(
                           value: beritaList[index],
@@ -130,7 +130,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                       SizedBox(
                         height: 170,
                         child: GridView.builder(
-                            itemCount: beritaList.length,
+                            itemCount: 10,
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
                             gridDelegate:
@@ -172,7 +172,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                         child: ListView.builder(
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
-                            itemCount: majalahList.length,
+                            itemCount: 10,
                             itemBuilder: (contex, index) {
                               return ChangeNotifierProvider.value(
                                 value: majalahList[index],
