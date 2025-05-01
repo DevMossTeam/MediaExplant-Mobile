@@ -9,18 +9,18 @@ class Reaksi with ChangeNotifier {
   @JsonKey(name:'user_id')
   final String userId;
   @JsonKey(name:'item_id')
-  final String beritaId;
+  final String itemId;
   @JsonKey(name:'jenis_reaksi')
   final String jenisReaksi;
   @JsonKey(name:'reaksi_type')
   final String reaksiType;
   Reaksi({
     required this.userId,
-    required this.beritaId,
+    required this.itemId,
     required this.jenisReaksi,
     required this.reaksiType,
   });
- 
+
 
   // Factory method untuk konversi dari JSON
   factory Reaksi.fromJson(Map<String, dynamic> json) => _$ReaksiFromJson(json);

@@ -20,55 +20,49 @@ class BeritaTerbaruItem extends StatelessWidget {
       child: Stack(
         children: [
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(5),
-                child: Container(
-                  width: double.infinity,
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: CachedNetworkImage(
-                      imageUrl: berita.gambar ??
-                          berita.firstImageFromKonten ??
-                          'https://via.placeholder.com/150',
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => const Center(
-                        child: CircularProgressIndicator(), // Indikator loading
-                      ),
-                      errorWidget: (context, url, error) => const Center(
-                        child: Icon(Icons.broken_image,
-                            size: 50, color: Colors.red),
-                      ),
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: CachedNetworkImage(
+                    imageUrl: berita.gambar ??
+                        berita.firstImageFromKonten ??
+                        'https://via.placeholder.com/150',
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(), // Indikator loading
+                    ),
+                    errorWidget: (context, url, error) => const Center(
+                      child:
+                          Icon(Icons.broken_image, size: 50, color: Colors.red),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 5),
-              Row(
-                children: [
-                  Text(
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    "${berita.kategori} | ",
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                        color: AppColors.primary),
-                  ),
-                  Text(
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    "${berita.tanggalDibuat}",
-                    style: const TextStyle(fontSize: 10, color: Colors.grey),
-                  ),
-                ],
+              Text(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                berita.kategori,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: AppColors.primary),
+              ),
+              Text(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                berita.tanggalDibuat,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               Text(
                 berita.judul,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
             ],
           ),

@@ -26,11 +26,10 @@ class BeritaTeratasUntukAnda extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // Gambar Berita
                 ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: AspectRatio(
-                    aspectRatio: 4 / 3, // Misalnya 4:3, bisa disesuaikan
+                    aspectRatio: 5 / 3, // Misalnya 4:3, bisa disesuaikan
                     child: CachedNetworkImage(
                       imageUrl: berita.gambar ??
                           berita.firstImageFromKonten ??
@@ -56,33 +55,29 @@ class BeritaTeratasUntukAnda extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            "${berita.kategori} | ",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10,
-                                color: AppColors.primary),
-                          ),
-                          Text(
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            "${berita.tanggalDibuat}",
-                            style: const TextStyle(
-                                fontSize: 10, color: Colors.grey),
-                          ),
-                        ],
+                      Text(
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        berita.kategori,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: AppColors.primary),
+                      ),
+                      Text(
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        berita.tanggalDibuat,
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       Text(
                         berita.judul,
-                        maxLines: 3,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          fontSize: 15,
                         ),
                       ),
                     ],

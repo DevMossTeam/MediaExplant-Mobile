@@ -8,14 +8,14 @@ part of 'reaksi.dart';
 
 Reaksi _$ReaksiFromJson(Map<String, dynamic> json) => Reaksi(
       userId: json['user_id'] as String,
-      beritaId: json['item_id'] as String,
+      itemId: json['item_id'] as String,
       jenisReaksi: json['jenis_reaksi'] as String,
       reaksiType: json['reaksi_type'] as String,
     );
 
 Map<String, dynamic> _$ReaksiToJson(Reaksi instance) => <String, dynamic>{
       'user_id': instance.userId,
-      'item_id': instance.beritaId,
+      'item_id': instance.itemId,
       'jenis_reaksi': instance.jenisReaksi,
       'reaksi_type': instance.reaksiType,
     };

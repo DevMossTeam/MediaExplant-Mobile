@@ -12,11 +12,10 @@ class BeritaDariKami extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final berita = Provider.of<Berita>(context);
-    final bookmarkProvider =
-        Provider.of<BookmarkProvider>(context, listen: false);
+    final bookmarkProvider = Provider.of<BookmarkProvider>(context, listen: false);
     return Container(
       width: double.infinity,
-      height: 60,
+      height: 70,
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       child: Stack(
         children: [
@@ -50,7 +49,7 @@ class BeritaDariKami extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Row(
                       children: [
@@ -78,7 +77,7 @@ class BeritaDariKami extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                        fontSize: 15,
                       ),
                     ),
                   ],

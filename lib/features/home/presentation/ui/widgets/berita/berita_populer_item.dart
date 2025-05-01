@@ -15,8 +15,8 @@ class BeritaPopulerItem extends StatelessWidget {
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
     return Container(
-      width: double.infinity,
-      height: 60,
+      // width: double.infinity,
+      height: 70,
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
       child: Stack(
         children: [
@@ -50,7 +50,7 @@ class BeritaPopulerItem extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Row(
                       children: [
@@ -78,7 +78,7 @@ class BeritaPopulerItem extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                        fontSize: 15,
                       ),
                     ),
                   ],

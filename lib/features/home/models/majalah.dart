@@ -3,50 +3,40 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'berita.g.dart';
+part 'majalah.g.dart';
 
 @JsonSerializable()
-class Berita with ChangeNotifier {
-  final String idBerita;
-  final String judul;
-  final String kontenBerita;
-  final String? gambar;
-  final String tanggalDibuat;
+class Majalah with ChangeNotifier {
+  final String idproduk;
   final String penulis;
-  final String? profil;
+  final String judul;
+  final String deskripsi;
+  final String release_date;
   final String kategori;
+  final String? profil;
+  final String media_url;
   int jumlahLike;
   int jumlahDislike;
-  final int jumlahKomentar;
-  final List<String> tags;
+  int jumlahKomentar;
   bool isBookmark;
   bool isLike;
   bool isDislike;
-  Berita({
-    required this.idBerita,
-    required this.judul,
-    required this.kontenBerita,
-    this.gambar,
-    required this.tanggalDibuat,
+  Majalah({
+    required this.idproduk,
     required this.penulis,
-    this.profil,
+    required this.judul,
+    required this.deskripsi,
+    required this.release_date,
     required this.kategori,
+    this.profil,
+    required this.media_url,
     required this.jumlahLike,
     required this.jumlahDislike,
     required this.jumlahKomentar,
-    required this.tags,
     required this.isBookmark,
     required this.isLike,
     required this.isDislike,
   });
- 
-
-  // // Fungsi untuk mengambil gambar pertama dari konten HTML
-  String? get firstImageFromKonten {
-    final RegExp regex = RegExp(r'<img[^>]+src="([^">]+)"');
-    final match = regex.firstMatch(kontenBerita);
-    return match?.group(1);
-  }
 
   void statusBookmark() {
     isBookmark = !isBookmark;
@@ -85,7 +75,8 @@ class Berita with ChangeNotifier {
     notifyListeners();
   }
 
-  factory Berita.fromJson(Map<String, dynamic> json) => _$BeritaFromJson(json);
+  factory Majalah.fromJson(Map<String, dynamic> json) =>
+      _$MajalahFromJson(json);
 
-  Map<String, dynamic> toJson() => _$BeritaToJson(this);
+  Map<String, dynamic> toJson() => _$MajalahToJson(this);
 }

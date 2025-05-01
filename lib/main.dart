@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita_populer_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita_dari_kami_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita_rekomendasi_lain_view_model.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita/berita_populer_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita/berita_dari_kami_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita/berita_rekomendasi_lain_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terkait_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/produk/majalah_view_model.dart';
 import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -68,7 +70,7 @@ void main() {
 
         // Provider untuk Berita
         ChangeNotifierProvider(
-          create: (_) => BeritaTerkiniViewmodel(),
+          create: (_) => BeritaTerbaruViewmodel(),
         ),
         ChangeNotifierProvider(
           create: (_) => BeritaPopulerViewmodel(),
@@ -78,6 +80,14 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (_) => BeritaRekomendasiLainViewModel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BeritaTerkaitViewmodel(),
+        ),
+
+        // Provider majalah
+        ChangeNotifierProvider(
+          create: (_) => MajalahViewModel(),
         ),
 
         // Provider untuk Bookmark

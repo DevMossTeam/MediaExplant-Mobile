@@ -17,7 +17,7 @@ class BookmarkProvider with ChangeNotifier {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(request.toJson()),  // Menggunakan toJson dari model Bookmark
+        body: jsonEncode(request.toJson()),
       );
 
       if (response.statusCode == 200) {

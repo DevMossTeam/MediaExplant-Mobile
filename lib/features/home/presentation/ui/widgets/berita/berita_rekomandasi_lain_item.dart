@@ -22,23 +22,20 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: Container(
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: CachedNetworkImage(
-                  height: double.infinity,
-                  width: double.infinity,
-                  imageUrl: berita.gambar ??
-                      berita.firstImageFromKonten ??
-                      'https://via.placeholder.com/150',
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(), // Indikator loading
-                  ),
-                  errorWidget: (context, url, error) => const Center(
-                    child:
-                        Icon(Icons.broken_image, size: 50, color: Colors.red),
-                  ),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: CachedNetworkImage(
+                height: double.infinity,
+                width: double.infinity,
+                imageUrl: berita.gambar ??
+                    berita.firstImageFromKonten ??
+                    'https://via.placeholder.com/150',
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(), // Indikator loading
+                ),
+                errorWidget: (context, url, error) => const Center(
+                  child: Icon(Icons.broken_image, size: 50, color: Colors.red),
                 ),
               ),
             ),
@@ -67,14 +64,14 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
                   children: [
                     Text(
                       "${berita.kategori} | ${berita.tanggalDibuat}",
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                     Text(
                       berita.judul,
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                        fontSize: 15,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,

@@ -6,9 +6,9 @@ import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/models/berita.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita_terkini_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terkait_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomandasi_lain_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terbaru_item.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
@@ -22,9 +22,24 @@ class DetailBeritaScreen extends StatefulWidget {
 }
 
 class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
-  // Fungsi untuk menghapus gambar pertama dari konten berita
+  @override
+  void initState() {
+    super.initState();  
+
+  
+    final berita = Provider.of<Berita>(context, listen: false);
+    final beritaTerkaitViewmodel =
+        Provider.of<BeritaTerkaitViewmodel>(context, listen: false);
+    beritaTerkaitViewmodel.fetchBeritaTerkait(
+        "4FUD7QhJ0hMLMMlF6VQHjvkXad4L", berita.kategori, berita.idBerita);
+
+    final beritaTerbaruViewmodel =
+        Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
+    beritaTerbaruViewmodel.fetchBeritaTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L");
+  }
+
+
   String removeFirstImageFromKonten(String konten) {
-    // Hapus tag <p> yang hanya berisi <img> (bisa ada atribut)
     final RegExp imgInPTag =
         RegExp(r'<p[^>]*>\s*<img[^>]*>\s*</p>', caseSensitive: false);
     konten = konten.replaceFirst(imgInPTag, '');
@@ -32,19 +47,21 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
     // Jika ada <img> yang berdiri sendiri tanpa <p>
     final RegExp standaloneImgTag = RegExp(r'<img[^>]*>', caseSensitive: false);
     konten = konten.replaceFirst(standaloneImgTag, '');
-
     return konten.trim(); // Menghilangkan whitespace di awal/akhir
   }
 
   @override
   Widget build(BuildContext context) {
-    final beritaProvider = Provider.of<BeritaTerkiniViewmodel>(context);
-    final beritaList = beritaProvider.allBerita;
+    final beritaTerkaitViewmodel = Provider.of<BeritaTerkaitViewmodel>(context);
+    final beritaTerkaitList = beritaTerkaitViewmodel.allBerita;
+
+    final beritaTerbaruViewmodel = Provider.of<BeritaTerbaruViewmodel>(context);
+    final beritaTerbaruList = beritaTerbaruViewmodel.allBerita;
 
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
     final reaksiProvider = Provider.of<ReaksiProvider>(context, listen: false);
-    final berita = Provider.of<Berita>(context); // Ambil berita dari Provider
+    final berita = Provider.of<Berita>(context);
     String kontenTanpaGambar = removeFirstImageFromKonten(berita.kontenBerita);
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -112,7 +129,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                         bookmarkType: "Berita",
                       ),
                     );
-                    // Ubah status lewat model, biar notifyListeners terpanggil
+
                     berita.statusBookmark();
                   },
                   icon: Icon(
@@ -205,13 +222,11 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                               onPressed: () async {
                                 await reaksiProvider.toggleReaksi(Reaksi(
                                   userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                                  beritaId: berita.idBerita,
+                                  itemId: berita.idBerita,
                                   jenisReaksi: "Suka",
                                   reaksiType: "Berita",
                                 ));
-
-                                berita
-                                    .statusLike(); // Gunakan method dari model
+                                berita.statusLike();
                               },
                               icon: Icon(
                                 Icons.thumb_up,
@@ -228,13 +243,11 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                               onPressed: () async {
                                 await reaksiProvider.toggleReaksi(Reaksi(
                                   userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                                  beritaId: berita.idBerita,
+                                  itemId: berita.idBerita,
                                   jenisReaksi: "Tidak Suka",
                                   reaksiType: "Berita",
                                 ));
-
-                                berita
-                                    .statusDislike(); // Gunakan method dari model
+                                berita.statusDislike();
                               },
                               icon: Icon(
                                 Icons.thumb_down,
@@ -298,7 +311,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
               child: Row(
                 children: [
                   Text(
-                    "Rekomandasi Lainnya",
+                    "Berita Terkait",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -319,18 +332,18 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
               ),
             ),
           ),
-          // BERITA rekomendasi lainnya
+          // BERITA terkait
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   return ChangeNotifierProvider.value(
-                    value: beritaList[index],
+                    value: beritaTerkaitList[index],
                     child: BeritaPopulerItem(),
                   );
                 },
-                childCount: beritaList.length,
+                childCount: beritaTerkaitList.length,
               ),
             ),
           ),
@@ -393,13 +406,13 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                         const SizedBox(height: 10),
                         // BERITA TERBARU
                         Container(
-                          height: 150,
+                          height: 180,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: beritaList.length,
+                            itemCount: beritaTerbaruList.length,
                             itemBuilder: (context, index) {
                               return ChangeNotifierProvider.value(
-                                value: beritaList[index],
+                                value: beritaTerbaruList[index],
                                 child: BeritaTerbaruItem(),
                               );
                             },
@@ -411,7 +424,6 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             TextButton(
                               onPressed: () {
                                 // aksi saat tombol ditekan
-                                print("Tombol ditekan");
                               },
                               child: const Text(
                                 "Selengkapnya >>",
