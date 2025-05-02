@@ -168,7 +168,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                         height: 10,
                       ),
                       SizedBox(
-                        height: 230,
+                        height: 250,
                         child: ListView.builder(
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,

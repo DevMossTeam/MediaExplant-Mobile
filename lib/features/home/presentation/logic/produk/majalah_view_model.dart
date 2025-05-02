@@ -6,6 +6,11 @@ import 'package:http/http.dart' as http;
 import 'package:mediaexplant/features/home/models/majalah.dart';
 import 'package:pdfx/pdfx.dart';
 
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 class MajalahViewModel with ChangeNotifier {
   List<Majalah> _allMajalah = [];
   bool _isLoaded = false;
@@ -14,59 +19,97 @@ class MajalahViewModel with ChangeNotifier {
   bool get isLoaded => _isLoaded;
 
   Future<void> fetchMajalah(String userId) async {
-  if (_isLoaded) return;
+    if (_isLoaded) return;
 
-  final url = Uri.parse('http://10.0.2.2:8000/api/produk-majalah?user_id=$userId');
+    final url =
+        Uri.parse('http://10.0.2.2:8000/api/produk-majalah?user_id=$userId');
 
-  try {
-    final response = await http.get(url);
+    try {
+      final response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
 
-      _allMajalah = data.map((item) => Majalah.fromJson(item)).toList();
+        _allMajalah = data.map((item) => Majalah.fromJson(item)).toList();
 
-      // Preload thumbnail untuk semua majalah
-      for (final majalah in _allMajalah) {
-        _preloadThumbnail(majalah);
+        // Preload thumbnail untuk semua majalah
+        for (final majalah in _allMajalah) {
+          _preloadThumbnail(majalah);
+        }
+
+        _isLoaded = true;
+        notifyListeners();
+      } else {
+        throw Exception("Gagal mengambil Majalah.");
       }
-
-      _isLoaded = true;
-      notifyListeners();
-    } else {
-      throw Exception("Gagal mengambil Majalah.");
+    } catch (error) {
+      rethrow;
     }
-  } catch (error) {
-    rethrow;
   }
-}
 
-Future<void> _preloadThumbnail(Majalah majalah) async {
-  if (majalah.media_url.isEmpty) return;
+// fungsi render thumbnail
 
-  try {
-    final data = await NetworkAssetBundle(Uri.parse(majalah.media_url)).load(majalah.media_url);
-    final bytes = data.buffer.asUint8List();
+  Future<void> _preloadThumbnail(Majalah majalah) async {
+    if (majalah.media_url.isEmpty) return;
 
-    final doc = await PdfDocument.openData(bytes);
-    final page = await doc.getPage(1);
+    try {
+      final data = await NetworkAssetBundle(Uri.parse(majalah.media_url))
+          .load(majalah.media_url);
+      final bytes = data.buffer.asUint8List();
 
-    final pageImage = await page.render(
-      width: 300,
-      height: 400,
-      format: PdfPageImageFormat.png,
-    );
+      final doc = await PdfDocument.openData(bytes);
+      final page = await doc.getPage(1);
 
-    await page.close();
+      final pageImage = await page.render(
+        width: 300,
+        height: 400,
+        format: PdfPageImageFormat.png,
+      );
 
-    if (pageImage != null) {
-      majalah.thumbnail = pageImage.bytes;
+      await page.close();
+
+      if (pageImage != null) {
+        majalah.thumbnail = pageImage.bytes;
+      }
+    } catch (e) {
+      debugPrint('Gagal preload thumbnail: $e');
     }
-  } catch (e) {
-    debugPrint('Gagal preload thumbnail: $e');
   }
-}
 
+// fungsi download pdf
+
+  Future<void> downloadProduk(String idProduk) async {
+    final dio = Dio();
+    final url = 'http://10.0.2.2:8000/api/api/produk-majalah/$idProduk/media';
+
+    // Minta izin penyimpanan (Android)
+    if (Platform.isAndroid) {
+      var status = await Permission.storage.request();
+      if (!status.isGranted) {
+        print('Izin penyimpanan ditolak');
+        return;
+      }
+    }
+
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final savePath = '${dir.path}/produk-$idProduk.pdf';
+
+      await dio.download(
+        url,
+        savePath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            print('Progress: ${(received / total * 100).toStringAsFixed(0)}%');
+          }
+        },
+      );
+
+      print('Download selesai: $savePath');
+    } catch (e) {
+      print('Gagal download: $e');
+    }
+  }
 
   void resetCache() {
     _isLoaded = false;

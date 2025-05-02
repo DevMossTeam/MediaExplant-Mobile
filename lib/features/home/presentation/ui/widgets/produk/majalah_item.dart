@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/models/majalah.dart';
-import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/detail_produk_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:pdfx/pdfx.dart';
 
@@ -80,21 +80,21 @@ class _MajalahItemState extends State<MajalahItem> {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 10,
+                    fontSize: 12,
                     color: AppColors.primary),
               ),
               Text(
                 majalah.release_date,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 10, color: Colors.grey),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               Text(
                 majalah.judul,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -112,7 +112,7 @@ class _MajalahItemState extends State<MajalahItem> {
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             ChangeNotifierProvider.value(
                                 value: majalah,
-                                child: const DetailBeritaScreen()),
+                                child: const DetailProdukScreen()),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
                           return SlideTransition(

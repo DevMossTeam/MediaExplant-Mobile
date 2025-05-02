@@ -5,4 +5,5 @@ class AppColors {
   static const Color secondary = Color(0xFF007BFF);
   static const Color background = Color(0xFFFCFCFC);
   static const Color text = Color(0xFF333333);
+  static const Color button_download = Color(0xFF5773FF);
 }
