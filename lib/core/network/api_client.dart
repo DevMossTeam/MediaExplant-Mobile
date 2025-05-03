@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 
 class ApiClient {
-  final String baseUrl;
+  // final String baseUrl;
 
-  ApiClient({this.baseUrl = "http://192.168.1.21:8000/api"});
+  static const String baseUrl = "http://192.168.43.21:8000/api";
+
+  // ApiClient({this.baseUrl = "http://192.168.1.21:8000/api"});
 
   /// Generic GET, sekarang bisa pakai queryParameters
   Future<Map<String, dynamic>> getData(
