@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/home/models/berita.dart';
 
 // nyambung API
@@ -16,7 +17,7 @@ class BeritaTerkaitViewmodel with ChangeNotifier {
     if (_isLoaded) return;
 
     final url =
-    Uri.parse('http://10.0.2.2:8000/api/berita/terkait?berita_id=$beritaId&user_id=$userId&kategori=$kategori');
+    Uri.parse("${ApiClient.baseUrl}/berita/terkait?berita_id=$beritaId&user_id=$userId&kategori=$kategori");
 
     try {
       final response = await http.get(url);

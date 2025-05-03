@@ -172,7 +172,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                         child: ListView.builder(
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
-                            itemCount: 10,
+                            itemCount: majalahList.length,
                             itemBuilder: (contex, index) {
                               return ChangeNotifierProvider.value(
                                 value: majalahList[index],

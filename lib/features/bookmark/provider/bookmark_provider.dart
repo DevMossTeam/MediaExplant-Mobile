@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 
 class BookmarkProvider with ChangeNotifier {
@@ -11,7 +12,7 @@ class BookmarkProvider with ChangeNotifier {
 
   // Toggle bookmark
   Future<void> toggleBookmark(Bookmark request) async {
-    final url = Uri.parse('http://10.0.2.2:8000/api/bookmark/toggle');
+    final url = Uri.parse("${ApiClient.baseUrl}/bookmark/toggle");
 
     try {
       final response = await http.post(

@@ -1,11 +1,9 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/models/majalah.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_produk_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:pdfx/pdfx.dart';
 
 class MajalahItem extends StatefulWidget {
   const MajalahItem({super.key});
@@ -15,40 +13,9 @@ class MajalahItem extends StatefulWidget {
 }
 
 class _MajalahItemState extends State<MajalahItem> {
-  Uint8List? _thumbnailBytes;
-
   @override
   void initState() {
     super.initState();
-    final majalah = Provider.of<Majalah>(context, listen: false);
-    if (majalah.media_url.isNotEmpty) {
-      _loadPdfThumbnail(majalah.media_url);
-    }
-  }
-
-  Future<void> _loadPdfThumbnail(String pdfUrl) async {
-    try {
-      final data = await NetworkAssetBundle(Uri.parse(pdfUrl)).load(pdfUrl);
-      final bytes = data.buffer.asUint8List();
-
-      final doc = await PdfDocument.openData(bytes);
-      final page = await doc.getPage(1);
-
-      final pageImage = await page.render(
-        width: 300,
-        height: 400,
-        format: PdfPageImageFormat.png,
-      );
-
-      await page.close();
-
-      if (mounted && pageImage != null) {
-        final majalah = Provider.of<Majalah>(context, listen: false);
-        majalah.thumbnail = pageImage.bytes;
-      }
-    } catch (e) {
-      debugPrint("Gagal memuat thumbnail PDF: $e");
-    }
   }
 
   @override
@@ -68,9 +35,13 @@ class _MajalahItemState extends State<MajalahItem> {
                 borderRadius: BorderRadius.circular(5),
                 child: AspectRatio(
                   aspectRatio: 3 / 4,
-                  child: majalah.thumbnail == null
-                      ? const Center(child: CircularProgressIndicator())
-                      : Image.memory(majalah.thumbnail!, fit: BoxFit.cover),
+                  // tampilkan thumbnail di sini
+                  child: majalah.thumbnail != null
+                      ? Image.memory(
+                          majalah.thumbnail!,
+                          fit: BoxFit.cover,
+                        )
+                      : const Center(child: CircularProgressIndicator()),
                 ),
               ),
               const SizedBox(height: 5),

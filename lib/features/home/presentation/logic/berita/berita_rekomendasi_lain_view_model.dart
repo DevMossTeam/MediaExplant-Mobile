@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/home/models/berita.dart';
 
 class BeritaRekomendasiLainViewModel with ChangeNotifier {
@@ -14,7 +15,7 @@ class BeritaRekomendasiLainViewModel with ChangeNotifier {
   Future<void> fetchBeritaRekomendasiLain(String userId) async {
     if (_isLoaded) return;
 
-    final url = Uri.parse('http://10.0.2.2:8000/api/berita/rekomendasi-lainnya?user_id=$userId');
+    final url = Uri.parse("${ApiClient.baseUrl}/berita/rekomendasi-lainnya?user_id=$userId");
 
     try {
       final response = await http.get(url);
