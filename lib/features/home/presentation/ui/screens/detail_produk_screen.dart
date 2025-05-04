@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
-import 'package:mediaexplant/features/home/models/majalah.dart';
-import 'package:mediaexplant/features/home/presentation/logic/produk/majalah_view_model.dart';
+import 'package:mediaexplant/features/home/models/produk.dart';
+import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailProdukScreen extends StatefulWidget {
   const DetailProdukScreen({super.key});
@@ -45,8 +47,8 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
     final reaksiProvider = Provider.of<ReaksiProvider>(context, listen: false);
     // final berita = Provider.of<Berita>(context);
 
-    final majalah = Provider.of<Majalah>(context);
-    final majalahVW = Provider.of<MajalahViewModel>(context, listen: false);
+    final majalah = Provider.of<Produk>(context);
+    final majalahVW = Provider.of<ProdukViewModel>(context, listen: false);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -197,7 +199,8 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                               width: 180,
                               child: ElevatedButton.icon(
                                 onPressed: () async {
-                                  await majalahVW.downloadProduk(majalah.idproduk);
+                                  await majalahVW
+                                      .downloadProduk(majalah.idproduk);
                                 },
                                 icon: const Icon(Icons.download),
                                 label: const Text('Download'),
@@ -213,7 +216,12 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                             SizedBox(
                               width: 180,
                               child: ElevatedButton.icon(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  // akan ngebaca pdf
+                                  // Misalnya idProduk diambil dari data produk
+                                  // majalahVW.previewProduk(
+                                  //     majalah.idproduk, context);
+                                },
                                 icon: const Icon(Icons.remove_red_eye),
                                 label: const Text('Pratinjau'),
                                 style: ElevatedButton.styleFrom(

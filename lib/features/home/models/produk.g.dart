@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'majalah.dart';
+part of 'produk.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Majalah _$MajalahFromJson(Map<String, dynamic> json) => Majalah(
+Produk _$ProdukFromJson(Map<String, dynamic> json) => Produk(
       idproduk: json['idproduk'] as String,
       penulis: json['penulis'] as String,
       judul: json['judul'] as String,
@@ -23,7 +23,7 @@ Majalah _$MajalahFromJson(Map<String, dynamic> json) => Majalah(
       isDislike: json['isDislike'] as bool,
     );
 
-Map<String, dynamic> _$MajalahToJson(Majalah instance) => <String, dynamic>{
+Map<String, dynamic> _$ProdukToJson(Produk instance) => <String, dynamic>{
       'idproduk': instance.idproduk,
       'penulis': instance.penulis,
       'judul': instance.judul,

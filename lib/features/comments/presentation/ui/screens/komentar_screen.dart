@@ -1,4 +1,3 @@
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/comments/data/models/komentar.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/widgets/komentar_item.dart';
@@ -16,12 +15,10 @@ class _KomentarScreenState extends State<KomentarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Faker faker = Faker();
-
     // Data Dummy Komentar
     List<Komentar> comments = [
       Komentar(
-        profileUrl: faker.internet.httpsUrl(),
+        profileUrl: "",
         username: "Ryyw",
         time: "4 j",
         comment: "apalah ini kelakuan randomnya bikin heran",
@@ -29,7 +26,7 @@ class _KomentarScreenState extends State<KomentarScreen> {
         replies: 20,
       ),
       Komentar(
-        profileUrl: faker.internet.httpsUrl(),
+        profileUrl: "",
         username: "twofaces",
         comment: "pengen rasanya mokel",
         time: "6 j",
@@ -37,7 +34,7 @@ class _KomentarScreenState extends State<KomentarScreen> {
         replies: 14,
       ),
       Komentar(
-        profileUrl: faker.internet.httpsUrl(),
+        profileUrl: "",
         username: "gada nama",
         comment: "batuk udah satu bulan gw aseli",
         time: "2 mnt",
@@ -155,9 +152,11 @@ class _KomentarScreenState extends State<KomentarScreen> {
                             icon: const Icon(Icons.send),
                             onPressed: () {
                               if (_commentController.text.isNotEmpty) {
-                                print("Komentar dikirim: ${_commentController.text}");
+                                print(
+                                    "Komentar dikirim: ${_commentController.text}");
                                 _commentController.clear();
-                                _focusNode.unfocus(); // Sembunyikan keyboard setelah kirim
+                                _focusNode
+                                    .unfocus(); // Sembunyikan keyboard setelah kirim
                               }
                             },
                           ),

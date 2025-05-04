@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:mediaexplant/core/network/api_client.dart';
-import 'package:mediaexplant/features/home/models/majalah.dart';
+import 'package:mediaexplant/features/home/models/produk.dart';
 import 'package:pdfx/pdfx.dart';
 
 import 'dart:io';
@@ -13,15 +12,21 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:open_file/open_file.dart';
 
-class MajalahViewModel with ChangeNotifier {
-  List<Majalah> _allMajalah = [];
-  bool _isLoaded = false;
+class ProdukViewModel with ChangeNotifier {
+  List<Produk> _allMajalah = [];
+  List<Produk> _allBuletin = [];
+  List<Produk> get allMajalah => _allMajalah;
+  List<Produk> get allBuletin => _allBuletin;
 
-  List<Majalah> get allMajalah => _allMajalah;
-  bool get isLoaded => _isLoaded;
+  bool _isMajalahLoaded = false;
+  bool _isBuletinLoaded = false;
+
+  bool get isMajalahLoaded => _isMajalahLoaded;
+  bool get isBuletinLoaded => _isBuletinLoaded;
+
 
   Future<void> fetchMajalah(String userId) async {
-    if (_isLoaded) return;
+    if (_isMajalahLoaded) return;
 
     final url =
         Uri.parse("${ApiClient.baseUrl}/produk-majalah?user_id=$userId");
@@ -32,9 +37,9 @@ class MajalahViewModel with ChangeNotifier {
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
 
-        _allMajalah = data.map((item) => Majalah.fromJson(item)).toList();
+        _allMajalah = data.map((item) => Produk.fromJson(item)).toList();
 
-        _isLoaded = true;
+        _isMajalahLoaded = true;
         notifyListeners();
 
         // Proses preload thumbnail secara paralel di latar belakang
@@ -51,12 +56,44 @@ class MajalahViewModel with ChangeNotifier {
     }
   }
 
-  // Fungsi preload thumbnail
-  Future<void> preloadThumbnail(Majalah majalah) async {
-    if (majalah.media_url.isEmpty) return;
+// get buletin
+  Future<void> fetchBuletin(String userId) async {
+    if (_isBuletinLoaded) return;
+
+    final url =
+        Uri.parse("${ApiClient.baseUrl}/produk-buletin?user_id=$userId");
 
     try {
-      final bytes = await _fetchPdfBytes(majalah.media_url);
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+
+        _allBuletin = data.map((item) => Produk.fromJson(item)).toList();
+
+        _isBuletinLoaded = true;
+        notifyListeners();
+
+       // Proses preload thumbnail secara paralel di latar belakang
+        for (final buletin in _allBuletin) {
+          if (buletin.thumbnail == null) {
+            preloadThumbnail(buletin); // tanpa await
+          }
+        }
+      } else {
+        throw Exception("Gagal mengambil Buletin.");
+      }
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+   // Fungsi preload thumbnail
+  Future<void> preloadThumbnail(Produk produk) async {
+    if (produk.media_url.isEmpty) return;
+
+    try {
+      final bytes = await _fetchPdfBytes(produk.media_url);
 
       final document = await PdfDocument.openData(bytes);
 
@@ -77,7 +114,7 @@ class MajalahViewModel with ChangeNotifier {
       await document.close();
 
       if (pageImage != null && pageImage.bytes.isNotEmpty) {
-        majalah.thumbnail = pageImage.bytes;
+        produk.thumbnail = pageImage.bytes;
       } else {
         print('Gagal render halaman PDF');
       }
@@ -121,8 +158,7 @@ class MajalahViewModel with ChangeNotifier {
       rethrow;
     }
   }
-
-  // Fungsi download produk PDF
+// Fungsi download produk PDF
   Future<void> downloadProduk(String idProduk) async {
     final dio = Dio();
     final url = "${ApiClient.baseUrl}/produk-majalah/$idProduk/media";
@@ -173,8 +209,10 @@ class MajalahViewModel with ChangeNotifier {
   }
 
   void resetCache() {
-    _isLoaded = false;
+    _isMajalahLoaded = false;
+    _isBuletinLoaded = false;
     _allMajalah = [];
+    _allBuletin = [];
     notifyListeners();
   }
 }

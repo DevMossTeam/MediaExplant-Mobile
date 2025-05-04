@@ -5,10 +5,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'majalah.g.dart';
+part 'produk.g.dart';
 
 @JsonSerializable()
-class Majalah with ChangeNotifier {
+class Produk with ChangeNotifier {
   final String idproduk;
   final String penulis;
   final String judul;
@@ -23,7 +23,7 @@ class Majalah with ChangeNotifier {
   bool isBookmark;
   bool isLike;
   bool isDislike;
-  Majalah({
+  Produk({
     required this.idproduk,
     required this.penulis,
     required this.judul,
@@ -86,8 +86,8 @@ class Majalah with ChangeNotifier {
     notifyListeners();
   }
 
-  factory Majalah.fromJson(Map<String, dynamic> json) =>
-      _$MajalahFromJson(json);
+  factory Produk.fromJson(Map<String, dynamic> json) =>
+      _$ProdukFromJson(json);
 
-  Map<String, dynamic> toJson() => _$MajalahToJson(this);
+  Map<String, dynamic> toJson() => _$ProdukToJson(this);
 }

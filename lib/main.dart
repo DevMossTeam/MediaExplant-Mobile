@@ -6,7 +6,7 @@ import 'package:mediaexplant/features/home/presentation/logic/berita/berita_dari
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_rekomendasi_lain_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terkait_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/produk/majalah_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -87,7 +87,7 @@ void main() {
 
         // Provider majalah
         ChangeNotifierProvider(
-          create: (_) => MajalahViewModel(),
+          create: (_) => ProdukViewModel(),
         ),
 
         // Provider untuk Bookmark

@@ -1,18 +1,18 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
-import 'package:mediaexplant/features/home/models/majalah.dart';
+import 'package:mediaexplant/features/home/models/produk.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_produk_screen.dart';
 import 'package:provider/provider.dart';
 
-class MajalahItem extends StatefulWidget {
-  const MajalahItem({super.key});
+class ProdukItem extends StatefulWidget {
+  const ProdukItem({super.key});
 
   @override
-  _MajalahItemState createState() => _MajalahItemState();
+  _ProdukItemState createState() => _ProdukItemState();
 }
 
-class _MajalahItemState extends State<MajalahItem> {
+class _ProdukItemState extends State<ProdukItem> {
   @override
   void initState() {
     super.initState();
@@ -20,7 +20,7 @@ class _MajalahItemState extends State<MajalahItem> {
 
   @override
   Widget build(BuildContext context) {
-    final majalah = Provider.of<Majalah>(context);
+    final majalah = Provider.of<Produk>(context);
 
     return Container(
       width: 105,
