@@ -125,7 +125,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                     await bookmarkProvider.toggleBookmark(
                       Bookmark(
                         userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                        beritaId: berita.idBerita,
+                        itemId: berita.idBerita,
                         bookmarkType: "Berita",
                       ),
                     );

@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
-import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
-import 'package:mediaexplant/features/home/models/produk/produk.dart';
-import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
+import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class DetailProdukScreen extends StatefulWidget {
-  const DetailProdukScreen({super.key});
+class DetailKaryaScreen extends StatefulWidget {
+  const DetailKaryaScreen({super.key});
 
   @override
-  State<DetailProdukScreen> createState() => _DetailProdukScreenState();
+  State<DetailKaryaScreen> createState() => _DetailKaryaScreenState();
 }
 
-class _DetailProdukScreenState extends State<DetailProdukScreen> {
+class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
   @override
   void initState() {
     super.initState();
+
+    // provider
+    // view model
+
+    ;
   }
 
   @override
@@ -29,11 +31,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
     final reaksiProvider = Provider.of<ReaksiProvider>(context, listen: false);
-    // final berita = Provider.of<Berita>(context);
-
-    final majalah = Provider.of<Produk>(context);
-    final majalahVW = Provider.of<ProdukViewModel>(context, listen: false);
-
+    final karya = Provider.of<Karya>(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
@@ -50,9 +48,12 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                 return Stack(
                   fit: StackFit.expand,
                   children: [
-                    majalah.thumbnail == null
-                        ? const Center(child: CircularProgressIndicator())
-                        : Image.memory(majalah.thumbnail!, fit: BoxFit.cover),
+                    karya.media.isNotEmpty
+                        ? Image.memory(
+                            karya.gambar(),
+                            fit: BoxFit.cover,
+                          )
+                        : const Center(child: CircularProgressIndicator()),
                   ],
                 );
               },
@@ -86,34 +87,21 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                     await bookmarkProvider.toggleBookmark(
                       Bookmark(
                         userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                        itemId: majalah.idproduk,
-                        bookmarkType: "Produk",
+                        itemId: karya.idKarya,
+                        bookmarkType: "Karya",
                       ),
                     );
 
-                    majalah.statusBookmark();
+                    karya.statusBookmark();
                   },
                   icon: Icon(
-                    majalah.isBookmark
-                        ? Icons.bookmark
-                        : Icons.bookmark_outline,
+                    karya.isBookmark ? Icons.bookmark : Icons.bookmark_outline,
                     color: Colors.white,
                   ),
                 ),
               ),
             ],
           ),
-
-          // SliverToBoxAdapter(
-          //   child: Row(
-          //     children: [
-          //       ClipRRect(
-          //         borderRadius: BorderRadius.circular(5),
-          //         child: AspectRatio(aspectRatio: 3 / 4),
-          //       ),
-          //     ],
-          //   ),
-          // ),
 
           // Konten Berita
           SliverList(
@@ -127,14 +115,14 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          majalah.kategori,
+                          karya.kategori,
                           style: const TextStyle(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          majalah.judul,
+                          karya.judul,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -145,7 +133,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                           height: 10,
                         ),
                         Text(
-                          'Oleh: ${majalah.penulis}  |  ${majalah.release_date}',
+                          'Oleh: ${karya.penulis}  |  ${karya.release}',
                           style: const TextStyle(color: Colors.grey),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -155,78 +143,51 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                   ),
                   const Divider(color: Colors.grey, thickness: 0.5),
                   Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          elevation: 5,
-                          margin: const EdgeInsets.all(8),
-                          clipBehavior: Clip.antiAlias,
-                          child: SizedBox(
-                            height: 230,
-                            width: 170,
-                            child: majalah.thumbnail == null
-                                ? const Center(
-                                    child: CircularProgressIndicator())
-                                : Image.memory(majalah.thumbnail!,
-                                    fit: BoxFit.cover),
-                          ),
-                        ),
-                        Column(
-                          children: [
-                            SizedBox(
-                              width: 180,
-                              child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  await majalahVW
-                                      .downloadProduk(majalah.idproduk);
-                                },
-                                icon: const Icon(Icons.download),
-                                label: const Text('Download'),
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  backgroundColor: AppColors.button_download,
-                                  foregroundColor: Colors.white,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 180,
-                              child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  // akan ngebaca pdf
-                                  // Misalnya idProduk diambil dari data produk
-                                  // majalahVW.previewProduk(
-                                  //     majalah.idproduk, context);
-                                },
-                                icon: const Icon(Icons.remove_red_eye),
-                                label: const Text('Pratinjau'),
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  backgroundColor: Colors.black,
-                                  foregroundColor: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          karya.deskripsi,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Center(
+                          child: Text(
+                            karya.judul,
+                            style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            "(Oleh${karya.penulis})",
+                            style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          karya.kontenKarya,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 7),
                           child: Text(
@@ -247,20 +208,19 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                               onPressed: () async {
                                 await reaksiProvider.toggleReaksi(Reaksi(
                                   userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                                  itemId: majalah.idproduk,
+                                  itemId: karya.idKarya,
                                   jenisReaksi: "Suka",
-                                  reaksiType: "Produk",
+                                  reaksiType: "Karya",
                                 ));
-                                majalah.statusLike();
+                                karya.statusLike();
                               },
                               icon: Icon(
                                 Icons.thumb_up,
-                                color:
-                                    majalah.isLike ? Colors.blue : Colors.grey,
+                                color: karya.isLike ? Colors.blue : Colors.grey,
                               ),
                             ),
                             Text(
-                              '${majalah.jumlahLike}',
+                              '${karya.jumlahLike}',
                               style: const TextStyle(color: Colors.blue),
                             ),
                             const SizedBox(width: 10),
@@ -268,22 +228,21 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                               onPressed: () async {
                                 await reaksiProvider.toggleReaksi(Reaksi(
                                   userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                                  itemId: majalah.idproduk,
+                                  itemId: karya.idKarya,
                                   jenisReaksi: "Tidak Suka",
-                                  reaksiType: "Produk",
+                                  reaksiType: "Karya",
                                 ));
-                                majalah.statusDislike();
+                                karya.statusDislike();
                               },
                               icon: Icon(
                                 Icons.thumb_down,
-                                color: majalah.isDislike
-                                    ? Colors.red
-                                    : Colors.grey,
+                                color:
+                                    karya.isDislike ? Colors.red : Colors.grey,
                               ),
                             ),
 
                             Text(
-                              '${majalah.jumlahDislike}',
+                              '${karya.jumlahDislike}',
                               style: const TextStyle(color: Colors.red),
                             ),
                             const SizedBox(width: 10),
@@ -318,7 +277,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
               child: Row(
                 children: [
                   Text(
-                    "Produk Terkait",
+                    "Berita Terkait",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -339,6 +298,119 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
               ),
             ),
           ),
+          // // BERITA terkait
+          // SliverPadding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 5),
+          //   sliver: SliverList(
+          //     delegate: SliverChildBuilderDelegate(
+          //       (context, index) {
+          //         return ChangeNotifierProvider.value(
+          //           value: beritaTerkaitList[index],
+          //           child: BeritaPopulerItem(),
+          //         );
+          //       },
+          //       childCount: beritaTerkaitList.length,
+          //     ),
+          //   ),
+          // ),
+          // SliverToBoxAdapter(
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.end,
+          //     children: [
+          //       TextButton(
+          //         onPressed: () {
+          //           // aksi saat tombol ditekan
+          //         },
+          //         child: const Text(
+          //           "Selengkapnya >>",
+          //           style: TextStyle(
+          //             color: AppColors.primary,
+          //             fontSize: 14,
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+
+          // // berita terbaru
+          // SliverPadding(
+          //   padding: const EdgeInsets.only(top: 20),
+          //   sliver: SliverList(
+          //     delegate: SliverChildListDelegate([
+          //       Container(
+          //         color: Colors.grey.withAlpha(50),
+          //         child: Padding(
+          //           padding:
+          //               const EdgeInsets.only(left: 10, top: 20, bottom: 20),
+          //           child: Column(
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               const Row(
+          //                 children: [
+          //                   Text(
+          //                     "Terbaru",
+          //                     style: TextStyle(
+          //                       fontSize: 16,
+          //                       fontWeight: FontWeight.bold,
+          //                       color: Colors.black,
+          //                     ),
+          //                   ),
+          //                   SizedBox(
+          //                     width: 10,
+          //                   ),
+          //                   Text(
+          //                     "Teratas untuk anda",
+          //                     style: TextStyle(
+          //                       fontSize: 12,
+          //                       color: Colors.grey,
+          //                     ),
+          //                   ),
+          //                 ],
+          //               ),
+          //               const SizedBox(height: 10),
+          //               // BERITA TERBARU
+          //               // SizedBox(
+          //               //   height: 180,
+          //               //   child: ListView.builder(
+          //               //     scrollDirection: Axis.horizontal,
+          //               //     itemCount: 10,
+          //               //     itemBuilder: (context, index) {
+          //               //       return ChangeNotifierProvider.value(
+          //               //         value: beritaTerbaruList[index],
+          //               //         child: BeritaTerbaruItem(),
+          //               //       );
+          //               //     },
+          //               //   ),
+          //               // ),
+          //               Row(
+          //                 mainAxisAlignment: MainAxisAlignment.end,
+          //                 children: [
+          //                   TextButton(
+          //                     onPressed: () {
+          //                       // aksi saat tombol ditekan
+          //                     },
+          //                     child: const Text(
+          //                       "Selengkapnya >>",
+          //                       style: TextStyle(
+          //                         color: AppColors.primary,
+          //                         fontSize: 14,
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 ],
+          //               ),
+          //               const SizedBox(
+          //                 height: 50,
+          //               ),
+          //             ],
+          //           ),
+          //         ),
+          //       ),
+          //       // const Divider(color: Colors.grey, thickness: 0.5),
+          //     ]),
+          //   ),
+          // ),
         ],
       ),
 

@@ -10,7 +10,6 @@ import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terkini_item.dart';
 import 'package:provider/provider.dart';
 
-
 class HomeBeritaScreen extends StatefulWidget {
   const HomeBeritaScreen({super.key});
 
@@ -106,7 +105,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
             itemBuilder: (context, index) {
               return ChangeNotifierProvider.value(
                 value: beritaTerkiniList[index],
-                child: const BeritaTerkiniItem(),
+                child: BeritaTerkiniItem(),
               );
             },
           ),

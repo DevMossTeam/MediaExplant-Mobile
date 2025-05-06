@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/karya/puisi_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomendasi_untuk_anda_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_teratas_untuk_anda.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/puisi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/produk/produk_item.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +21,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
   final Map<String, bool> _isLoading = {
     'berita': false,
     'produk': false,
+    'puisi': false,
   };
 
   @override
@@ -29,25 +32,31 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
       final beritaVM =
           Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
       final produkVW = Provider.of<ProdukViewModel>(context, listen: false);
+      final puisiVW =
+          Provider.of<PuisiTerbaruViewmodel>(context, listen: false);
       setState(() {
         _isLoading['berita'] = true;
         _isLoading['produk'] = true;
+        _isLoading['puisi'] = true;
       });
 
       Future.wait([
         beritaVM.fetchBeritaTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
         produkVW.fetchMajalah("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
         produkVW.fetchBuletin("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
+        puisiVW.fetchPuisiTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
       ]).then((_) {
         setState(() {
           _isLoading['berita'] = false;
           _isLoading['produk'] = false;
+          _isLoading['puisi'] = false;
         });
       }).catchError((error) {
         print("Error fetch berita: $error");
         setState(() {
           _isLoading['berita'] = false;
           _isLoading['produk'] = false;
+          _isLoading['puisi'] = false;
         });
       });
 
@@ -60,6 +69,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
     final beritaList = Provider.of<BeritaTerbaruViewmodel>(context).allBerita;
     final majalahList = Provider.of<ProdukViewModel>(context).allMajalah;
     final buletinList = Provider.of<ProdukViewModel>(context).allBuletin;
+    final puisiList = Provider.of<PuisiTerbaruViewmodel>(context).allPuisi;
 
     // Jika ada data yang sedang dimuat, tampilkan loading indicator
     if (_isLoading.values.contains(true)) {
@@ -193,6 +203,19 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                         return ChangeNotifierProvider.value(
                           value: buletinList[index],
                           child: ProdukItem(),
+                        );
+                      }),
+                ),
+                SizedBox(
+                  height: 250,
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: puisiList.length,
+                      itemBuilder: (contex, index) {
+                        return ChangeNotifierProvider.value(
+                          value: puisiList[index],
+                          child: PuisiItem(),
                         );
                       }),
                 ),

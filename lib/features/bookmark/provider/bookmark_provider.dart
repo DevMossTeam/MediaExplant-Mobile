@@ -28,7 +28,7 @@ class BookmarkProvider with ChangeNotifier {
           final newBookmark = Bookmark.fromJson(responseData['data']);
           _bookmarks.add(newBookmark);
         } else if (responseData['status'] == 'removed') {
-          _bookmarks.removeWhere((b) => b.beritaId == request.beritaId);
+          _bookmarks.removeWhere((b) => b.itemId == request.itemId);
         }
 
         notifyListeners();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
-import 'package:mediaexplant/features/home/presentation/ui/screens/detail_produk_screen.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/detail_karya_screen.dart';
 import 'package:provider/provider.dart';
 
 class PuisiItem extends StatefulWidget {
@@ -19,7 +19,7 @@ class _PuisiItemState extends State<PuisiItem> {
 
   @override
   Widget build(BuildContext context) {
-    final karya = Provider.of<Karya>(context);
+    final puisi = Provider.of<Karya>(context);
 
     return Container(
       width: 105,
@@ -34,15 +34,17 @@ class _PuisiItemState extends State<PuisiItem> {
                 borderRadius: BorderRadius.circular(5),
                 child: AspectRatio(
                   aspectRatio: 3 / 4,
-                  child: karya.media.isNotEmpty
-                      ? karya.gambar()
-                      : const Center(
-                          child: CircularProgressIndicator()),
+                  child: puisi.media.isNotEmpty
+                      ? Image.memory(
+                          puisi.gambar(),
+                          fit: BoxFit.cover,
+                        )
+                      : const Center(child: CircularProgressIndicator()),
                 ),
               ),
               const SizedBox(height: 5),
               Text(
-                karya.kategori,
+                puisi.kategori,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -51,13 +53,13 @@ class _PuisiItemState extends State<PuisiItem> {
                     color: AppColors.primary),
               ),
               Text(
-                karya.release,
+                puisi.release,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               Text(
-                karya.judul,
+                puisi.judul,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style:
@@ -78,8 +80,7 @@ class _PuisiItemState extends State<PuisiItem> {
                             const Duration(milliseconds: 500),
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             ChangeNotifierProvider.value(
-                                value: karya,
-                                child: const DetailProdukScreen()),
+                                value: puisi, child: const DetailKaryaScreen()),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
                           return SlideTransition(

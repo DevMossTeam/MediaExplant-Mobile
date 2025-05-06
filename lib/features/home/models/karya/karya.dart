@@ -45,13 +45,11 @@ class Karya with ChangeNotifier {
   });
 
   // // Fungsi untuk mengambil konvert media ke gambar
-  Image gambar() {
-    // Mengonversi string base64 menjadi data byte
-    final decodedBytes = base64Decode(media);
-    // Mengembalikan widget Image dengan data byte
-    return Image.memory(Uint8List.fromList(decodedBytes));
+  Uint8List? _gambarBytes;
+  Uint8List gambar() {
+    _gambarBytes ??= Uint8List.fromList(base64Decode(media));
+    return _gambarBytes!;
   }
-
 
   void statusBookmark() {
     isBookmark = !isBookmark;
