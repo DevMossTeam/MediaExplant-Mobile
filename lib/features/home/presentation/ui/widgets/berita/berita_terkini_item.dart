@@ -1,8 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
-import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
-import 'package:mediaexplant/features/home/models/berita.dart';
+import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -14,32 +13,29 @@ class BeritaTerkiniItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final berita = Provider.of<Berita>(context);
-    final bookmarkProvider =
-        Provider.of<BookmarkProvider>(context, listen: false);
+    // final bookmarkProvider =
+    //     Provider.of<BookmarkProvider>(context, listen: false);
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 15),
-      height: 280,
+      margin: const EdgeInsets.symmetric(horizontal: 15),
+      height: 200,
       width: double.infinity,
       child: Center(
         child: Stack(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
-              child: Container(
-                child: CachedNetworkImage(
-                  height: double.infinity,
-                  width: double.infinity,
-                  imageUrl: berita.gambar ??
-                      berita.firstImageFromKonten ??
-                      'https://via.placeholder.com/150',
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(), // Indikator loading
-                  ),
-                  errorWidget: (context, url, error) => const Center(
-                    child:
-                        Icon(Icons.broken_image, size: 50, color: Colors.red),
-                  ),
+              child: CachedNetworkImage(
+                height: double.infinity,
+                width: double.infinity,
+                imageUrl: berita.gambar ??
+                    berita.firstImageFromKonten ??
+                    'https://via.placeholder.com/150',
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(), // Indikator loading
+                ),
+                errorWidget: (context, url, error) => const Center(
+                  child: Icon(Icons.broken_image, size: 50, color: Colors.red),
                 ),
               ),
             ),
@@ -68,8 +64,8 @@ class BeritaTerkiniItem extends StatelessWidget {
                     children: [
                       Text(
                         "${berita.kategori} | ${berita.tanggalDibuat} yang lalu",
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 12),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 12),
                       ),
                       Text(
                         berita.judul,
@@ -99,18 +95,18 @@ class BeritaTerkiniItem extends StatelessWidget {
                               milliseconds: 1000), // Durasi animasi masuk
                           reverseTransitionDuration: const Duration(
                               milliseconds: 500), // Durasi animasi balik
-                          pageBuilder: (context, animation,
-                                  secondaryAnimation) =>
-                              ChangeNotifierProvider.value(
-                                  value: berita, child:
-                                  DetailBeritaScreen()),
-                          transitionsBuilder: (context, animation,
-                              secondaryAnimation, child) {
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  ChangeNotifierProvider.value(
+                                      value: berita,
+                                      child: DetailBeritaScreen()),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
                             // Animasi geser + fade
                             return SlideTransition(
                               position: Tween<Offset>(
-                                begin: const Offset(
-                                    1.0, 0.0), // Mulai dari kanan
+                                begin:
+                                    const Offset(1.0, 0.0), // Mulai dari kanan
                                 end: Offset.zero, // Berhenti di tengah
                               ).animate(CurvedAnimation(
                                 parent: animation,

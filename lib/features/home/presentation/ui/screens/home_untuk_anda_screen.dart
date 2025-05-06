@@ -16,9 +16,9 @@ class HomeUntukAndaScreen extends StatefulWidget {
 
 class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
   var _isInit = true;
-  Map<String, bool> _isLoading = {
+  final Map<String, bool> _isLoading = {
     'berita': false,
-    'majalah': false,
+    'produk': false,
   };
 
   @override
@@ -31,7 +31,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
       final produkVW = Provider.of<ProdukViewModel>(context, listen: false);
       setState(() {
         _isLoading['berita'] = true;
-        _isLoading['majalah'] = true;
+        _isLoading['produk'] = true;
       });
 
       Future.wait([
@@ -41,13 +41,13 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
       ]).then((_) {
         setState(() {
           _isLoading['berita'] = false;
-          _isLoading['majalah'] = false;
+          _isLoading['produk'] = false;
         });
       }).catchError((error) {
         print("Error fetch berita: $error");
         setState(() {
           _isLoading['berita'] = false;
-          _isLoading['majalah'] = false;
+          _isLoading['produk'] = false;
         });
       });
 
@@ -72,7 +72,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
           const SizedBox(height: 20),
 
           Padding(
-            padding: EdgeInsets.only(left: 15),
+            padding: const EdgeInsets.only(left: 15),
             child: SizedBox(
               height: 180,
               child: ListView.builder(

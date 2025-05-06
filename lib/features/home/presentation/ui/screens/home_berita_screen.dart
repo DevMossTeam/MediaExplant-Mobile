@@ -4,12 +4,12 @@ import 'package:mediaexplant/features/home/presentation/logic/berita/berita_popu
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_dari_kami_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_rekomendasi_lain_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_dari_kami.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomandasi_lain_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terbaru_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terkini_item.dart';
 import 'package:provider/provider.dart';
+
 
 class HomeBeritaScreen extends StatefulWidget {
   const HomeBeritaScreen({super.key});
@@ -20,7 +20,7 @@ class HomeBeritaScreen extends StatefulWidget {
 
 class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
   var _isInit = true;
-  Map<String, bool> _isLoading = {
+  final Map<String, bool> _isLoading = {
     'terkini': false,
     'populer': false,
     'rekomendasi': false,
@@ -101,7 +101,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
           // Berita terkini
           ListView.builder(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: 1,
             itemBuilder: (context, index) {
               return ChangeNotifierProvider.value(
@@ -145,7 +145,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
           ),
 
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 5),
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -183,7 +183,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
           Container(
             color: Colors.grey.withAlpha(50),
             child: Padding(
-              padding: EdgeInsets.only(left: 15, top: 20, bottom: 20),
+              padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
               child: Column(
                 children: [
                   const Row(
@@ -213,7 +213,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
                   ),
 
                   // berita terbaru
-                  Container(
+                  SizedBox(
                     height: 180,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
@@ -289,11 +289,11 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount:10,
+              itemCount: 10,
               itemBuilder: (context, index) {
                 return ChangeNotifierProvider.value(
                   value: beritaRekomendasiList[index],
-                  child: BeritaDariKami(),
+                  child: BeritaPopulerItem(),
                 );
               },
             ),
@@ -318,95 +318,6 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
             ],
           ),
 
-          // const Padding(
-          //   padding: EdgeInsets.only(left: 15, top: 20),
-          //   child: Row(
-          //     children: [
-          //       Text(
-          //         "Tag Terpopuler",
-          //         style: TextStyle(
-          //           fontSize: 16,
-          //           fontWeight: FontWeight.bold,
-          //           color: Colors.black,
-          //         ),
-          //       ),
-          //       SizedBox(
-          //         width: 10,
-          //       ),
-          //       Text(
-          //         "5 Teratas untuk anda",
-          //         style: TextStyle(
-          //           fontSize: 12,
-          //           color: Colors.grey,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 5),
-          //   child: SizedBox(
-          //     child: ListView.builder(
-          //       shrinkWrap: true,
-          //       physics: const NeverScrollableScrollPhysics(),
-          //       itemCount: 5,
-          //       itemBuilder: (context, index) {
-          //         return TagPopulerItem(
-          //           onTap: () {
-          //             ScaffoldMessenger.of(context).showSnackBar(
-          //               SnackBar(
-          //                 content:
-          //                     Text("Anda menekan tag ke-${index + 1}"),
-          //                 duration: const Duration(seconds: 2),
-          //               ),
-          //             );
-          //           },
-          //         );
-          //       },
-          //     ),
-          //   ),
-          // ),
-          // const Padding(
-          //   padding: EdgeInsets.only(left: 15, top: 20),
-          //   child: Row(
-          //     children: [
-          //       Text(
-          //         "Komentar Terbanyak",
-          //         style: TextStyle(
-          //           fontSize: 16,
-          //           fontWeight: FontWeight.bold,
-          //           color: Colors.black,
-          //         ),
-          //       ),
-          //       SizedBox(
-          //         width: 10,
-          //       ),
-          //       Text(
-          //         "5 Teratas untuk anda",
-          //         style: TextStyle(
-          //           fontSize: 12,
-          //           color: Colors.grey,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 8),
-          //   child: ListView.builder(
-          //     // Menyesuaikan ukuran dengan isi list
-          //     shrinkWrap: true,
-          //     physics: const NeverScrollableScrollPhysics(),
-          //     itemCount: 5,
-          //     itemBuilder: (context, index) {
-          //       return ChangeNotifierProvider.value(
-          //           value: beritaPopulerList[index],
-          //           child: KomentarTerbanyakItem());
-          //     },
-          //   ),
-          // ),
-
           const SizedBox(
             height: 20,
           ),
@@ -415,7 +326,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
           Container(
             color: Colors.grey.withAlpha(50),
             child: Padding(
-              padding: EdgeInsets.only(left: 15, top: 20, bottom: 20),
+              padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
               child: Column(
                 children: [
                   const Row(
@@ -443,7 +354,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Container(
+                  SizedBox(
                     height: 150,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,

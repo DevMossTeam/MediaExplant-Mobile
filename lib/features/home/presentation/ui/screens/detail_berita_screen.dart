@@ -4,7 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
-import 'package:mediaexplant/features/home/models/berita.dart';
+import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terkait_viewmodel.dart';
@@ -354,7 +354,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                 TextButton(
                   onPressed: () {
                     // aksi saat tombol ditekan
-                    print("Tombol ditekan");
+                  
                   },
                   child: const Text(
                     "Selengkapnya >>",
@@ -405,7 +405,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                         ),
                         const SizedBox(height: 10),
                         // BERITA TERBARU
-                        Container(
+                        SizedBox(
                           height: 180,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,

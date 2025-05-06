@@ -28,26 +28,25 @@ class HomeScreen extends StatelessWidget {
               unselectedLabelColor: Colors.grey,
               indicatorColor: AppColors.primary,
               isScrollable: false,
-              labelStyle: const TextStyle(
-                fontSize: 13,
+              labelStyle: TextStyle(
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
               tabs: [
-                Tab(
-                  text: 'Untuk Anda',
-                ),
+                Tab(text: 'Untuk Anda'),
                 Tab(text: 'Berita'),
-                Tab(
-                  text: 'Produk',
-                ),
+                Tab(text: 'Produk'),
                 Tab(text: 'Karya'),
               ],
             ),
           ),
           body: const TabBarView(
+            physics: BouncingScrollPhysics(),
             children: [
               HomeUntukAndaScreen(),
               HomeBeritaScreen(),
+              Center(child: Text("Produk")), // sementara placeholder
+              Center(child: Text("Karya")),  // sementara placeholder
             ],
           ),
         ),

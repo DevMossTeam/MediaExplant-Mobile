@@ -1,7 +1,6 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
-import 'package:mediaexplant/features/home/models/produk.dart';
+import 'package:mediaexplant/features/home/models/produk/produk.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_produk_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +25,7 @@ class _ProdukItemState extends State<ProdukItem> {
       width: 105,
       height: 150,
       margin: const EdgeInsets.only(right: 10),
-      child: Stack(
+      child: Stack( 
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

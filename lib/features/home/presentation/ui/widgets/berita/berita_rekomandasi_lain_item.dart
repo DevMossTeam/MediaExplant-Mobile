@@ -1,8 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
-import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
-import 'package:mediaexplant/features/home/models/berita.dart';
+import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -12,8 +11,8 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final berita = Provider.of<Berita>(context);
-    final bookmarkProvider =
-        Provider.of<BookmarkProvider>(context, listen: false);
+    // final bookmarkProvider =
+    //     Provider.of<BookmarkProvider>(context, listen: false);
     return Container(
       margin: const EdgeInsets.only(right: 10),
       // color: Colors.amber,

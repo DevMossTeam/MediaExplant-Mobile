@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:mediaexplant/core/network/api_client.dart';
-import 'package:mediaexplant/features/home/models/produk.dart';
+import 'package:mediaexplant/features/home/models/produk/produk.dart';
 import 'package:pdfx/pdfx.dart';
 
 import 'dart:io';
