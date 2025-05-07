@@ -10,6 +10,7 @@ import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/desain_grafis_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/puisi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/produk/produk_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
 import 'package:provider/provider.dart';
 
 class HomeUntukAndaScreen extends StatefulWidget {
@@ -122,31 +123,9 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
             height: 20,
           ),
 
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              children: [
-                Text(
-                  "Berita",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  "Teratas untuk anda",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: titleHeader("Terpopuler", "5 Teratas untuk anda")),
 
           // berita teratas untuk anda
 
@@ -223,7 +202,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                         );
                       }),
                 ),
-                 SizedBox(
+                SizedBox(
                   height: 250,
                   child: ListView.builder(
                       shrinkWrap: true,

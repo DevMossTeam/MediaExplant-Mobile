@@ -8,6 +8,7 @@ import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomandasi_lain_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terbaru_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terkini_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
 import 'package:provider/provider.dart';
 
 class HomeBeritaScreen extends StatefulWidget {
@@ -113,32 +114,9 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
           // terpopuler 5 teratas
           const SizedBox(height: 20),
 
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              children: [
-                Text(
-                  "Terpopuler",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  "5 Teratas untuk anda",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: titleHeader("Terpopuler", "5 Teratas untuk anda")),
           const SizedBox(
             height: 10,
           ),
@@ -185,32 +163,10 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
               padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
               child: Column(
                 children: [
-                  const Row(
-                    children: [
-                      Text(
-                        "Terbaru",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "Teratas untuk anda",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
+                  titleHeader("Terbaru", "Teratas untuk anda"),
                   const SizedBox(
                     height: 20,
                   ),
-
                   // berita terbaru
                   SizedBox(
                     height: 180,
@@ -251,34 +207,10 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
           const SizedBox(
             height: 20,
           ),
-
           // Dari Kami mungkin anda suka
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              children: [
-                Text(
-                  "Dari Kami",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  "Mungkin anda suka",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: titleHeader("Dari Kami", "Mungkin anda suka")),
           const SizedBox(
             height: 10,
           ),
@@ -328,28 +260,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
               padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
               child: Column(
                 children: [
-                  const Row(
-                    children: [
-                      Text(
-                        "Rekomendasi Lain",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "mungkin anda suka",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
+                  titleHeader("Rekomendasi", "Mungkin anda suka"),
                   const SizedBox(
                     height: 20,
                   ),

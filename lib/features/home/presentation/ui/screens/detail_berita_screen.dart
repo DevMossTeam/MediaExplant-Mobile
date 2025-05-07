@@ -10,6 +10,7 @@ import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terb
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terkait_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terbaru_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:provider/provider.dart';
@@ -24,9 +25,8 @@ class DetailBeritaScreen extends StatefulWidget {
 class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
   @override
   void initState() {
-    super.initState();  
+    super.initState();
 
-  
     final berita = Provider.of<Berita>(context, listen: false);
     final beritaTerkaitViewmodel =
         Provider.of<BeritaTerkaitViewmodel>(context, listen: false);
@@ -37,7 +37,6 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
         Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
     beritaTerbaruViewmodel.fetchBeritaTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L");
   }
-
 
   String removeFirstImageFromKonten(String konten) {
     final RegExp imgInPTag =
@@ -308,32 +307,10 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
             ]),
           ),
 
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.only(left: 15, top: 15, bottom: 10),
-              child: Row(
-                children: [
-                  Text(
-                    "Berita Terkait",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    "Mungkin anda sukai",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                padding: const EdgeInsets.only(left: 15, top: 15, bottom: 10),
+                child: titleHeader("Berita Terkait","mungkin anda suka")),
           ),
           // BERITA terkait
           SliverPadding(
@@ -357,7 +334,6 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                 TextButton(
                   onPressed: () {
                     // aksi saat tombol ditekan
-                  
                   },
                   child: const Text(
                     "Selengkapnya >>",
@@ -384,28 +360,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
-                          children: [
-                            Text(
-                              "Terbaru",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              "Teratas untuk anda",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
+                        titleHeader("Terbaru","Teratas untuk anda"),
                         const SizedBox(height: 10),
                         // BERITA TERBARU
                         SizedBox(
