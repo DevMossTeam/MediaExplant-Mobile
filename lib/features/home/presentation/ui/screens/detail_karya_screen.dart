@@ -143,7 +143,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                   ),
                   const Divider(color: Colors.grey, thickness: 0.5),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -168,11 +168,11 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                         ),
                         Center(
                           child: Text(
-                            "(Oleh${karya.penulis})",
+                            "(Oleh ${karya.penulis})",
                             style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                ),
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                         const SizedBox(
@@ -188,15 +188,12 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
 
                         const SizedBox(height: 20),
 
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 7),
-                          child: Text(
-                            "Berikan Tanggapanmu :",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                        const Text(
+                          "Berikan Tanggapanmu :",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
 

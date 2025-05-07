@@ -7,6 +7,7 @@ import 'package:mediaexplant/features/home/presentation/logic/berita/berita_reko
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terkait_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/karya/puisi_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/karya/syair_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
@@ -18,8 +19,6 @@ import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.d
 import 'package:mediaexplant/features/profile/presentation/ui/screens/profile_screen.dart';
 import 'package:mediaexplant/features/settings/logic/keamanan_viewmodel.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
-
-// Pastikan Anda mengimpor kelas-kelas berikut:
 import 'package:mediaexplant/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:mediaexplant/features/profile/domain/repositories/profile_repository.dart';
 import 'package:mediaexplant/features/profile/data/repositories/profile_repository_impl.dart';
@@ -54,11 +53,11 @@ void main() {
           create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>())
             ..refreshUserData(),
         ),
-        // ✅ Provider untuk HubungiViewModel
+        // Provider untuk HubungiViewModel
         ChangeNotifierProvider<HubungiViewModel>(
           create: (ctx) => HubungiViewModel(apiClient: ctx.read<ApiClient>()),
         ),
-        // ✅ Provider untuk HubungiViewModel
+        // Provider untuk HubungiViewModel
         ChangeNotifierProvider<SettingsViewModel>(
           create: (ctx) => SettingsViewModel(apiClient: ctx.read<ApiClient>()),
         ),
@@ -94,6 +93,9 @@ void main() {
         // provider karya
         ChangeNotifierProvider(
           create: (_) => PuisiTerbaruViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SyairTerbaruViewmodel(),
         ),
 
         // Provider untuk Bookmark

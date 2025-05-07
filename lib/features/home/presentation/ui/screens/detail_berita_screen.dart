@@ -277,24 +277,27 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                         ),
 
                         // Tag berita
-                        Wrap(
-                          spacing: 8.0,
-                          runSpacing: 8.0,
-                          children: berita.tags.map((tag) {
-                            return ActionChip(
-                              onPressed: () {},
-                              label: Text(
-                                tag,
-                                style:
-                                    const TextStyle(color: AppColors.primary),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                side: const BorderSide(color: Colors.grey),
-                              ),
-                              backgroundColor: AppColors.background,
-                            );
-                          }).toList(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Wrap(
+                            spacing: 8.0,
+                            runSpacing: 8.0,
+                            children: berita.tags.map((tag) {
+                              return ActionChip(
+                                onPressed: () {},
+                                label: Text(
+                                  tag,
+                                  style:
+                                      const TextStyle(color: AppColors.primary),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  side: const BorderSide(color: Colors.grey),
+                                ),
+                                backgroundColor: AppColors.background,
+                              );
+                            }).toList(),
+                          ),
                         ),
                       ],
                     ),
@@ -334,7 +337,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
           ),
           // BERITA terkait
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -377,7 +380,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                   color: Colors.grey.withAlpha(50),
                   child: Padding(
                     padding:
-                        const EdgeInsets.only(left: 10, top: 20, bottom: 20),
+                        const EdgeInsets.only(left: 15, top: 20, bottom: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

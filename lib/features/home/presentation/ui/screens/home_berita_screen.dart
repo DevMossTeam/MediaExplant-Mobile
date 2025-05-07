@@ -284,7 +284,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
           ),
 
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

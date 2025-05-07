@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/karya/puisi_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/karya/syair_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomendasi_untuk_anda_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_teratas_untuk_anda.dart';
@@ -22,6 +23,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
     'berita': false,
     'produk': false,
     'puisi': false,
+    'syair': false,
   };
 
   @override
@@ -31,25 +33,30 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
     if (_isInit) {
       final beritaVM =
           Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
-      final produkVW = Provider.of<ProdukViewModel>(context, listen: false);
-      final puisiVW =
+      final produkVM = Provider.of<ProdukViewModel>(context, listen: false);
+      final puisiVM =
           Provider.of<PuisiTerbaruViewmodel>(context, listen: false);
+      final syairVM =
+          Provider.of<SyairTerbaruViewmodel>(context, listen: false);
       setState(() {
         _isLoading['berita'] = true;
         _isLoading['produk'] = true;
         _isLoading['puisi'] = true;
+        _isLoading['syair'] = true;
       });
 
       Future.wait([
         beritaVM.fetchBeritaTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        produkVW.fetchMajalah("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        produkVW.fetchBuletin("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        puisiVW.fetchPuisiTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
+        produkVM.fetchMajalah("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
+        produkVM.fetchBuletin("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
+        puisiVM.fetchPuisiTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
+        syairVM.fetchSyairTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
       ]).then((_) {
         setState(() {
           _isLoading['berita'] = false;
           _isLoading['produk'] = false;
           _isLoading['puisi'] = false;
+          _isLoading['syair'] = false;
         });
       }).catchError((error) {
         print("Error fetch berita: $error");
@@ -57,6 +64,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
           _isLoading['berita'] = false;
           _isLoading['produk'] = false;
           _isLoading['puisi'] = false;
+          _isLoading['syair'] = false;
         });
       });
 
@@ -70,6 +78,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
     final majalahList = Provider.of<ProdukViewModel>(context).allMajalah;
     final buletinList = Provider.of<ProdukViewModel>(context).allBuletin;
     final puisiList = Provider.of<PuisiTerbaruViewmodel>(context).allPuisi;
+    final syairList = Provider.of<SyairTerbaruViewmodel>(context).allSyair;
 
     // Jika ada data yang sedang dimuat, tampilkan loading indicator
     if (_isLoading.values.contains(true)) {
@@ -87,7 +96,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
               height: 180,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 10,
+                itemCount: beritaList.length.clamp(0, 10),
                 itemBuilder: (context, index) {
                   return ChangeNotifierProvider.value(
                     value: beritaList[index],
@@ -140,7 +149,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                 SizedBox(
                   height: 170,
                   child: GridView.builder(
-                      itemCount: 10,
+                      itemCount: beritaList.length.clamp(0, 10),
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       gridDelegate:
@@ -182,7 +191,33 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                   child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
-                      itemCount: majalahList.length,
+                      itemCount: puisiList.length.clamp(0, 5),
+                      itemBuilder: (contex, index) {
+                        return ChangeNotifierProvider.value(
+                          value: puisiList[index],
+                          child: PuisiItem(),
+                        );
+                      }),
+                ),
+                SizedBox(
+                  height: 250,
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: syairList.length.clamp(0, 5),
+                      itemBuilder: (contex, index) {
+                        return ChangeNotifierProvider.value(
+                          value: syairList[index],
+                          child: PuisiItem(),
+                        );
+                      }),
+                ),
+                SizedBox(
+                  height: 250,
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: majalahList.length.clamp(0, 5),
                       itemBuilder: (contex, index) {
                         return ChangeNotifierProvider.value(
                           value: majalahList[index],
@@ -198,24 +233,11 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                   child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
-                      itemCount: buletinList.length,
+                      itemCount: buletinList.length.clamp(0, 5),
                       itemBuilder: (contex, index) {
                         return ChangeNotifierProvider.value(
                           value: buletinList[index],
                           child: ProdukItem(),
-                        );
-                      }),
-                ),
-                SizedBox(
-                  height: 250,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: puisiList.length,
-                      itemBuilder: (contex, index) {
-                        return ChangeNotifierProvider.value(
-                          value: puisiList[index],
-                          child: PuisiItem(),
                         );
                       }),
                 ),
