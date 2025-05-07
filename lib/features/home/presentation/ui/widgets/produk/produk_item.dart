@@ -19,33 +19,44 @@ class _ProdukItemState extends State<ProdukItem> {
 
   @override
   Widget build(BuildContext context) {
-    final majalah = Provider.of<Produk>(context);
+    final produk = Provider.of<Produk>(context);
 
     return Container(
       width: 105,
       height: 150,
       margin: const EdgeInsets.only(right: 10),
-      child: Stack( 
+      child: Stack(
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: AspectRatio(
-                  aspectRatio: 3 / 4,
-                  // tampilkan thumbnail di sini
-                  child: majalah.thumbnail != null
-                      ? Image.memory(
-                          majalah.thumbnail!,
-                          fit: BoxFit.cover,
-                        )
-                      : const Center(child: CircularProgressIndicator()),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 2,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: AspectRatio(
+                    aspectRatio: 3 / 4,
+                    child: produk.thumbnail != null
+                        ? Image.memory(
+                            produk.thumbnail!,
+                            fit: BoxFit.cover,
+                          )
+                        : const Center(child: CircularProgressIndicator()),
+                  ),
                 ),
               ),
               const SizedBox(height: 5),
               Text(
-                majalah.kategori,
+                produk.kategori,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -54,14 +65,14 @@ class _ProdukItemState extends State<ProdukItem> {
                     color: AppColors.primary),
               ),
               Text(
-                majalah.release_date,
+                produk.release_date,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               Text(
-                majalah.judul,
-                maxLines: 3,
+                produk.judul,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style:
                     const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
@@ -81,7 +92,7 @@ class _ProdukItemState extends State<ProdukItem> {
                             const Duration(milliseconds: 500),
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             ChangeNotifierProvider.value(
-                                value: majalah,
+                                value: produk,
                                 child: const DetailProdukScreen()),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {

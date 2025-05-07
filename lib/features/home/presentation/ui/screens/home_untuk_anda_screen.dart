@@ -9,6 +9,7 @@ import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomendasi_untuk_anda_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_teratas_untuk_anda.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/desain_grafis_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/fotografi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/puisi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/produk/produk_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
@@ -135,11 +136,94 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
             height: 20,
           ),
 
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: titleHeader("Terpopuler", "5 Teratas untuk anda")),
+          // Padding(
+          //     padding: const EdgeInsets.symmetric(horizontal: 15),
+          //     child: titleHeader("Terpopuler", "5 Teratas untuk anda")),
 
           // berita teratas untuk anda
+
+          Container(
+            color: Colors.grey.withAlpha(50),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
+              child: Column(
+                children: [
+                  titleHeader("Berita", "Teratas untuk anda"),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  // berita terbaru
+                  SizedBox(
+                    height: 170,
+                    child: GridView.builder(
+                        itemCount: beritaList.length.clamp(0, 10),
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                childAspectRatio: 0.25,
+                                crossAxisCount: 2),
+                        itemBuilder: (contex, index) {
+                          return ChangeNotifierProvider.value(
+                            value: beritaList[index],
+                            child: BeritaTeratasUntukAnda(),
+                          );
+                        }),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          // aksi saat tombol ditekan
+                          print("Tombol ditekan");
+                        },
+                        child: const Text(
+                          "Selengkapnya >>",
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Padding(
+          //   padding: const EdgeInsets.only(
+          //     left: 15,
+          //     top: 10,
+          //   ),
+          //   child: Column(
+          //     children: [
+
+          //       Row(
+          //         mainAxisAlignment: MainAxisAlignment.end,
+          //         children: [
+          //           TextButton(
+          //             onPressed: () {
+          //               // aksi saat tombol ditekan
+          //               print("Tombol ditekan");
+          //             },
+          //             child: const Text(
+          //               "Selengkapnya >>",
+          //               style: TextStyle(
+          //                 color: AppColors.primary,
+          //                 fontSize: 14,
+          //               ),
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
           Padding(
             padding: const EdgeInsets.only(
@@ -148,48 +232,12 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
             ),
             child: Column(
               children: [
-                SizedBox(
-                  height: 170,
-                  child: GridView.builder(
-                      itemCount: beritaList.length.clamp(0, 10),
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              mainAxisSpacing: 10,
-                              crossAxisSpacing: 10,
-                              childAspectRatio: 0.25,
-                              crossAxisCount: 2),
-                      itemBuilder: (contex, index) {
-                        return ChangeNotifierProvider.value(
-                          value: beritaList[index],
-                          child: BeritaTeratasUntukAnda(),
-                        );
-                      }),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        // aksi saat tombol ditekan
-                        print("Tombol ditekan");
-                      },
-                      child: const Text(
-                        "Selengkapnya >>",
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                titleHeader("Puisi", "Terbaru untuk anda"),
                 const SizedBox(
                   height: 10,
                 ),
                 SizedBox(
-                  height: 250,
+                  height: 240,
                   child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
@@ -201,8 +249,12 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                         );
                       }),
                 ),
+                titleHeader("Syair", "Terbaru untuk anda"),
+                const SizedBox(
+                  height: 10,
+                ),
                 SizedBox(
-                  height: 250,
+                  height: 240,
                   child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
@@ -214,8 +266,12 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                         );
                       }),
                 ),
+                titleHeader("Desain Grafis", "Terbaru untuk anda"),
+                const SizedBox(
+                  height: 10,
+                ),
                 SizedBox(
-                  height: 250,
+                  height: 200,
                   child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
@@ -227,21 +283,80 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                         );
                       }),
                 ),
-                SizedBox(
-                  height: 250,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: fotografiList.length.clamp(0, 5),
-                      itemBuilder: (contex, index) {
-                        return ChangeNotifierProvider.value(
-                          value: fotografiList[index],
-                          child: DesainGrafisItem(),
-                        );
-                      }),
+              ],
+            ),
+          ),
+
+          Container(
+            color: Colors.grey.withAlpha(50),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
+              child: Column(
+                children: [
+                  // berita terbaru
+                  titleHeader("Fotografi", "Terbaru untuk anda"),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                    height: 170,
+                    child: GridView.builder(
+                        itemCount: fotografiList.length.clamp(0, 10),
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                childAspectRatio: 0.25,
+                                crossAxisCount: 2),
+                        itemBuilder: (contex, index) {
+                          return ChangeNotifierProvider.value(
+                            value: fotografiList[index],
+                            child: FotografiItem(),
+                          );
+                        }),
+                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.end,
+                  //   children: [
+                  //     TextButton(
+                  //       onPressed: () {
+                  //         // aksi saat tombol ditekan
+                  //         print("Tombol ditekan");
+                  //       },
+                  //       child: const Text(
+                  //         "Selengkapnya >>",
+                  //         style: TextStyle(
+                  //           color: AppColors.primary,
+                  //           fontSize: 14,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(
+            height: 10,
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 15,
+              top: 10,
+            ),
+            child: Column(
+              children: [
+                titleHeader("Majalah", "Terbaru untuk anda"),
+                const SizedBox(
+                  height: 10,
                 ),
                 SizedBox(
-                  height: 250,
+                  height: 240,
                   child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
@@ -253,11 +368,12 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                         );
                       }),
                 ),
+                titleHeader("Buletin", "Terbaru untuk anda"),
                 const SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 SizedBox(
-                  height: 250,
+                  height: 240,
                   child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,

@@ -24,6 +24,7 @@ class _DesainGrafisItemState extends State<DesainGrafisItem> {
     return Container(
       width: 105,
       height: 150,
+      // color: Colors.amber,
       margin: const EdgeInsets.only(right: 10),
       child: Stack(
         children: [
@@ -60,7 +61,7 @@ class _DesainGrafisItemState extends State<DesainGrafisItem> {
               ),
               Text(
                 karya.judul,
-                maxLines: 3,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style:
                     const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),

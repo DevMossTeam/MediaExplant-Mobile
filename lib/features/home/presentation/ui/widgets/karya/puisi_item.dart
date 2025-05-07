@@ -60,7 +60,7 @@ class _PuisiItemState extends State<PuisiItem> {
               ),
               Text(
                 karya.judul,
-                maxLines: 3,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style:
                     const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
@@ -80,7 +80,7 @@ class _PuisiItemState extends State<PuisiItem> {
                             const Duration(milliseconds: 500),
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             ChangeNotifierProvider.value(
-                                value: karya, child: const DetailKaryaScreen()),
+                                value: karya, child: DetailKaryaScreen()),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
                           return SlideTransition(
@@ -89,7 +89,7 @@ class _PuisiItemState extends State<PuisiItem> {
                               end: Offset.zero,
                             ).animate(CurvedAnimation(
                               parent: animation,
-                              curve: Curves.easeInOutCubic,
+                              curve: Curves.easeInOutCubic, 
                             )),
                             child: FadeTransition(
                               opacity: animation,

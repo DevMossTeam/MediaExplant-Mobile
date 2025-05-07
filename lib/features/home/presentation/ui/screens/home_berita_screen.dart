@@ -18,7 +18,8 @@ class HomeBeritaScreen extends StatefulWidget {
   State<HomeBeritaScreen> createState() => _HomeBeritaScreenState();
 }
 
-class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
+class _HomeBeritaScreenState extends State<HomeBeritaScreen>
+    with AutomaticKeepAliveClientMixin<HomeBeritaScreen> {
   var _isInit = true;
   final Map<String, bool> _isLoading = {
     'terkini': false,
@@ -26,6 +27,9 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
     'rekomendasi': false,
     'rekomendasiLain': false,
   };
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void didChangeDependencies() {
@@ -52,8 +56,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
         beritaTerkiniVM.fetchBeritaTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
         beritaPopulerVM.fetchBeritaPopuler("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
         beritaRekomendasiVM.fetchBeritaDariKami("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        beritaRekomendasiLainVM
-            .fetchBeritaRekomendasiLain("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
+        beritaRekomendasiLainVM.fetchBeritaRekomendasiLain("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
       ]).then((_) {
         setState(() {
           _isLoading['terkini'] = false;
@@ -62,7 +65,6 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
           _isLoading['rekomendasiLain'] = false;
         });
       }).catchError((error) {
-        print("Error fetch berita: $error");
         setState(() {
           _isLoading['terkini'] = false;
           _isLoading['populer'] = false;
@@ -77,6 +79,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final beritaTerkiniList =
         Provider.of<BeritaTerbaruViewmodel>(context).allBerita;
     final beritaPopulerList =
@@ -283,7 +286,6 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
                       TextButton(
                         onPressed: () {
                           // aksi saat tombol ditekan
-                          print("Tombol ditekan");
                         },
                         child: const Text(
                           "Selengkapnya >>",

@@ -65,7 +65,7 @@ class BeritaPopulerItem extends StatelessWidget {
                         Text(
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          "${berita.tanggalDibuat}",
+                          berita.tanggalDibuat,
                           style:
                               const TextStyle(fontSize: 12, color: Colors.grey),
                         ),
