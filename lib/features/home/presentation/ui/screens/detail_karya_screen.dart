@@ -158,7 +158,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                           height: 20,
                         ),
                         
-                        if (karya.kategori != 'desain_grafis')...[
+                        if (karya.kategori != 'desain_grafis' && karya.kategori  != 'fotografi')...[
                           Center(
                             child: Text(
                               karya.judul,

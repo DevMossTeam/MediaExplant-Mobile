@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
-import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
@@ -9,7 +8,6 @@ import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DetailProdukScreen extends StatefulWidget {
   const DetailProdukScreen({super.key});
@@ -155,7 +153,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                   ),
                   const Divider(color: Colors.grey, thickness: 0.5),
                   Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,

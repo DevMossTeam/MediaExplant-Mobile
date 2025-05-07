@@ -7,6 +7,7 @@ import 'package:mediaexplant/features/home/presentation/logic/berita/berita_reko
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terkait_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/karya/desain_grafis_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/karya/fotografi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/karya/puisi_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/karya/syair_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
@@ -100,6 +101,9 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (_) => DesainGrafisViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => FotografiViewmodel(),
         ),
 
         // Provider untuk Bookmark

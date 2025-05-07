@@ -260,7 +260,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
               padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
               child: Column(
                 children: [
-                  titleHeader("Rekomendasi", "Mungkin anda suka"),
+                  titleHeader("Rekomendasi Lain", "Mungkin anda suka"),
                   const SizedBox(
                     height: 20,
                   ),
