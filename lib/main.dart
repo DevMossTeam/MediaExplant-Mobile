@@ -127,9 +127,7 @@ class MyApp extends StatelessWidget {
           unselectedItemColor: Colors.black,
         ),
       ),
-      // Gunakan MainNavigationScreen sebagai halaman utama
-      home: const MainNavigationScreen(),
-      // onGenerateRoute tetap dapat digunakan untuk navigasi named route lain
+      initialRoute: '/', // Mulai dari splash screen
       onGenerateRoute: AppRouter.generateRoute,
     );
   }

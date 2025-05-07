@@ -34,12 +34,12 @@ import 'package:mediaexplant/main.dart';
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      // Gunakan MainNavigationScreen sebagai entry point
       case '/':
         return MaterialPageRoute(builder: (_) => const SplashScreen());
       case '/welcome':
         return MaterialPageRoute(builder: (_) => const WelcomeScreen());
       case '/home':
-        // Gunakan MainNavigationScreen sebagai entry point
         return MaterialPageRoute(builder: (_) => const MainNavigationScreen());
       case '/detail_article':
         if (settings.arguments is Berita) {
