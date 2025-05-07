@@ -157,24 +157,29 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                         const SizedBox(
                           height: 20,
                         ),
-                        Center(
-                          child: Text(
-                            karya.judul,
-                            style: const TextStyle(
+                        
+                        if (karya.kategori != 'desain_grafis')...[
+                          Center(
+                            child: Text(
+                              karya.judul,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Center(
-                          child: Text(
-                            "(Oleh ${karya.penulis})",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
+                          Center(
+                            child: Text(
+                              "(Oleh ${karya.penulis})",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
+
                         const SizedBox(
                           height: 20,
                         ),

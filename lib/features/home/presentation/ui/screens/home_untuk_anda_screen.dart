@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/karya/desain_grafis_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/karya/puisi_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/karya/syair_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomendasi_untuk_anda_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_teratas_untuk_anda.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/desain_grafis_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/puisi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/produk/produk_item.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +26,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
     'produk': false,
     'puisi': false,
     'syair': false,
+    'desain_grafis': false,
   };
 
   @override
@@ -38,11 +41,14 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
           Provider.of<PuisiTerbaruViewmodel>(context, listen: false);
       final syairVM =
           Provider.of<SyairTerbaruViewmodel>(context, listen: false);
+      final desainGrafisVM =
+          Provider.of<DesainGrafisViewmodel>(context, listen: false);
       setState(() {
         _isLoading['berita'] = true;
         _isLoading['produk'] = true;
         _isLoading['puisi'] = true;
         _isLoading['syair'] = true;
+        _isLoading['desain_grafis'] = true;
       });
 
       Future.wait([
@@ -51,12 +57,14 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
         produkVM.fetchBuletin("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
         puisiVM.fetchPuisiTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
         syairVM.fetchSyairTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
+        desainGrafisVM.fetchDesainGrafis("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
       ]).then((_) {
         setState(() {
           _isLoading['berita'] = false;
           _isLoading['produk'] = false;
           _isLoading['puisi'] = false;
           _isLoading['syair'] = false;
+          _isLoading['desain_grafis'] = false;
         });
       }).catchError((error) {
         print("Error fetch berita: $error");
@@ -65,6 +73,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
           _isLoading['produk'] = false;
           _isLoading['puisi'] = false;
           _isLoading['syair'] = false;
+          _isLoading['desain_grafis'] = false;
         });
       });
 
@@ -79,6 +88,8 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
     final buletinList = Provider.of<ProdukViewModel>(context).allBuletin;
     final puisiList = Provider.of<PuisiTerbaruViewmodel>(context).allPuisi;
     final syairList = Provider.of<SyairTerbaruViewmodel>(context).allSyair;
+    final desainGrafisList =
+        Provider.of<DesainGrafisViewmodel>(context).allDesainGrafis;
 
     // Jika ada data yang sedang dimuat, tampilkan loading indicator
     if (_isLoading.values.contains(true)) {
@@ -209,6 +220,19 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen> {
                         return ChangeNotifierProvider.value(
                           value: syairList[index],
                           child: PuisiItem(),
+                        );
+                      }),
+                ),
+                 SizedBox(
+                  height: 250,
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: desainGrafisList.length.clamp(0, 5),
+                      itemBuilder: (contex, index) {
+                        return ChangeNotifierProvider.value(
+                          value: desainGrafisList[index],
+                          child: DesainGrafisItem(),
                         );
                       }),
                 ),

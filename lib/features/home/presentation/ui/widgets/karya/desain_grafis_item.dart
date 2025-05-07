@@ -4,14 +4,14 @@ import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_karya_screen.dart';
 import 'package:provider/provider.dart';
 
-class PuisiItem extends StatefulWidget {
-  const PuisiItem({super.key});
+class DesainGrafisItem extends StatefulWidget {
+  const DesainGrafisItem({super.key});
 
   @override
-  _PuisiItemState createState() => _PuisiItemState();
+  _DesainGrafisItemState createState() => _DesainGrafisItemState();
 }
 
-class _PuisiItemState extends State<PuisiItem> {
+class _DesainGrafisItemState extends State<DesainGrafisItem> {
   @override
   void initState() {
     super.initState();
@@ -33,7 +33,7 @@ class _PuisiItemState extends State<PuisiItem> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: AspectRatio(
-                  aspectRatio: 3 / 4,
+                  aspectRatio: 1 / 1,
                   child: karya.media.isNotEmpty
                       ? Image.memory(
                           karya.gambar(),
