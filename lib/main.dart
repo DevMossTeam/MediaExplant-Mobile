@@ -177,7 +177,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         statusBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
-        body: _pages[_currentIndex],
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _pages,
+        ),
+        //  _pages[_currentIndex],
         bottomNavigationBar: SizedBox(
           height: 75,
           child: BottomNavigationBar(

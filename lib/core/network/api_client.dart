@@ -94,7 +94,7 @@ class ApiClient {
     return postData(
       "profile/update",
       data,
-      headers: { "Authorization": "Bearer $token" },
+      headers: {"Authorization": "Bearer $token"},
     );
   }
 
@@ -105,8 +105,8 @@ class ApiClient {
   }) async {
     final data = await getData(
       "profile/check-username",
-      headers: { "Authorization": "Bearer $token" },
-      queryParameters: { "nama_pengguna": username },
+      headers: {"Authorization": "Bearer $token"},
+      queryParameters: {"nama_pengguna": username},
     );
     return data['available'] as bool? ?? false;
   }
