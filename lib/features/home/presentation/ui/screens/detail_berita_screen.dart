@@ -151,11 +151,21 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          berita.kategori,
-                          style: const TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold),
+                        Row(
+                          children: [
+                            Image.asset(
+                              'assets/images/app_logo.png',
+                              height: 30,
+                              width: 30,
+                            ),
+                            const SizedBox(width: 10,),
+                            Text(
+                              berita.kategori,
+                              style: const TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 10),
                         Text(
@@ -310,7 +320,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
           SliverToBoxAdapter(
             child: Padding(
                 padding: const EdgeInsets.only(left: 15, top: 15, bottom: 10),
-                child: titleHeader("Berita Terkait","mungkin anda suka")),
+                child: titleHeader("Berita Terkait", "mungkin anda suka")),
           ),
           // BERITA terkait
           SliverPadding(
@@ -360,7 +370,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        titleHeader("Terbaru","Teratas untuk anda"),
+                        titleHeader("Terbaru", "Teratas untuk anda"),
                         const SizedBox(height: 10),
                         // BERITA TERBARU
                         SizedBox(

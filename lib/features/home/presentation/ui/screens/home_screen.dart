@@ -3,7 +3,6 @@ import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_berita_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_untuk_anda_screen.dart';
 
-
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -16,11 +15,10 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: AppColors.background,
           appBar: AppBar(
             backgroundColor: AppColors.background,
-            title: const Text(
-              'MediaExplant',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 15, top: 5),
+              child: Image.asset(
+                'assets/images/app_logo.png',
               ),
             ),
             bottom: const TabBar(
@@ -46,7 +44,7 @@ class HomeScreen extends StatelessWidget {
               HomeUntukAndaScreen(),
               HomeBeritaScreen(),
               Center(child: Text("Produk")), // sementara placeholder
-              Center(child: Text("Karya")),  // sementara placeholder
+              Center(child: Text("Karya")), // sementara placeholder
             ],
           ),
         ),

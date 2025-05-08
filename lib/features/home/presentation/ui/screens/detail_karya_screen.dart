@@ -114,11 +114,23 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          karya.kategoriFormatted,
-                          style: const TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold),
+                        Row(
+                          children: [
+                            Image.asset(
+                              'assets/images/app_logo.png',
+                              height: 30,
+                              width: 30,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              karya.kategoriFormatted,
+                              style: const TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 10),
                         Text(
@@ -157,8 +169,9 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                         const SizedBox(
                           height: 20,
                         ),
-                        
-                        if (karya.kategori != 'desain_grafis' && karya.kategori  != 'fotografi')...[
+
+                        if (karya.kategori != 'desain_grafis' &&
+                            karya.kategori != 'fotografi') ...[
                           Center(
                             child: Text(
                               karya.judul,

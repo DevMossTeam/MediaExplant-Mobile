@@ -83,6 +83,24 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                               color: Colors.black,
                             ),
                           ),
+                          Row(
+                            children: [
+                              Image.asset(
+                                'assets/images/app_logo.png',
+                                height: 20,
+                                width: 20,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                produk.kategori,
+                                style: const TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 5),
                           Text(
                             "Oleh: ${produk.penulis}",
@@ -180,17 +198,6 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                         size: 30,
                         color: Colors.grey,
                       ),
-                    ),
-                    Container(
-                      height: 25,
-                      width: 2,
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      color: Colors.grey,
-                    ),
-                    const Icon(Icons.book, color: Colors.grey, size: 28),
-                    Text(
-                      produk.kategori,
-                      style: const TextStyle(color: AppColors.primary),
                     ),
                   ],
                 ),
