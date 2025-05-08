@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_karya_screen.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class PuisiItem extends StatefulWidget {
@@ -74,29 +75,14 @@ class _PuisiItemState extends State<PuisiItem> {
                 onTap: () {
                   Future.delayed(const Duration(milliseconds: 200), () {
                     Navigator.of(context).pushAndRemoveUntil(
-                      PageRouteBuilder(
-                        transitionDuration: const Duration(milliseconds: 1000),
-                        reverseTransitionDuration:
-                            const Duration(milliseconds: 500),
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            ChangeNotifierProvider.value(
-                                value: karya, child: DetailKaryaScreen()),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          return SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(1.0, 0.0),
-                              end: Offset.zero,
-                            ).animate(CurvedAnimation(
-                              parent: animation,
-                              curve: Curves.easeInOutCubic, 
-                            )),
-                            child: FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            ),
-                          );
-                        },
+                      PageTransition(
+                        type: PageTransitionType.rightToLeftWithFade,
+                        duration: const Duration(milliseconds: 1000),
+                        reverseDuration: const Duration(milliseconds: 500),
+                        child: ChangeNotifierProvider.value(
+                          value: karya,
+                          child: DetailKaryaScreen(),
+                        ),
                       ),
                       (route) => route.isFirst,
                     );

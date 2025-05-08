@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class BeritaPopulerItem extends StatelessWidget {
@@ -97,34 +98,15 @@ class BeritaPopulerItem extends StatelessWidget {
               child: InkWell(
                 onTap: () {
                   Future.delayed(const Duration(milliseconds: 200), () {
-                    // Delay efek splash
                     Navigator.of(context).pushAndRemoveUntil(
-                      PageRouteBuilder(
-                        transitionDuration: const Duration(
-                            milliseconds: 1000), // Durasi animasi masuk
-                        reverseTransitionDuration: const Duration(
-                            milliseconds: 500), // Durasi animasi balik
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            ChangeNotifierProvider.value(
-                                value: berita, child: DetailBeritaScreen()),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          // Animasi geser + fade
-                          return SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(1.0, 0.0), // Mulai dari kanan
-                              end: Offset.zero, // Berhenti di tengah
-                            ).animate(CurvedAnimation(
-                              parent: animation,
-                              curve: Curves.easeInOutCubic, // Lebih smooth
-                            )),
-                            child: FadeTransition(
-                              opacity:
-                                  animation, // Efek fade kecil agar lebih lembut
-                              child: child,
-                            ),
-                          );
-                        },
+                      PageTransition(
+                        type: PageTransitionType.rightToLeftWithFade,
+                        duration: const Duration(milliseconds: 1000),
+                        reverseDuration: const Duration(milliseconds: 500),
+                        child: ChangeNotifierProvider.value(
+                          value: berita,
+                          child: DetailBeritaScreen(),
+                        ),
                       ),
                       (route) => route.isFirst,
                     );
