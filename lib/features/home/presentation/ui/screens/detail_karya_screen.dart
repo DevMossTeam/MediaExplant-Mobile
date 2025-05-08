@@ -115,7 +115,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          karya.kategori,
+                          karya.kategoriFormatted,
                           style: const TextStyle(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold),

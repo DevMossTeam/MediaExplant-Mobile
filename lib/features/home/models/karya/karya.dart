@@ -51,6 +51,25 @@ class Karya with ChangeNotifier {
     return _gambarBytes!;
   }
 
+  // fungsi untuk kategori
+
+  String get kategoriFormatted {
+    switch (kategori.toLowerCase()) {
+      case 'syair':
+        return 'Syair';
+      case 'desain_grafis':
+        return 'Desain grafis';
+      case 'puisi':
+        return 'Puisi';
+      case 'pantun':
+        return 'Pantun';
+      case 'fotografi':
+        return 'Fotografi';
+      default:
+        return kategori;
+    }
+  }
+
   void statusBookmark() {
     isBookmark = !isBookmark;
     notifyListeners();

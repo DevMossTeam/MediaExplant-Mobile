@@ -45,33 +45,6 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
               },
             ),
           ),
-          actions: [
-            Container(
-              margin: const EdgeInsets.only(right: 20),
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.black.withAlpha(100),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: () async {
-                  await bookmarkProvider.toggleBookmark(
-                    Bookmark(
-                      userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-                      itemId: produk.idproduk,
-                      bookmarkType: "Produk",
-                    ),
-                  );
-                  produk.statusBookmark();
-                },
-                icon: Icon(
-                  produk.isBookmark ? Icons.bookmark : Icons.bookmark_outline,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -189,7 +162,32 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 10),
                       color: Colors.grey,
                     ),
-                    const Icon(Icons.book, color: Colors.grey, size: 30),
+                    IconButton(
+                      onPressed: () async {
+                        await bookmarkProvider.toggleBookmark(
+                          Bookmark(
+                            userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                            itemId: produk.idproduk,
+                            bookmarkType: "Produk",
+                          ),
+                        );
+                        produk.statusBookmark();
+                      },
+                      icon: Icon(
+                        produk.isBookmark
+                            ? Icons.bookmark_add_outlined
+                            : Icons.bookmark_add,
+                        size: 30,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    Container(
+                      height: 25,
+                      width: 2,
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      color: Colors.grey,
+                    ),
+                    const Icon(Icons.book, color: Colors.grey, size: 28),
                     Text(
                       produk.kategori,
                       style: const TextStyle(color: AppColors.primary),
