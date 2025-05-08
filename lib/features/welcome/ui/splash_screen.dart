@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// SplashScreen dengan background animasi Lottie dan staggered animations
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
-  
+
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -13,32 +13,32 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late final AnimationController _controller;
-  
+
   // Animasi untuk logo (scaling & rotation)
   late final Animation<double> _logoScaleAnimation;
   late final Animation<double> _logoRotationAnimation;
-  
+
   // Animasi untuk judul (title)
   late final Animation<double> _textFadeAnimation;
   late final Animation<Offset> _textSlideAnimation;
-  
+
   // Animasi untuk tagline (sub judul)
   late final Animation<double> _taglineFadeAnimation;
   late final Animation<Offset> _taglineSlideAnimation;
-  
+
   // Animasi untuk progress indicator
   late final Animation<double> _progressAnimation;
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     // Satu controller untuk semua animasi selama 4 detik
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
     );
-    
+
     // --- Logo Animations (0.0 - 0.3) ---
     _logoScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -52,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen>
         curve: const Interval(0.0, 0.3, curve: Curves.easeOut),
       ),
     );
-    
+
     // --- Title Animations (0.3 - 0.5) ---
     _textFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -69,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen>
         curve: const Interval(0.3, 0.5, curve: Curves.easeOut),
       ),
     );
-    
+
     // --- Tagline Animations (0.5 - 0.7) ---
     _taglineFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -86,7 +86,7 @@ class _SplashScreenState extends State<SplashScreen>
         curve: const Interval(0.5, 0.7, curve: Curves.easeOut),
       ),
     );
-    
+
     // --- Progress Indicator Animation (0.7 - 1.0) ---
     _progressAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -94,10 +94,10 @@ class _SplashScreenState extends State<SplashScreen>
         curve: const Interval(0.7, 1.0, curve: Curves.linear),
       ),
     );
-    
+
     // Mulai semua animasi secara bersamaan (dengan interval masing-masing)
     _controller.forward();
-    
+
     // Navigasi ke halaman berikutnya saat animasi selesai
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -105,13 +105,13 @@ class _SplashScreenState extends State<SplashScreen>
       }
     });
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-  
+
   /// Widget background Lottie
   Widget _buildLottieBackground() {
     return SizedBox.expand(
@@ -122,15 +122,15 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
   }
-  
+
   /// Widget logo dengan animasi scale dan rotation
   Widget _buildLogo() {
     return ScaleTransition(
       scale: _logoScaleAnimation,
       child: RotationTransition(
         turns: _logoRotationAnimation,
-        child: SvgPicture.asset(
-          'assets/images/app_logo.svg',
+        child: Image.asset(
+          'assets/images/app_logo.png',
           width: 100,
           height: 100,
         ),
@@ -138,7 +138,6 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 
-  
   /// Widget tagline dengan animasi fade dan slide
   Widget _buildTaglineText() {
     return FadeTransition(
@@ -157,7 +156,7 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
   }
-  
+
   /// Widget progress indicator yang menampilkan status loading
   Widget _buildProgressIndicator() {
     return AnimatedBuilder(
@@ -174,7 +173,7 @@ class _SplashScreenState extends State<SplashScreen>
       },
     );
   }
-  
+
   /// Menggabungkan semua widget utama pada splash screen
   Widget _buildContent() {
     return Center(
@@ -195,7 +194,7 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
