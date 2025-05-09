@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
+import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_populer_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_dari_kami_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_rekomendasi_lain_view_model.dart';
@@ -110,6 +111,11 @@ void main() {
         ChangeNotifierProvider(create: (ctx) => BookmarkProvider()),
         // provider untuk Reaksi
         ChangeNotifierProvider(create: (_) => ReaksiProvider()),
+
+        //komentar
+        ChangeNotifierProvider(
+          create: (_) => KomentarViewmodel(),
+        ),
       ],
       child: const MyApp(),
     ),

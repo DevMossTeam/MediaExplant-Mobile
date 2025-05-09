@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/features/comments/data/models/komentar.dart';
+import 'package:mediaexplant/features/comments/models/komentar.dart';
 
 class KomentarItem extends StatelessWidget {
   final Komentar comment;
@@ -18,7 +18,10 @@ class KomentarItem extends StatelessWidget {
             children: [
               // Foto Profil
               CircleAvatar(
-                backgroundImage: NetworkImage(comment.profileUrl),
+                backgroundImage:
+                    comment.profil != null && comment.profil!.isNotEmpty
+                        ? NetworkImage(comment.profil!)
+                        : null,
                 radius: 18,
               ),
               const SizedBox(width: 10),
@@ -42,7 +45,7 @@ class KomentarItem extends StatelessWidget {
 
                         // Waktu
                         Text(
-                          comment.time,
+                          comment.tanggalKomentar,
                           style:
                               TextStyle(fontSize: 12, color: Colors.grey[600]),
                         ),
@@ -52,50 +55,51 @@ class KomentarItem extends StatelessWidget {
 
                     // Isi Komentar
                     Text(
-                      comment.comment,
+                      comment.isiKomentar,
                       style: const TextStyle(fontSize: 14),
                     ),
                     const SizedBox(height: 6),
 
                     // Tombol Balas, Like, Dislike
-                    Row(
+                    const Row(
                       children: [
                         // Tombol Balas
-                        const Text(
+                        Text(
                           "Balas",
                           style: TextStyle(fontSize: 13, color: Colors.blue),
                         ),
-                        const SizedBox(width: 10),
+                         SizedBox(width: 10),
 
-                        // Like
-                        const Icon(Icons.favorite_border,
-                            size: 16, color: Colors.grey),
-                        const SizedBox(width: 5),
-                        Text(
-                          comment.likes.toString(),
-                          style: const TextStyle(fontSize: 13, color: Colors.grey),
-                        ),
+                        // // Like
+                        // const Icon(Icons.favorite_border,
+                        //     size: 16, color: Colors.grey),
+                        // const SizedBox(width: 5),
+                        // Text(
+                        //   comment.likes.toString(),
+                        //   style:
+                        //       const TextStyle(fontSize: 13, color: Colors.grey),
+                        // ),
 
-                        const SizedBox(width: 10),
+                        // const SizedBox(width: 10),
 
-                        // Dislike
-                        const Icon(Icons.thumb_down_alt_outlined,
-                            size: 16, color: Colors.grey),
+                        // // Dislike
+                        // const Icon(Icons.thumb_down_alt_outlined,
+                        //     size: 16, color: Colors.grey),
                       ],
                     ),
 
                     // Jika ada balasan, tampilkan "Lihat balasan"
-                    if (comment.replies > 0)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Text(
-                          "Lihat ${comment.replies} balasan",
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.blue,
-                          ),
-                        ),
-                      ),
+                    // if (comment.replies > 0)
+                    //   Padding(
+                    //     padding: const EdgeInsets.only(top: 6),
+                    //     child: Text(
+                    //       "Lihat ${comment.replies} balasan",
+                    //       style: const TextStyle(
+                    //         fontSize: 13,
+                    //         color: Colors.blue,
+                    //       ),
+                    //     ),
+                    //   ),
                   ],
                 ),
               ),

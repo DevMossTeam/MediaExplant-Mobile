@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/features/comments/data/models/komentar.dart';
+import 'package:mediaexplant/features/comments/models/komentar.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/widgets/komentar_item.dart';
 
 class KomentarScreen extends StatefulWidget {
@@ -18,28 +18,40 @@ class _KomentarScreenState extends State<KomentarScreen> {
     // Data Dummy Komentar
     List<Komentar> comments = [
       Komentar(
-        profileUrl: "",
+        profil: "",
         username: "Ryyw",
-        time: "4 j",
-        comment: "apalah ini kelakuan randomnya bikin heran",
-        likes: 638,
-        replies: 20,
+        tanggalKomentar: "4 j",
+        isiKomentar: "apalah ini kelakuan randomnya bikin heran",
+        id: "1",
+        itemId: "dsd",
+        komentarType: "Berita",
+        userId: "mdkodfuidw",
+        parentId: ""
+
       ),
       Komentar(
-        profileUrl: "",
-        username: "twofaces",
-        comment: "pengen rasanya mokel",
-        time: "6 j",
-        likes: 281,
-        replies: 14,
+        profil: "",
+        username: "Ryyw",
+        tanggalKomentar: "4 j",
+        isiKomentar: "apalah ini kelakuan randomnya bikin heran",
+        id: "1",
+        itemId: "dsd",
+        komentarType: "Berita",
+        userId: "mdkodfuidw",
+        parentId: ""
+
       ),
       Komentar(
-        profileUrl: "",
-        username: "gada nama",
-        comment: "batuk udah satu bulan gw aseli",
-        time: "2 mnt",
-        likes: 0,
-        replies: 0,
+        profil: "",
+        username: "Ryyw",
+        tanggalKomentar: "4 j",
+        isiKomentar: "apalah ini kelakuan randomnya bikin heran",
+        id: "1",
+        itemId: "dsd",
+        komentarType: "Berita",
+        userId: "mdkodfuidw",
+        parentId: ""
+
       ),
     ];
 
