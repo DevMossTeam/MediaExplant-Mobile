@@ -286,7 +286,5 @@ MediaExplant/
 ├── main.dart                             // Entry point aplikasi
 ├── pubspec.yaml                          // Dependency dan asset config
 └── README.md
-│   │
-│   ├── main.dart                        // Entry Point Aplikasi (MainActivity)
 └── pubspec.yaml                         // Konfigurasi Proyek
 ```
