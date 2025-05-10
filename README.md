@@ -124,13 +124,168 @@ MediaExplant/
 │   │   │       │       └── comment_item.dart         // (item_komentar.xml)
 │   │   │       └── logic/                // Logika komentar
 │   │   │           └── comments_viewmodel.dart
-│   │
-│   │   ├── notifications/                // Fitur Pemberitahuan
-│   │   ├── profile/                      // Fitur Profil Pengguna
+│   │   ├── notifications/                // Fitur Notifikasi
+│   │   │   ├── data/
+│   │   │   │   ├── datasources/
+│   │   │   │   │   └── notification_remote_data_source.dart
+│   │   │   │   ├── models/
+│   │   │   │   │   └── notification_model.dart
+│   │   │   │   └── repositories/
+│   │   │   │       └── notification_repository_impl.dart
+│   │   │   ├── domain/
+│   │   │   │   ├── entities/
+│   │   │   │   │   └── notification.dart
+│   │   │   │   ├── repositories/
+│   │   │   │   │   └── notification_repository.dart
+│   │   │   │   └── usecases/
+│   │   │   │       └── get_notifications.dart
+│   │   │   └── presentation/
+│   │   │       ├── ui/                   // Tampilan notifikasi
+│   │   │       │   └── screens/
+│   │   │       │       └── notifications_screen.dart // (fragment_notifikasi.xml)
+│   │   │       ├── widgets/
+│   │   │       │   └── notification_item.dart        // (item_notifikasi.xml)
+│   │   │       └── logic/
+│   │   │           └── notifications_viewmodel.dart
+│   │   │
+│   │   ├── profile/                      // Fitur Profil
+│   │   │   ├── data/
+│   │   │   │   ├── datasources/
+│   │   │   │   │   └── profile_remote_data_source.dart
+│   │   │   │   ├── models/
+│   │   │   │   │   └── profile_model.dart
+│   │   │   │   └── repositories/
+│   │   │   │       └── profile_repository_impl.dart
+│   │   │   ├── domain/
+│   │   │   │   ├── entities/
+│   │   │   │   │   └── profile.dart
+│   │   │   │   ├── repositories/
+│   │   │   │   │   └── profile_repository.dart
+│   │   │   │   └── usecases/
+│   │   │   │       └── get_profile.dart
+│   │   │   └── presentation/
+│   │   │       ├── ui/                   // Tampilan profil
+│   │   │       │   └── screens/
+│   │   │       │       └── profile_screen.dart      // (fragment_profile.xml)
+│   │   │       └── logic/
+│   │   │           └── profile_viewmodel.dart
+│   │   │
+│   │   ├── reaksi/                       // Fitur Reaksi & Bookmark
+│   │   │   ├── data/
+│   │   │   │   ├── datasources/
+│   │   │   │   │   └── reaksi_remote_data_source.dart
+│   │   │   │   ├── models/
+│   │   │   │   │   └── reaksi_model.dart
+│   │   │   │   └── repositories/
+│   │   │   │       └── reaksi_repository_impl.dart
+│   │   │   ├── domain/
+│   │   │   │   ├── entities/
+│   │   │   │   │   └── reaksi.dart
+│   │   │   │   ├── repositories/
+│   │   │   │   │   └── reaksi_repository.dart
+│   │   │   │   └── usecases/
+│   │   │   │       ├── get_bookmarked_news.dart      // Bookmark
+│   │   │   │       ├── get_liked_news.dart             // Like
+│   │   │   │       └── get_view_count.dart             // ViewCount
+│   │   │   └── presentation/
+│   │   │       ├── ui/                   // Tampilan reaksi/bookmark
+│   │   │       │   └── screens/
+│   │   │       │       └── bookmarked_news_screen.dart // (fragment_daftar_berita_bookmark.xml)
+│   │   │       ├── widgets/
+│   │   │       │   ├── bookmark_item.dart           // (item_berita_bookmark.xml)
+│   │   │       │   └── like_item.dart               // (item_berita_like.xml)
+│   │   │       └── logic/
+│   │   │           ├── bookmark_viewmodel.dart
+│   │   │           ├── daftar_berita_bookmark_viewmodel.dart
+│   │   │           ├── daftar_berita_like_viewmodel.dart
+│   │   │           └── view_count_viewmodel.dart
+│   │   │
 │   │   ├── report/                       // Fitur Pelaporan
+│   │   │   ├── data/
+│   │   │   │   ├── datasources/
+│   │   │   │   │   └── report_remote_data_source.dart
+│   │   │   │   ├── models/
+│   │   │   │   │   └── report_model.dart
+│   │   │   │   └── repositories/
+│   │   │   │       └── report_repository_impl.dart
+│   │   │   ├── domain/
+│   │   │   │   ├── entities/
+│   │   │   │   │   └── report.dart
+│   │   │   │   ├── repositories/
+│   │   │   │   │   └── report_repository.dart
+│   │   │   │   └── usecases/
+│   │   │   │       └── submit_report.dart
+│   │   │   └── presentation/
+│   │   │       ├── ui/                   // Tampilan dialog pelaporan
+│   │   │       │   └── dialogs/
+│   │   │       │       └── report_dialog.dart       // (fragment_report_dialog.xml)
+│   │   │       └── logic/
+│   │   │           └── report_viewmodel.dart
+│   │   │
 │   │   ├── search/                       // Fitur Pencarian
-│   │   ├── settings/                     // Fitur Pengaturan
-│   │   └── welcome/                      // Fitur Penyambutan
+│   │   │   ├── data/
+│   │   │   │   ├── datasources/
+│   │   │   │   │   └── search_remote_data_source.dart
+│   │   │   │   ├── models/
+│   │   │   │   │   └── search_model.dart
+│   │   │   │   └── repositories/
+│   │   │   │       └── search_repository_impl.dart
+│   │   │   ├── domain/
+│   │   │   │   ├── entities/
+│   │   │   │   │   └── search.dart
+│   │   │   │   ├── repositories/
+│   │   │   │   │   └── search_repository.dart
+│   │   │   │   └── usecases/
+│   │   │   │       └── perform_search.dart
+│   │   │   └── presentation/
+│   │   │       ├── ui/                   // Tampilan pencarian
+│   │   │       │   ├── screens/
+│   │   │       │   │   ├── search_screen.dart        // (fragment_search.xml)
+│   │   │       │   │   └── search_results_screen.dart  // (fragment_search_results.xml)
+│   │   │       │   └── widgets/
+│   │   │       │       └── search_result_item.dart     // (item_riwayat_search.xml, dsb.)
+│   │   │       └── logic/
+│   │   │           └── search_viewmodel.dart
+│   │   │
+│   │   ├── welcome/                      // Fitur Onboarding & Welcome Page
+│   │   │   └── presentation/
+│   │   │       ├── ui/
+│   │   │       │   ├── screens/
+│   │   │       │   │   ├── splash_screen.dart        // Splash screen (baru)
+│   │   │       │   │   ├── welcome_screen.dart         // (fragment_welcome.xml)
+│   │   │       │   │   ├── welcome_page1.dart          // (fragment_welcome_page_1.xml)
+│   │   │       │   │   ├── welcome_page2.dart          // (fragment_welcome_page_2.xml)
+│   │   │       │   │   └── welcome_page3.dart          // (fragment_welcome_page_3.xml)
+│   │   │       └── logic/
+│   │   │           ├── splash_viewmodel.dart         // ViewModel untuk Splash Screen
+│   │   │           └── welcome_viewmodel.dart
+│   │   │
+│   │   └── settings/                     // Fitur Settings (setara dengan fitur lainnya)
+│   │       └── presentation/
+│   │           ├── ui/
+│   │           │   ├── screens/
+│   │           │   │   ├── settings_screen.dart             // Layar utama Settings
+│   │           │   │   ├── hubungi_screen.dart               // (HubungiFragment.kt)
+│   │           │   │   ├── keamanan_screen.dart              // (KeamananFragment.kt)
+│   │           │   │   ├── pusat_bantuan_screen.dart           // (PusatBantuanFragment.kt)
+│   │           │   │   ├── setting_notifikasi_screen.dart      // (SettingNotifikasiFragment.kt)
+│   │           │   │   ├── tentang_screen.dart                 // (TentangFragment.kt)
+│   │           │   │   └── umum_screen.dart                    // (UmumFragment.kt)
+│   │           │   └── dialogs/                               // Jika ada dialog khusus Settings
+│   │           └── logic/
+│   │               ├── hubungi_viewmodel.dart              // (HubungiViewModel.kt)
+│   │               ├── keamanan_viewmodel.dart             // (KeamananViewModel.kt)
+│   │               ├── settings_viewmodel.dart        // (PengaturanAkunViewModel.kt)
+│   │               ├── pusat_bantuan_viewmodel.dart          // (opsional)
+│   │               ├── setting_notifikasi_viewmodel.dart     // (opsional)
+│   │               ├── tentang_viewmodel.dart                // (opsional)
+│   │               └── umum_viewmodel.dart                  // (UmumViewModel.kt)
+│   │
+│   └── navigation/
+│       └── app_router.dart               // Konfigurasi routing/navigasi aplikasi
+├── main.dart                             // Entry point aplikasi
+├── pubspec.yaml                          // Dependency dan asset config
+└── README.md
 │   │
 │   ├── main.dart                        // Entry Point Aplikasi (MainActivity)
 └── pubspec.yaml                         // Konfigurasi Proyek
