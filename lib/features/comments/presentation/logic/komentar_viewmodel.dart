@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/comments/models/komentar.dart';
 
-
 class KomentarViewmodel with ChangeNotifier {
   List<Komentar> _komentarList = [];
   List<Komentar> get komentarList => _komentarList;
@@ -12,6 +11,26 @@ class KomentarViewmodel with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  /// Untuk menyimpan komentar yang sedang dibalas
+  String? _replyToKomentarId;
+  String? _replyToUsername;
+
+  String? get replyToKomentarId => _replyToKomentarId;
+  String? get replyToUsername => _replyToUsername;
+
+  /// Set komentar yang sedang dibalas
+  void setReplyTo({required String komentarId, required String username}) {
+    _replyToKomentarId = komentarId;
+    _replyToUsername = username;
+    notifyListeners();
+  }
+
+  /// Reset balasan
+  void clearReplyTo() {
+    _replyToKomentarId = null;
+    _replyToUsername = null;
+    notifyListeners();
+  }
 
   Future<void> fetchKomentar({required String komentarType, required String itemId}) async {
     _isLoading = true;
@@ -35,7 +54,6 @@ class KomentarViewmodel with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Kirim komentar baru
   Future<bool> postKomentar({
     required String userId,
     required String isiKomentar,
@@ -72,3 +90,5 @@ class KomentarViewmodel with ChangeNotifier {
     }
   }
 }
+
+

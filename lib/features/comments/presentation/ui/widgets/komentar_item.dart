@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/features/comments/models/komentar.dart';
 
-class KomentarItem extends StatelessWidget {
+class KomentarItem extends StatefulWidget {
   final Komentar comment;
+  final VoidCallback? onReply;
 
-  const KomentarItem({Key? key, required this.comment}) : super(key: key);
+  const KomentarItem({
+    Key? key,
+    required this.comment,
+    this.onReply,
+  }) : super(key: key);
+
+  @override
+  State<KomentarItem> createState() => _KomentarItemState();
+}
+
+class _KomentarItemState extends State<KomentarItem> {
+  bool showReplies = false;
 
   @override
   Widget build(BuildContext context) {
+    final childKomentar = widget.comment.childKomentar ?? [];
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Column(
@@ -18,10 +32,10 @@ class KomentarItem extends StatelessWidget {
             children: [
               // Foto Profil
               CircleAvatar(
-                backgroundImage:
-                    comment.profil != null && comment.profil!.isNotEmpty
-                        ? NetworkImage(comment.profil!)
-                        : null,
+                backgroundImage: widget.comment.profil != null &&
+                        widget.comment.profil!.isNotEmpty
+                    ? NetworkImage(widget.comment.profil!)
+                    : null,
                 radius: 18,
               ),
               const SizedBox(width: 10),
@@ -33,73 +47,68 @@ class KomentarItem extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        // Nama Pengguna
                         Text(
-                          comment.username,
+                          widget.comment.username ?? "",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
                         ),
                         const SizedBox(width: 6),
-
-                        // Waktu
                         Text(
-                          comment.tanggalKomentar,
+                          widget.comment.tanggalKomentar,
                           style:
                               TextStyle(fontSize: 12, color: Colors.grey[600]),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
 
-                    // Isi Komentar
                     Text(
-                      comment.isiKomentar,
+                      widget.comment.isiKomentar,
                       style: const TextStyle(fontSize: 14),
                     ),
                     const SizedBox(height: 6),
 
-                    // Tombol Balas, Like, Dislike
-                    const Row(
-                      children: [
-                        // Tombol Balas
-                        Text(
-                          "Balas",
-                          style: TextStyle(fontSize: 13, color: Colors.blue),
-                        ),
-                         SizedBox(width: 10),
-
-                        // // Like
-                        // const Icon(Icons.favorite_border,
-                        //     size: 16, color: Colors.grey),
-                        // const SizedBox(width: 5),
-                        // Text(
-                        //   comment.likes.toString(),
-                        //   style:
-                        //       const TextStyle(fontSize: 13, color: Colors.grey),
-                        // ),
-
-                        // const SizedBox(width: 10),
-
-                        // // Dislike
-                        // const Icon(Icons.thumb_down_alt_outlined,
-                        //     size: 16, color: Colors.grey),
-                      ],
+                    const SizedBox(height: 4),
+                    GestureDetector(
+                      onTap: widget.onReply,
+                      child: const Text(
+                        "Balas",
+                        style: TextStyle(fontSize: 13, color: Colors.blue),
+                      ),
                     ),
+                    const SizedBox(height: 8),
 
-                    // Jika ada balasan, tampilkan "Lihat balasan"
-                    // if (comment.replies > 0)
-                    //   Padding(
-                    //     padding: const EdgeInsets.only(top: 6),
-                    //     child: Text(
-                    //       "Lihat ${comment.replies} balasan",
-                    //       style: const TextStyle(
-                    //         fontSize: 13,
-                    //         color: Colors.blue,
-                    //       ),
-                    //     ),
-                    //   ),
+                    // Tombol lihat balasan
+                    if (childKomentar.isNotEmpty)
+                      TextButton(
+                        style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                        onPressed: () {
+                          setState(() {
+                            showReplies = !showReplies;
+                          });
+                        },
+                        child: Text(
+                          showReplies
+                              ? "Sembunyikan balasan"
+                              : "Lihat balasan (${childKomentar.length})",
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                      ),
+
+                    // Daftar komentar balasan
+                    if (showReplies)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 32),
+                        child: Column(
+                          children: childKomentar
+                              .map((reply) => KomentarItem(
+                                    comment: reply,
+                                    onReply: widget.onReply,
+                                  ))
+                              .toList(),
+                        ),
+                      ),
                   ],
                 ),
               ),

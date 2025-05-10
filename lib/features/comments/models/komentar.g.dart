@@ -14,8 +14,11 @@ Komentar _$KomentarFromJson(Map<String, dynamic> json) => Komentar(
       komentarType: json['komentar_type'] as String,
       itemId: json['item_id'] as String,
       parentId: json['parent_id'] as String?,
-      username: json['nama_pengguna'] as String,
+      username: json['nama_pengguna'] as String?,
       profil: json['profil_pic'] as String?,
+      childKomentar: (json['childKomentar'] as List<dynamic>?)
+          ?.map((e) => Komentar.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$KomentarToJson(Komentar instance) => <String, dynamic>{
@@ -28,4 +31,5 @@ Map<String, dynamic> _$KomentarToJson(Komentar instance) => <String, dynamic>{
       'parent_id': instance.parentId,
       'nama_pengguna': instance.username,
       'profil_pic': instance.profil,
+      'childKomentar': instance.childKomentar,
     };

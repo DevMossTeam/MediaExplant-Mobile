@@ -20,9 +20,10 @@ class Komentar {
   @JsonKey(name: 'parent_id')
   final String? parentId;
   @JsonKey(name: 'nama_pengguna')
-  final String username;
+  final String? username;
   @JsonKey(name: 'profil_pic')
   final String? profil;
+  final List<Komentar>? childKomentar;
   Komentar({
     required this.id,
     required this.userId,
@@ -31,10 +32,36 @@ class Komentar {
     required this.komentarType,
     required this.itemId,
     this.parentId,
-    required this.username,
+    this.username,
     this.profil,
+    this.childKomentar,
   });
- 
+
+  Komentar copyWith({
+    String? id,
+    String? userId,
+    String? isiKomentar,
+    String? tanggalKomentar,
+    String? komentarType,
+    String? itemId,
+    String? parentId,
+    String? username,
+    String? profil,
+    List<Komentar>? childKomentar,
+  }) {
+    return Komentar(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      isiKomentar: isiKomentar ?? this.isiKomentar,
+      tanggalKomentar: tanggalKomentar ?? this.tanggalKomentar,
+      komentarType: komentarType ?? this.komentarType,
+      itemId: itemId ?? this.itemId,
+      parentId: parentId ?? this.parentId,
+      username: username ?? this.username,
+      profil: profil ?? this.profil,
+      childKomentar: childKomentar ?? this.childKomentar,
+    );
+  }
 
   factory Komentar.fromJson(Map<String, dynamic> json) =>
       _$KomentarFromJson(json);

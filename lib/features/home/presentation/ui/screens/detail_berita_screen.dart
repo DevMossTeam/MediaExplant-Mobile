@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
+import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
@@ -158,7 +159,9 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                               height: 30,
                               width: 30,
                             ),
-                            const SizedBox(width: 10,),
+                            const SizedBox(
+                              width: 10,
+                            ),
                             Text(
                               berita.kategori,
                               style: const TextStyle(
@@ -422,7 +425,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
         shape: const CircleBorder(),
         backgroundColor: AppColors.primary,
         onPressed: () {
-          showKomentarScreen(context);
+          showKomentarBottomSheet(context, 'Berita', berita.idBerita, "ovPHOkUBw3FHrq6PeQkg1McfBqkF");
         },
         child: const Icon(Icons.comment, color: Colors.white),
       ),
@@ -430,14 +433,22 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
   }
 }
 
-// Fungsi untuk menampilkan komentar
-void showKomentarScreen(BuildContext context) {
+
+void showKomentarBottomSheet(BuildContext context, String komentarType, String itemId, String userId) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (context) {
-      return const KomentarScreen();
-    },
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) => ChangeNotifierProvider(
+      create: (_) => KomentarViewmodel()..fetchKomentar(komentarType: komentarType, itemId: itemId),
+      child: KomentarBottomSheet(
+        komentarType: komentarType,
+        itemId: itemId,
+        userId: userId,
+      ),
+    ),
   );
 }

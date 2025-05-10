@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
+import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
@@ -286,155 +287,155 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
             ]),
           ),
 
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.only(left: 15, top: 15, bottom: 10),
-              child: Row(
-                children: [
-                  Text(
-                    "Berita Terkait",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    "Mungkin anda sukai",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // // BERITA terkait
-          // SliverPadding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 5),
-          //   sliver: SliverList(
-          //     delegate: SliverChildBuilderDelegate(
-          //       (context, index) {
-          //         return ChangeNotifierProvider.value(
-          //           value: beritaTerkaitList[index],
-          //           child: BeritaPopulerItem(),
-          //         );
-          //       },
-          //       childCount: beritaTerkaitList.length,
+          // const SliverToBoxAdapter(
+          //   child: Padding(
+          //     padding: EdgeInsets.only(left: 15, top: 15, bottom: 10),
+          //     child: Row(
+          //       children: [
+          //         Text(
+          //           "Berita Terkait",
+          //           style: TextStyle(
+          //             fontSize: 16,
+          //             fontWeight: FontWeight.bold,
+          //             color: Colors.black,
+          //           ),
+          //         ),
+          //         SizedBox(
+          //           width: 10,
+          //         ),
+          //         Text(
+          //           "Mungkin anda sukai",
+          //           style: TextStyle(
+          //             fontSize: 12,
+          //             color: Colors.grey,
+          //           ),
+          //         ),
+          //       ],
           //     ),
           //   ),
           // ),
-          // SliverToBoxAdapter(
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.end,
-          //     children: [
-          //       TextButton(
-          //         onPressed: () {
-          //           // aksi saat tombol ditekan
-          //         },
-          //         child: const Text(
-          //           "Selengkapnya >>",
-          //           style: TextStyle(
-          //             color: AppColors.primary,
-          //             fontSize: 14,
-          //           ),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
+          // // // BERITA terkait
+          // // SliverPadding(
+          // //   padding: const EdgeInsets.symmetric(horizontal: 5),
+          // //   sliver: SliverList(
+          // //     delegate: SliverChildBuilderDelegate(
+          // //       (context, index) {
+          // //         return ChangeNotifierProvider.value(
+          // //           value: beritaTerkaitList[index],
+          // //           child: BeritaPopulerItem(),
+          // //         );
+          // //       },
+          // //       childCount: beritaTerkaitList.length,
+          // //     ),
+          // //   ),
+          // // ),
+          // // SliverToBoxAdapter(
+          // //   child: Row(
+          // //     mainAxisAlignment: MainAxisAlignment.end,
+          // //     children: [
+          // //       TextButton(
+          // //         onPressed: () {
+          // //           // aksi saat tombol ditekan
+          // //         },
+          // //         child: const Text(
+          // //           "Selengkapnya >>",
+          // //           style: TextStyle(
+          // //             color: AppColors.primary,
+          // //             fontSize: 14,
+          // //           ),
+          // //         ),
+          // //       ),
+          // //     ],
+          // //   ),
+          // // ),
 
-          // // berita terbaru
-          // SliverPadding(
-          //   padding: const EdgeInsets.only(top: 20),
-          //   sliver: SliverList(
-          //     delegate: SliverChildListDelegate([
-          //       Container(
-          //         color: Colors.grey.withAlpha(50),
-          //         child: Padding(
-          //           padding:
-          //               const EdgeInsets.only(left: 10, top: 20, bottom: 20),
-          //           child: Column(
-          //             crossAxisAlignment: CrossAxisAlignment.start,
-          //             children: [
-          //               const Row(
-          //                 children: [
-          //                   Text(
-          //                     "Terbaru",
-          //                     style: TextStyle(
-          //                       fontSize: 16,
-          //                       fontWeight: FontWeight.bold,
-          //                       color: Colors.black,
-          //                     ),
-          //                   ),
-          //                   SizedBox(
-          //                     width: 10,
-          //                   ),
-          //                   Text(
-          //                     "Teratas untuk anda",
-          //                     style: TextStyle(
-          //                       fontSize: 12,
-          //                       color: Colors.grey,
-          //                     ),
-          //                   ),
-          //                 ],
-          //               ),
-          //               const SizedBox(height: 10),
-          //               // BERITA TERBARU
-          //               // SizedBox(
-          //               //   height: 180,
-          //               //   child: ListView.builder(
-          //               //     scrollDirection: Axis.horizontal,
-          //               //     itemCount: 10,
-          //               //     itemBuilder: (context, index) {
-          //               //       return ChangeNotifierProvider.value(
-          //               //         value: beritaTerbaruList[index],
-          //               //         child: BeritaTerbaruItem(),
-          //               //       );
-          //               //     },
-          //               //   ),
-          //               // ),
-          //               Row(
-          //                 mainAxisAlignment: MainAxisAlignment.end,
-          //                 children: [
-          //                   TextButton(
-          //                     onPressed: () {
-          //                       // aksi saat tombol ditekan
-          //                     },
-          //                     child: const Text(
-          //                       "Selengkapnya >>",
-          //                       style: TextStyle(
-          //                         color: AppColors.primary,
-          //                         fontSize: 14,
-          //                       ),
-          //                     ),
-          //                   ),
-          //                 ],
-          //               ),
-          //               const SizedBox(
-          //                 height: 50,
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       ),
-          //       // const Divider(color: Colors.grey, thickness: 0.5),
-          //     ]),
-          //   ),
-          // ),
+          // // // berita terbaru
+          // // SliverPadding(
+          // //   padding: const EdgeInsets.only(top: 20),
+          // //   sliver: SliverList(
+          // //     delegate: SliverChildListDelegate([
+          // //       Container(
+          // //         color: Colors.grey.withAlpha(50),
+          // //         child: Padding(
+          // //           padding:
+          // //               const EdgeInsets.only(left: 10, top: 20, bottom: 20),
+          // //           child: Column(
+          // //             crossAxisAlignment: CrossAxisAlignment.start,
+          // //             children: [
+          // //               const Row(
+          // //                 children: [
+          // //                   Text(
+          // //                     "Terbaru",
+          // //                     style: TextStyle(
+          // //                       fontSize: 16,
+          // //                       fontWeight: FontWeight.bold,
+          // //                       color: Colors.black,
+          // //                     ),
+          // //                   ),
+          // //                   SizedBox(
+          // //                     width: 10,
+          // //                   ),
+          // //                   Text(
+          // //                     "Teratas untuk anda",
+          // //                     style: TextStyle(
+          // //                       fontSize: 12,
+          // //                       color: Colors.grey,
+          // //                     ),
+          // //                   ),
+          // //                 ],
+          // //               ),
+          // //               const SizedBox(height: 10),
+          // //               // BERITA TERBARU
+          // //               // SizedBox(
+          // //               //   height: 180,
+          // //               //   child: ListView.builder(
+          // //               //     scrollDirection: Axis.horizontal,
+          // //               //     itemCount: 10,
+          // //               //     itemBuilder: (context, index) {
+          // //               //       return ChangeNotifierProvider.value(
+          // //               //         value: beritaTerbaruList[index],
+          // //               //         child: BeritaTerbaruItem(),
+          // //               //       );
+          // //               //     },
+          // //               //   ),
+          // //               // ),
+          // //               Row(
+          // //                 mainAxisAlignment: MainAxisAlignment.end,
+          // //                 children: [
+          // //                   TextButton(
+          // //                     onPressed: () {
+          // //                       // aksi saat tombol ditekan
+          // //                     },
+          // //                     child: const Text(
+          // //                       "Selengkapnya >>",
+          // //                       style: TextStyle(
+          // //                         color: AppColors.primary,
+          // //                         fontSize: 14,
+          // //                       ),
+          // //                     ),
+          // //                   ),
+          // //                 ],
+          // //               ),
+          // //               const SizedBox(
+          // //                 height: 50,
+          // //               ),
+          // //             ],
+          // //           ),
+          // //         ),
+          // //       ),
+          // //       // const Divider(color: Colors.grey, thickness: 0.5),
+          // //     ]),
+          // //   ),
+          // // ),
         ],
       ),
 
       // FAB untuk membuka komentar
-      floatingActionButton: FloatingActionButton(
+     floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         backgroundColor: AppColors.primary,
         onPressed: () {
-          showKomentarScreen(context);
+          showKomentarBottomSheet(context, 'Karya', karya.idKarya, "ovPHOkUBw3FHrq6PeQkg1McfBqkF");
         },
         child: const Icon(Icons.comment, color: Colors.white),
       ),
@@ -442,14 +443,23 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
   }
 }
 
-// Fungsi untuk menampilkan komentar
-void showKomentarScreen(BuildContext context) {
+
+void showKomentarBottomSheet(BuildContext context, String komentarType, String itemId, String userId) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (context) {
-      return const KomentarScreen();
-    },
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) => ChangeNotifierProvider(
+      create: (_) => KomentarViewmodel()..fetchKomentar(komentarType: komentarType, itemId: itemId),
+      child: KomentarBottomSheet(
+        komentarType: komentarType,
+        itemId: itemId,
+        userId: userId,
+      ),
+    ),
   );
 }
+

@@ -1,66 +1,206 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:mediaexplant/features/comments/models/komentar.dart';
+import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/widgets/komentar_item.dart';
 
-class KomentarScreen extends StatefulWidget {
-  const KomentarScreen({Key? key}) : super(key: key);
+class KomentarBottomSheet extends StatefulWidget {
+  final String komentarType;
+  final String itemId;
+  final String userId;
+
+  const KomentarBottomSheet({
+    Key? key,
+    required this.komentarType,
+    required this.itemId,
+    required this.userId,
+  }) : super(key: key);
 
   @override
-  _KomentarScreenState createState() => _KomentarScreenState();
+  State<KomentarBottomSheet> createState() => _KomentarBottomSheetState();
 }
 
-class _KomentarScreenState extends State<KomentarScreen> {
-  final TextEditingController _commentController = TextEditingController();
+class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
+  final TextEditingController _komentarController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  Komentar? _replyTo;
+  Set<String> _openedKomentarIds = Set(); // Menyimpan komentar yang sudah dibuka balasannya
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<KomentarViewmodel>().fetchKomentar(
+            komentarType: widget.komentarType,
+            itemId: widget.itemId,
+          );
+    });
+  }
+
+  Map<String?, List<Komentar>> _groupKomentar(List<Komentar> list) {
+    final Map<String?, List<Komentar>> map = {};
+    for (final komentar in list) {
+      final parentId =
+          komentar.parentId?.isEmpty ?? true ? null : komentar.parentId;
+      map.putIfAbsent(parentId, () => []).add(komentar);
+    }
+    return map;
+  }
+
+  List<Widget> _buildKomentarItemRecursive(
+      Komentar komentar,
+      Map<String?, List<Komentar>> map,
+      int depth,
+      ) {
+    final replies = map[komentar.id] ?? [];
+    List<Widget> children = [];
+
+    // Komentar utama atau child
+    children.add(
+      Padding(
+        padding: EdgeInsets.only(left: depth * 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (depth > 0)
+              Text(
+                'Membalas komentar @${komentar.username}',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.blueGrey,
+                ),
+              ),
+            KomentarItem(
+              comment: komentar,
+              onReply: () {
+                setState(() {
+                  _replyTo = komentar;
+                  _focusNode.requestFocus();
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+
+    // Balasan komenter yang ditampilkan secara flat
+    if (_openedKomentarIds.contains(komentar.id)) {
+      for (final reply in replies) {
+        children.addAll(_buildKomentarItemRecursive(reply, map, depth + 1));
+      }
+    }
+
+    return children;
+  }
+
+  List<Widget> _buildKomentarList(Map<String?, List<Komentar>> map) {
+    final parentKomentar = map[null] ?? [];
+    List<Widget> widgets = [];
+
+    for (final komentar in parentKomentar) {
+      widgets.add(Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Komentar parent
+          KomentarItem(
+            comment: komentar,
+            onReply: () {
+              setState(() {
+                _replyTo = komentar;
+                _focusNode.requestFocus();
+              });
+            },
+          ),
+
+          // Tombol lihat balasan jika belum dibuka
+          if ((map[komentar.id] ?? []).isNotEmpty &&
+              !_openedKomentarIds.contains(komentar.id))
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _openedKomentarIds.add(komentar.id!);
+                });
+              },
+              child: Text('Lihat ${(map[komentar.id] ?? []).length} balasan'),
+            ),
+
+          // Jika sudah diklik, tampilkan semua balasan (flat & indent)
+          if (_openedKomentarIds.contains(komentar.id))
+            ..._getAllNestedReplies(komentar.id!, map).map(
+                  (reply) => Padding(
+                    padding: const EdgeInsets.only(left: 45), // indent flat
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Membalas komentar @${reply.username}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                        KomentarItem(
+                          comment: reply,
+                          onReply: () {
+                            setState(() {
+                              _replyTo = reply;
+                              _focusNode.requestFocus();
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+        ],
+      ));
+    }
+
+    // Menambahkan tombol sembunyikan balasan di akhir
+    if (_openedKomentarIds.isNotEmpty) {
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: TextButton(
+            onPressed: () {
+              setState(() {
+                _openedKomentarIds.clear(); // Menyembunyikan semua balasan
+              });
+            },
+            child: Text('Sembunyikan balasan'),
+          ),
+        ),
+      );
+    }
+
+    return widgets;
+  }
+
+  List<Komentar> _getAllNestedReplies(String parentId, Map<String?, List<Komentar>> map) {
+    final replies = map[parentId] ?? [];
+    List<Komentar> allReplies = [];
+
+    for (final reply in replies) {
+      allReplies.add(reply);
+      allReplies.addAll(_getAllNestedReplies(reply.id!, map)); // Ambil balasan child secara rekursif
+    }
+
+    return allReplies;
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Data Dummy Komentar
-    List<Komentar> comments = [
-      Komentar(
-        profil: "",
-        username: "Ryyw",
-        tanggalKomentar: "4 j",
-        isiKomentar: "apalah ini kelakuan randomnya bikin heran",
-        id: "1",
-        itemId: "dsd",
-        komentarType: "Berita",
-        userId: "mdkodfuidw",
-        parentId: ""
+    return Consumer<KomentarViewmodel>(
+      builder: (context, vm, _) {
+        final komentarMap = _groupKomentar(vm.komentarList);
 
-      ),
-      Komentar(
-        profil: "",
-        username: "Ryyw",
-        tanggalKomentar: "4 j",
-        isiKomentar: "apalah ini kelakuan randomnya bikin heran",
-        id: "1",
-        itemId: "dsd",
-        komentarType: "Berita",
-        userId: "mdkodfuidw",
-        parentId: ""
-
-      ),
-      Komentar(
-        profil: "",
-        username: "Ryyw",
-        tanggalKomentar: "4 j",
-        isiKomentar: "apalah ini kelakuan randomnya bikin heran",
-        id: "1",
-        itemId: "dsd",
-        komentarType: "Berita",
-        userId: "mdkodfuidw",
-        parentId: ""
-
-      ),
-    ];
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.7, // Ukuran awal modal (70% dari layar)
-          minChildSize: 0.4, // Ukuran minimal saat di-drag ke bawah
-          maxChildSize: 0.95, // Ukuran maksimal saat di-drag ke atas
+          initialChildSize: 0.7,
+          minChildSize: 0.4,
+          maxChildSize: 0.95,
           builder: (context, scrollController) {
             return AnimatedPadding(
               duration: const Duration(milliseconds: 300),
@@ -73,7 +213,6 @@ class _KomentarScreenState extends State<KomentarScreen> {
                 ),
                 child: Column(
                   children: [
-                    // Garis drag di atas modal
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 8),
                       width: 50,
@@ -83,21 +222,17 @@ class _KomentarScreenState extends State<KomentarScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-
-                    // Pencarian & Close Button
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 10),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText:
-                                    "Cari: reaksi streamer liat selena pheaker",
-                                border: InputBorder.none,
-                                hintStyle: TextStyle(color: Colors.blue),
-                              ),
+                            child: Text(
+                              "Komentar",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                           ),
                           IconButton(
@@ -107,68 +242,79 @@ class _KomentarScreenState extends State<KomentarScreen> {
                         ],
                       ),
                     ),
-
-                    // Jumlah Komentar
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Text(
-                        "1.124 komentar",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-
-                    // ListView Komentar (Dibungkus dengan Expanded agar fleksibel)
-                    Expanded(
-                      child: SingleChildScrollView(
-                        controller: scrollController, // Untuk mendukung drag
-                        child: Column(
-                          children: comments
-                              .map((comment) => KomentarItem(comment: comment))
-                              .toList(),
+                    if (vm.isLoading)
+                      const Expanded(
+                          child: Center(child: CircularProgressIndicator()))
+                    else
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: Column(
+                            children: _buildKomentarList(komentarMap),
+                          ),
                         ),
                       ),
-                    ),
-
-                    // Input Komentar
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 10),
                       color: Colors.white,
                       child: Row(
                         children: [
-                          // Emoji
-                          IconButton(
-                            icon: const Icon(Icons.emoji_emotions_outlined),
-                            onPressed: () {},
-                          ),
-
-                          // Input TextField (dengan FocusNode agar mendeteksi keyboard)
                           Expanded(
-                            child: TextField(
-                              controller: _commentController,
-                              focusNode: _focusNode,
-                              maxLines: null, // Bisa banyak baris
-                              keyboardType: TextInputType.multiline,
-                              decoration: const InputDecoration(
-                                hintText: "Tambahkan komentar...",
-                                border: InputBorder.none,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (_replyTo != null)
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          'Membalas @${_replyTo!.username}',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontStyle: FontStyle.italic,
+                                            color: Colors.blueGrey,
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.close, size: 18),
+                                        onPressed: () =>
+                                            setState(() => _replyTo = null),
+                                      ),
+                                    ],
+                                  ),
+                                TextField(
+                                  controller: _komentarController,
+                                  focusNode: _focusNode,
+                                  maxLines: null,
+                                  decoration: const InputDecoration(
+                                    hintText: "Tambahkan komentar...",
+                                    border: InputBorder.none,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-
-                          // Tombol Kirim
                           IconButton(
                             icon: const Icon(Icons.send),
-                            onPressed: () {
-                              if (_commentController.text.isNotEmpty) {
-                                print(
-                                    "Komentar dikirim: ${_commentController.text}");
-                                _commentController.clear();
-                                _focusNode
-                                    .unfocus(); // Sembunyikan keyboard setelah kirim
+                            onPressed: () async {
+                              final isi = _komentarController.text.trim();
+                              if (isi.isNotEmpty) {
+                                await vm.postKomentar(
+                                  userId: widget.userId,
+                                  isiKomentar: isi,
+                                  komentarType: widget.komentarType,
+                                  itemId: widget.itemId,
+                                  parentId: _replyTo?.id,
+                                );
+                                _komentarController.clear();
+                                setState(() => _replyTo = null);
+                                _focusNode.unfocus();
+                                await vm.fetchKomentar(
+                                  komentarType: widget.komentarType,
+                                  itemId: widget.itemId,
+                                );
                               }
                             },
                           ),
