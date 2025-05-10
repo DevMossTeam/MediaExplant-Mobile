@@ -28,8 +28,11 @@ import 'package:mediaexplant/features/profile/data/repositories/profile_reposito
 import 'package:mediaexplant/features/profile/domain/usecases/get_profile.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/hubungi_viewmodel.dart';
+import 'package:firebase_core/firebase_core.dart'; 
 
-void main() {
+Future<void> main() async {  
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();                             // ← inisialisasi Firebase
   runApp(
     MultiProvider(
       providers: [

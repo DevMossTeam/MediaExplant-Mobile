@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "121766675864",
+    "project_id": "mediaexplant666",
+    "storage_bucket": "mediaexplant666.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:121766675864:android:f4a6f7a08ebf88319e17ed",
+        "android_client_info": {
+          "package_name": "com.devmoss.mediaexplant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD236D-l2l3wHWBnCz0vedt5dLW-kCmtK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
