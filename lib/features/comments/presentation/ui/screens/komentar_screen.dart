@@ -24,7 +24,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
   final TextEditingController _komentarController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   Komentar? _replyTo;
-  Set<String> _openedKomentarIds = Set(); // Menyimpan komentar yang sudah dibuka balasannya
+  Set<String> _openedKomentarIds = Set();
 
   @override
   void initState() {
@@ -48,40 +48,37 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
   }
 
   List<Widget> _buildKomentarItemRecursive(
-      Komentar komentar,
-      Map<String?, List<Komentar>> map,
-      int depth,
-      ) {
+    Komentar komentar,
+    Map<String?, List<Komentar>> map,
+    int depth,
+  ) {
     final replies = map[komentar.id] ?? [];
     List<Widget> children = [];
 
     // Komentar utama atau child
     children.add(
-      Padding(
-        padding: EdgeInsets.only(left: depth * 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (depth > 0)
-              Text(
-                'Membalas komentar @${komentar.username}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.blueGrey,
-                ),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (depth > 0)
+            Text(
+              'Membalas komentar @${komentar.username}',
+              style: const TextStyle(
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+                color: Colors.blueGrey,
               ),
-            KomentarItem(
-              comment: komentar,
-              onReply: () {
-                setState(() {
-                  _replyTo = komentar;
-                  _focusNode.requestFocus();
-                });
-              },
             ),
-          ],
-        ),
+          KomentarItem(
+            comment: komentar,
+            onReply: () {
+              setState(() {
+                _replyTo = komentar;
+                _focusNode.requestFocus();
+              });
+            },
+          ),
+        ],
       ),
     );
 
@@ -117,44 +114,71 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
           // Tombol lihat balasan jika belum dibuka
           if ((map[komentar.id] ?? []).isNotEmpty &&
               !_openedKomentarIds.contains(komentar.id))
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _openedKomentarIds.add(komentar.id!);
-                });
-              },
-              child: Text('Lihat ${(map[komentar.id] ?? []).length} balasan'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 60),
+              child: Row(
+                children: [
+                  Container(
+                    width: 25,
+                    height: 0.5,
+                    color: Colors.grey,
+                    margin: const EdgeInsets.only(right: 5),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _openedKomentarIds.add(komentar.id!);
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          'Lihat ${(map[komentar.id] ?? []).length} balasan',
+                          style:
+                              const TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.arrow_drop_down,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
 
           // Jika sudah diklik, tampilkan semua balasan (flat & indent)
           if (_openedKomentarIds.contains(komentar.id))
             ..._getAllNestedReplies(komentar.id!, map).map(
-                  (reply) => Padding(
-                    padding: const EdgeInsets.only(left: 45), // indent flat
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Membalas komentar @${reply.username}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                        KomentarItem(
-                          comment: reply,
-                          onReply: () {
-                            setState(() {
-                              _replyTo = reply;
-                              _focusNode.requestFocus();
-                            });
-                          },
-                        ),
-                      ],
+              (reply) => Padding(
+                padding: const EdgeInsets.only(left: 45), // indent flat
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Membalas ${reply.username}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.blueGrey,
+                      ),
                     ),
-                  ),
+                    KomentarItem(
+                      comment: reply,
+                      onReply: () {
+                        setState(() {
+                          _replyTo = reply;
+                          _focusNode.requestFocus();
+                        });
+                      },
+                    ),
+                  ],
                 ),
+              ),
+            ),
         ],
       ));
     }
@@ -163,14 +187,33 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
     if (_openedKomentarIds.isNotEmpty) {
       widgets.add(
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                _openedKomentarIds.clear(); // Menyembunyikan semua balasan
-              });
-            },
-            child: Text('Sembunyikan balasan'),
+          padding: const EdgeInsets.symmetric(horizontal: 105),
+          child: Row(
+            children: [
+              Container(
+                width: 25,
+                height: 0.5,
+                color: Colors.grey,
+                margin: const EdgeInsets.only(right: 5),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _openedKomentarIds.clear();
+                  });
+                },
+                child: const Text(
+                  'Sembunyikan balasan',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Icon(
+                Icons.arrow_drop_up,
+                size: 18,
+                color: Colors.grey,
+              ),
+            ],
           ),
         ),
       );
@@ -179,13 +222,15 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
     return widgets;
   }
 
-  List<Komentar> _getAllNestedReplies(String parentId, Map<String?, List<Komentar>> map) {
+  List<Komentar> _getAllNestedReplies(
+      String parentId, Map<String?, List<Komentar>> map) {
     final replies = map[parentId] ?? [];
     List<Komentar> allReplies = [];
 
     for (final reply in replies) {
       allReplies.add(reply);
-      allReplies.addAll(_getAllNestedReplies(reply.id!, map)); // Ambil balasan child secara rekursif
+      allReplies.addAll(_getAllNestedReplies(
+          reply.id!, map)); // Ambil balasan child secara rekursif
     }
 
     return allReplies;
@@ -269,7 +314,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          'Membalas @${_replyTo!.username}',
+                                          'Membalas ${_replyTo!.username}',
                                           style: const TextStyle(
                                             fontSize: 12,
                                             fontStyle: FontStyle.italic,

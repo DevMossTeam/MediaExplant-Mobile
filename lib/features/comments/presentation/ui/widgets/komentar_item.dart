@@ -23,7 +23,7 @@ class _KomentarItemState extends State<KomentarItem> {
     final childKomentar = widget.comment.childKomentar ?? [];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -78,23 +78,6 @@ class _KomentarItemState extends State<KomentarItem> {
                       ),
                     ),
                     const SizedBox(height: 8),
-
-                    // Tombol lihat balasan
-                    if (childKomentar.isNotEmpty)
-                      TextButton(
-                        style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                        onPressed: () {
-                          setState(() {
-                            showReplies = !showReplies;
-                          });
-                        },
-                        child: Text(
-                          showReplies
-                              ? "Sembunyikan balasan"
-                              : "Lihat balasan (${childKomentar.length})",
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                      ),
 
                     // Daftar komentar balasan
                     if (showReplies)
