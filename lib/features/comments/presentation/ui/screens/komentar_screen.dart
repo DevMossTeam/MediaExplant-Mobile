@@ -203,7 +203,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                   });
                 },
                 child: const Text(
-                  'Sembunyikan balasan',
+                  'Sembunyikan',
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ),

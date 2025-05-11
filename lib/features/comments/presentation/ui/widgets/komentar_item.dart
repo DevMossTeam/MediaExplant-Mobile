@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/utils/time_ago_util.dart';
 import 'package:mediaexplant/features/comments/models/komentar.dart';
 
 class KomentarItem extends StatefulWidget {
@@ -56,7 +57,7 @@ class _KomentarItemState extends State<KomentarItem> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          widget.comment.tanggalKomentar,
+                          timeAgoFormat(DateTime.parse(widget.comment.tanggalKomentar)),
                           style:
                               TextStyle(fontSize: 12, color: Colors.grey[600]),
                         ),

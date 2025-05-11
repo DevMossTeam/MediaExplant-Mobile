@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/core/utils/time_ago_util.dart';
 import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:page_transition/page_transition.dart';
@@ -67,7 +68,8 @@ class BeritaTeratasUntukAnda extends StatelessWidget {
                       Text(
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        berita.tanggalDibuat,
+                        // berita.tanggalDibuat,
+                        timeAgoFormat(DateTime.parse(berita.tanggalDibuat)),
                         style:
                             const TextStyle(fontSize: 12, color: Colors.grey),
                       ),

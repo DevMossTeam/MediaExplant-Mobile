@@ -28,11 +28,14 @@ import 'package:mediaexplant/features/profile/data/repositories/profile_reposito
 import 'package:mediaexplant/features/profile/domain/usecases/get_profile.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/hubungi_viewmodel.dart';
-import 'package:firebase_core/firebase_core.dart'; 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:timeago/timeago.dart' as timeago_id;
 
-Future<void> main() async {  
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();                             // ← inisialisasi Firebase
+  await Firebase.initializeApp(); // ← inisialisasi Firebase
+  timeago.setLocaleMessages('id', timeago_id.IdMessages());
   runApp(
     MultiProvider(
       providers: [
