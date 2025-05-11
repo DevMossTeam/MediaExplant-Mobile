@@ -154,7 +154,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                   ),
                   // berita terbaru
                   SizedBox(
-                    height: 170,
+                    height: 200,
                     child: GridView.builder(
                         itemCount: beritaList.length.clamp(0, 10),
                         shrinkWrap: true,
@@ -299,7 +299,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                     height: 20,
                   ),
                   SizedBox(
-                    height: 170,
+                    height: 200,
                     child: GridView.builder(
                         itemCount: fotografiList.length.clamp(0, 10),
                         shrinkWrap: true,

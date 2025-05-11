@@ -377,7 +377,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                         const SizedBox(height: 10),
                         // BERITA TERBARU
                         SizedBox(
-                          height: 180,
+                          height: 200,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: 10,
