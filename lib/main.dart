@@ -13,6 +13,7 @@ import 'package:mediaexplant/features/home/presentation/logic/karya/fotografi_vi
 import 'package:mediaexplant/features/home/presentation/logic/karya/puisi_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/karya/syair_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
+import 'package:mediaexplant/features/search/search_screen.dart';
 import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -149,19 +150,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// Placeholder untuk Search
-class SearchScreen extends StatelessWidget {
-  const SearchScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Search")),
-      body: const Center(child: Text("Search Screen")),
-    );
-  }
-}
-
 /// Halaman utama dengan Bottom Navigation Bar
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({Key? key}) : super(key: key);
@@ -195,38 +183,29 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ),
         //  _pages[_currentIndex],
         bottomNavigationBar: SizedBox(
-          height: 75,
           child: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.white,
-            selectedItemColor: AppColors.primary,
-            unselectedItemColor: Colors.white,
             currentIndex: _currentIndex,
             onTap: (index) => setState(() => _currentIndex = index),
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            items: [
+            // showSelectedLabels: false,
+            // showUnselectedLabels: false,
+            selectedItemColor: AppColors.primary,
+            unselectedItemColor: Colors.black.withAlpha(150),
+            items: const [
               BottomNavigationBarItem(
-                icon: Icon(
-                  _currentIndex == 0 ? Icons.home : Icons.home_outlined,
-                  color: AppColors.primary,
-                ),
-                label: '',
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home),
+                label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.search,
-                  color: AppColors.primary,
-                  size: _currentIndex == 1 ? 30 : 24,
-                ),
-                label: '',
+                icon: Icon(Icons.search),
+                label: 'Search',
               ),
               BottomNavigationBarItem(
-                icon: Icon(
-                  _currentIndex == 2 ? Icons.person : Icons.person_outline,
-                  color: AppColors.primary,
-                ),
-                label: '',
+                icon: Icon(Icons.person_outline),
+                activeIcon: Icon(Icons.person),
+                label: 'Profile',
               ),
             ],
           ),

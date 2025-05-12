@@ -69,14 +69,16 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                 color: Colors.blueGrey,
               ),
             ),
-          KomentarItem(
-            comment: komentar,
-            onReply: () {
-              setState(() {
-                _replyTo = komentar;
-                _focusNode.requestFocus();
-              });
-            },
+          ChangeNotifierProvider.value(
+            value: komentar,
+            child: KomentarItem(
+              onReply: () {
+                setState(() {
+                  _replyTo = komentar;
+                  _focusNode.requestFocus();
+                });
+              },
+            ),
           ),
         ],
       ),
@@ -101,14 +103,16 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Komentar parent
-          KomentarItem(
-            comment: komentar,
-            onReply: () {
-              setState(() {
-                _replyTo = komentar;
-                _focusNode.requestFocus();
-              });
-            },
+          ChangeNotifierProvider.value(
+            value: komentar,
+            child: KomentarItem(
+              onReply: () {
+                setState(() {
+                  _replyTo = komentar;
+                  _focusNode.requestFocus();
+                });
+              },
+            ),
           ),
 
           // Tombol lihat balasan jika belum dibuka
@@ -163,21 +167,23 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                       child: Text(
                         'Balas ${reply.username}',
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 10,
                           // fontStyle: FontStyle.italic,
                           color: Colors.grey,
                         ),
                       ),
                     ),
-                    KomentarItem(
-                      comment: reply,
-                      onReply: () {
-                        setState(() {
-                          _replyTo = reply;
-                          _focusNode.requestFocus();
-                        });
-                      },
-                    ),
+                    ChangeNotifierProvider.value(
+                      value: reply,
+                      child: KomentarItem(
+                        onReply: () {
+                          setState(() {
+                            _replyTo = reply;
+                            _focusNode.requestFocus();
+                          });
+                        },
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -239,8 +245,8 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Consumer<KomentarViewmodel>(
-      builder: (context, vm, _) {
-        final komentarMap = _groupKomentar(vm.komentarList);
+      builder: (context, komentarVM, _) {
+        final komentarMap = _groupKomentar(komentarVM.komentarList);
 
         return DraggableScrollableSheet(
           initialChildSize: 0.7,
@@ -268,16 +274,22 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Expanded(
+                          const Text(
+                            "Komentar  ",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Expanded(
                             child: Text(
-                              "Komentar",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
+                              komentarVM.komentarList.length.toString(),
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.grey),
                             ),
                           ),
                           IconButton(
@@ -287,7 +299,11 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                         ],
                       ),
                     ),
-                    if (vm.isLoading)
+                    const Divider(
+                      thickness: 1,
+                    ),
+                    const SizedBox(height: 10,),
+                    if (komentarVM.isLoading)
                       const Expanded(
                           child: Center(child: CircularProgressIndicator()))
                     else
@@ -329,13 +345,21 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                                       ),
                                     ],
                                   ),
-                                TextField(
-                                  controller: _komentarController,
-                                  focusNode: _focusNode,
-                                  maxLines: null,
-                                  decoration: const InputDecoration(
-                                    hintText: "Tambahkan komentar...",
-                                    border: InputBorder.none,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.withAlpha(100),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: TextField(
+                                    controller: _komentarController,
+                                    focusNode: _focusNode,
+                                    maxLines: null,
+                                    decoration: const InputDecoration(
+                                      hintText: "Tambahkan komentar...",
+                                      border: InputBorder.none,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -346,7 +370,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                             onPressed: () async {
                               final isi = _komentarController.text.trim();
                               if (isi.isNotEmpty) {
-                                await vm.postKomentar(
+                                await komentarVM.postKomentar(
                                   userId: widget.userId,
                                   isiKomentar: isi,
                                   komentarType: widget.komentarType,
@@ -356,7 +380,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                                 _komentarController.clear();
                                 setState(() => _replyTo = null);
                                 _focusNode.unfocus();
-                                await vm.fetchKomentar(
+                                await komentarVM.fetchKomentar(
                                   komentarType: widget.komentarType,
                                   itemId: widget.itemId,
                                 );

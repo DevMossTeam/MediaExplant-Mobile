@@ -249,6 +249,9 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                         );
                       }),
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
                 titleHeader("Syair", "Terbaru untuk anda"),
                 const SizedBox(
                   height: 10,
@@ -265,6 +268,9 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                           child: PuisiItem(),
                         );
                       }),
+                ),
+                const SizedBox(
+                  height: 10,
                 ),
                 titleHeader("Desain Grafis", "Terbaru untuk anda"),
                 const SizedBox(
@@ -285,6 +291,9 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                 ),
               ],
             ),
+          ),
+          const SizedBox(
+            height: 20,
           ),
 
           Container(
@@ -367,6 +376,9 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                           child: ProdukItem(),
                         );
                       }),
+                ),
+                const SizedBox(
+                  height: 10,
                 ),
                 titleHeader("Buletin", "Terbaru untuk anda"),
                 const SizedBox(

@@ -6,7 +6,6 @@ import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-import 'package:timeago/timeago.dart';
 
 class BeritaPopulerItem extends StatelessWidget {
   const BeritaPopulerItem({super.key});

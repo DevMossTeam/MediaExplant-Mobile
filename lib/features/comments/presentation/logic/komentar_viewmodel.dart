@@ -7,6 +7,7 @@ import 'package:mediaexplant/features/comments/models/komentar.dart';
 class KomentarViewmodel with ChangeNotifier {
   List<Komentar> _komentarList = [];
   List<Komentar> get komentarList => _komentarList;
+  
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
