@@ -47,53 +47,6 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
     return map;
   }
 
-  List<Widget> _buildKomentarItemRecursive(
-    Komentar komentar,
-    Map<String?, List<Komentar>> map,
-    int depth,
-  ) {
-    final replies = map[komentar.id] ?? [];
-    List<Widget> children = [];
-
-    // Komentar utama atau child
-    children.add(
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (depth > 0)
-            Text(
-              'Membalas komentar ${komentar.username}',
-              style: const TextStyle(
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
-                color: Colors.blueGrey,
-              ),
-            ),
-          ChangeNotifierProvider.value(
-            value: komentar,
-            child: KomentarItem(
-              onReply: () {
-                setState(() {
-                  _replyTo = komentar;
-                  _focusNode.requestFocus();
-                });
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-
-    // Balasan komenter yang ditampilkan secara flat
-    if (_openedKomentarIds.contains(komentar.id)) {
-      for (final reply in replies) {
-        children.addAll(_buildKomentarItemRecursive(reply, map, depth + 1));
-      }
-    }
-
-    return children;
-  }
-
   List<Widget> _buildKomentarList(Map<String?, List<Komentar>> map) {
     final parentKomentar = map[null] ?? [];
     List<Widget> widgets = [];
@@ -131,23 +84,26 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        _openedKomentarIds.add(komentar.id!);
+                        _openedKomentarIds.add(komentar.id);
                       });
                     },
-                    child: Row(
-                      children: [
-                        Text(
-                          'Lihat ${(map[komentar.id] ?? []).length} balasan',
-                          style:
-                              const TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                        const SizedBox(width: 4),
-                        const Icon(
-                          Icons.arrow_drop_down,
-                          size: 18,
-                          color: Colors.grey,
-                        ),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Lihat ${(map[komentar.id] ?? []).length} balasan',
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.arrow_drop_down,
+                            size: 18,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -156,7 +112,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
 
           // Jika sudah dibuka, tampilkan semua balasan dan tombol sembunyikan
           if (_openedKomentarIds.contains(komentar.id)) ...[
-            ..._getAllNestedReplies(komentar.id!, map).map(
+            ..._getAllNestedReplies(komentar.id, map).map(
               (reply) => Padding(
                 padding: const EdgeInsets.only(left: 45), // indent
                 child: Column(
@@ -192,32 +148,35 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
             // Tombol sembunyikan setelah semua child
             Padding(
               padding: const EdgeInsets.only(left: 60),
-              child: Row(
-                children: [
-                  Container(
-                    width: 25,
-                    height: 0.5,
-                    color: Colors.grey,
-                    margin: const EdgeInsets.only(right: 5),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _openedKomentarIds.remove(komentar.id!);
-                      });
-                    },
-                    child: const Text(
-                      'Sembunyikan',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 25,
+                      height: 0.5,
+                      color: Colors.grey,
+                      margin: const EdgeInsets.only(right: 5),
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  const Icon(
-                    Icons.arrow_drop_up,
-                    size: 18,
-                    color: Colors.grey,
-                  ),
-                ],
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _openedKomentarIds.remove(komentar.id);
+                        });
+                      },
+                      child: const Text(
+                        'Sembunyikan',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.arrow_drop_up,
+                      size: 18,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -236,7 +195,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
     for (final reply in replies) {
       allReplies.add(reply);
       allReplies.addAll(_getAllNestedReplies(
-          reply.id!, map)); // Ambil balasan child secara rekursif
+          reply.id, map)); // Ambil balasan child secara rekursif
     }
 
     return allReplies;
@@ -280,7 +239,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                         children: [
                           const Text(
                             "Komentar  ",
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -302,7 +261,9 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                     const Divider(
                       thickness: 1,
                     ),
-                    const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     if (komentarVM.isLoading)
                       const Expanded(
                           child: Center(child: CircularProgressIndicator()))
@@ -315,9 +276,12 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                           ),
                         ),
                       ),
+                    const Divider(
+                      thickness: 1,
+                    ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
+                      padding:
+                          const EdgeInsets.only(right: 16, bottom: 5, left: 16),
                       color: Colors.white,
                       child: Row(
                         children: [
@@ -362,6 +326,9 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                                     ),
                                   ),
                                 ),
+                                const SizedBox(
+                                  height: 5,
+                                )
                               ],
                             ),
                           ),

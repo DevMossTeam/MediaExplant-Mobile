@@ -1,7 +1,5 @@
 import 'package:timeago/timeago.dart' as timeago;
 
-import 'package:timeago/timeago.dart' as timeago;
-
 class CustomIdMessages implements timeago.LookupMessages {
   @override
   String prefixAgo() => '';
