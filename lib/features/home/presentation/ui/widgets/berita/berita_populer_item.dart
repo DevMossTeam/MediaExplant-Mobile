@@ -13,7 +13,7 @@ class BeritaPopulerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final berita = Provider.of<Berita>(context);
-    // final bookmarkProvider =
+    // final bookmarkProvider =r
     //     Provider.of<BookmarkProvider>(context, listen: false);
     return Container(
       // width: double.infinity,

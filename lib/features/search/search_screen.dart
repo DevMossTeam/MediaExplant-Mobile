@@ -30,13 +30,21 @@ class _SearchViewState extends State<_SearchView> {
   Timer? _debounce;
 
   void _onSearch(String query) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      if (query.trim().isEmpty) return;
-      final viewModel = context.read<SearchBeritaViewModel>();
-      viewModel.searchBerita(query: query, userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L");
-    });
-  }
+  if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+  _debounce = Timer(const Duration(milliseconds: 500), () {
+    final viewModel = context.read<SearchBeritaViewModel>();
+    if (query.trim().isEmpty) {
+      viewModel.clearSearch();
+      return;
+    }
+    viewModel.searchBerita(
+      query: query,
+      userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+    );
+  });
+}
+
 
   @override
   void dispose() {
@@ -88,36 +96,41 @@ class _SearchViewState extends State<_SearchView> {
             ),
           ),
           const Divider(thickness: 1),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Builder(
-                builder: (context) {
-                  if (viewModel.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (viewModel.errorMessage != null) {
-                    return Center(child: Text(viewModel.errorMessage!));
-                  } else if (viewModel.hasilPencarian.isEmpty) {
-                    return const Center(
-                      child: Text(
-                          'Tidak ada hasil'),
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemCount: viewModel.hasilPencarian.length,
-                      itemBuilder: (context, index) {
-                        final berita = viewModel.hasilPencarian[index];
-                        return ChangeNotifierProvider.value(
-                          value: berita,
-                          child: const BeritaPopulerItem(),
-                        );
-                      },
-                    );
-                  }
-                },
+          
+
+
+
+          // hasil pencarian
+          if (_controller.text.trim().isNotEmpty)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Builder(
+                  builder: (context) {
+                    if (viewModel.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (viewModel.errorMessage != null) {
+                      return Center(child: Text(viewModel.errorMessage!));
+                    } else if (viewModel.hasilPencarian.isEmpty) {
+                      return const Center(
+                        child: Text('Tidak ada hasil'),
+                      );
+                    } else {
+                      return ListView.builder(
+                        itemCount: viewModel.hasilPencarian.length,
+                        itemBuilder: (context, index) {
+                          final berita = viewModel.hasilPencarian[index];
+                          return ChangeNotifierProvider.value(
+                            value: berita,
+                            child: const BeritaPopulerItem(),
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

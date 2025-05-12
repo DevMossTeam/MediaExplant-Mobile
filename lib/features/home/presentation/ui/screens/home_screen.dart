@@ -3,6 +3,8 @@ import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_berita_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_untuk_anda_screen.dart';
 
+const String userLogin = "4FUD7QhJ0hMLMMlF6VQHjvkXad4L";
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 

@@ -9,6 +9,7 @@ import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terkait_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terbaru_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
@@ -32,11 +33,11 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
     final beritaTerkaitViewmodel =
         Provider.of<BeritaTerkaitViewmodel>(context, listen: false);
     beritaTerkaitViewmodel.fetchBeritaTerkait(
-        "4FUD7QhJ0hMLMMlF6VQHjvkXad4L", berita.kategori, berita.idBerita);
+        userLogin, berita.kategori, berita.idBerita);
 
     final beritaTerbaruViewmodel =
         Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
-    beritaTerbaruViewmodel.fetchBeritaTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L");
+    beritaTerbaruViewmodel.fetchBeritaTerbaru(userLogin);
   }
 
   String removeFirstImageFromKonten(String konten) {
@@ -124,7 +125,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                   onPressed: () async {
                     await bookmarkProvider.toggleBookmark(
                       Bookmark(
-                        userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                        userId: userLogin,
                         itemId: berita.idBerita,
                         bookmarkType: "Berita",
                       ),
@@ -233,7 +234,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             IconButton(
                               onPressed: () async {
                                 await reaksiProvider.toggleReaksi(Reaksi(
-                                  userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                                  userId: userLogin,
                                   itemId: berita.idBerita,
                                   jenisReaksi: "Suka",
                                   reaksiType: "Berita",
@@ -254,7 +255,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             IconButton(
                               onPressed: () async {
                                 await reaksiProvider.toggleReaksi(Reaksi(
-                                  userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                                  userId: userLogin,
                                   itemId: berita.idBerita,
                                   jenisReaksi: "Tidak Suka",
                                   reaksiType: "Berita",
@@ -425,7 +426,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
         shape: const CircleBorder(),
         backgroundColor: AppColors.primary,
         onPressed: () {
-          showKomentarBottomSheet(context, 'Berita', berita.idBerita, "ovPHOkUBw3FHrq6PeQkg1McfBqkF");
+          showKomentarBottomSheet(context, 'Berita', berita.idBerita, userLogin);
         },
         child: const Icon(Icons.comment, color: Colors.white),
       ),

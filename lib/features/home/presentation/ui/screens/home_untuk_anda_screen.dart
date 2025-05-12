@@ -6,6 +6,7 @@ import 'package:mediaexplant/features/home/presentation/logic/karya/fotografi_vi
 import 'package:mediaexplant/features/home/presentation/logic/karya/puisi_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/karya/syair_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomendasi_untuk_anda_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_teratas_untuk_anda.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/desain_grafis_item.dart';
@@ -63,13 +64,13 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
       });
 
       Future.wait([
-        beritaVM.fetchBeritaTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        produkVM.fetchMajalah("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        produkVM.fetchBuletin("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        puisiVM.fetchPuisiTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        syairVM.fetchSyairTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        desainGrafisVM.fetchDesainGrafis("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        fotografiVM.fetchFotografi("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
+        beritaVM.fetchBeritaTerbaru(userLogin),
+        produkVM.fetchMajalah(userLogin),
+        produkVM.fetchBuletin(userLogin),
+        puisiVM.fetchPuisiTerbaru(userLogin),
+        syairVM.fetchSyairTerbaru(userLogin),
+        desainGrafisVM.fetchDesainGrafis(userLogin),
+        fotografiVM.fetchFotografi(userLogin),
       ]).then((_) {
         setState(() {
           _isLoading['berita'] = false;

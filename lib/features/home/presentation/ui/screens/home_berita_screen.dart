@@ -4,6 +4,7 @@ import 'package:mediaexplant/features/home/presentation/logic/berita/berita_popu
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_dari_kami_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_rekomendasi_lain_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomandasi_lain_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terbaru_item.dart';
@@ -53,10 +54,10 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
       });
 
       Future.wait([
-        beritaTerkiniVM.fetchBeritaTerbaru("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        beritaPopulerVM.fetchBeritaPopuler("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        beritaRekomendasiVM.fetchBeritaDariKami("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
-        beritaRekomendasiLainVM.fetchBeritaRekomendasiLain("4FUD7QhJ0hMLMMlF6VQHjvkXad4L"),
+        beritaTerkiniVM.fetchBeritaTerbaru(userLogin),
+        beritaPopulerVM.fetchBeritaPopuler(userLogin),
+        beritaRekomendasiVM.fetchBeritaDariKami(userLogin),
+        beritaRekomendasiLainVM.fetchBeritaRekomendasiLain(userLogin),
       ]).then((_) {
         setState(() {
           _isLoading['terkini'] = false;

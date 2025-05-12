@@ -5,6 +5,7 @@ import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:provider/provider.dart';
@@ -87,7 +88,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                   onPressed: () async {
                     await bookmarkProvider.toggleBookmark(
                       Bookmark(
-                        userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                        userId: userLogin,
                         itemId: karya.idKarya,
                         bookmarkType: "Karya",
                       ),
@@ -223,7 +224,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                             IconButton(
                               onPressed: () async {
                                 await reaksiProvider.toggleReaksi(Reaksi(
-                                  userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                                  userId: userLogin,
                                   itemId: karya.idKarya,
                                   jenisReaksi: "Suka",
                                   reaksiType: "Karya",
@@ -243,7 +244,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                             IconButton(
                               onPressed: () async {
                                 await reaksiProvider.toggleReaksi(Reaksi(
-                                  userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                                  userId: userLogin,
                                   itemId: karya.idKarya,
                                   jenisReaksi: "Tidak Suka",
                                   reaksiType: "Karya",
@@ -435,7 +436,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
         shape: const CircleBorder(),
         backgroundColor: AppColors.primary,
         onPressed: () {
-          showKomentarBottomSheet(context, 'Karya', karya.idKarya, "ovPHOkUBw3FHrq6PeQkg1McfBqkF");
+          showKomentarBottomSheet(context, 'Karya', karya.idKarya, userLogin);
         },
         child: const Icon(Icons.comment, color: Colors.white),
       ),

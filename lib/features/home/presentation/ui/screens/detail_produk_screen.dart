@@ -4,6 +4,7 @@ import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/models/produk/produk.dart';
 import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:provider/provider.dart';
@@ -131,7 +132,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                     IconButton(
                       onPressed: () async {
                         await reaksiProvider.toggleReaksi(Reaksi(
-                          userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                          userId: userLogin,
                           itemId: produk.idproduk,
                           jenisReaksi: "Suka",
                           reaksiType: "Produk",
@@ -151,7 +152,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                     IconButton(
                       onPressed: () async {
                         await reaksiProvider.toggleReaksi(Reaksi(
-                          userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                          userId: userLogin,
                           itemId: produk.idproduk,
                           jenisReaksi: "Tidak Suka",
                           reaksiType: "Produk",
@@ -184,7 +185,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                       onPressed: () async {
                         await bookmarkProvider.toggleBookmark(
                           Bookmark(
-                            userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
+                            userId: userLogin,
                             itemId: produk.idproduk,
                             bookmarkType: "Produk",
                           ),
