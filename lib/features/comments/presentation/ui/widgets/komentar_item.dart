@@ -50,16 +50,17 @@ class _KomentarItemState extends State<KomentarItem> {
                       children: [
                         Text(
                           widget.comment.username ?? "",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                          style: TextStyle(
+                            color: Colors.black.withAlpha(150),
+                            fontSize: 12,
                           ),
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          timeAgoFormat(DateTime.parse(widget.comment.tanggalKomentar)),
+                          timeAgoFormat(
+                              DateTime.parse(widget.comment.tanggalKomentar)),
                           style:
-                              TextStyle(fontSize: 12, color: Colors.grey[600]),
+                              const TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -68,14 +69,14 @@ class _KomentarItemState extends State<KomentarItem> {
                       widget.comment.isiKomentar,
                       style: const TextStyle(fontSize: 14),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 5),
 
-                    const SizedBox(height: 4),
+              
                     GestureDetector(
                       onTap: widget.onReply,
                       child: const Text(
                         "Balas",
-                        style: TextStyle(fontSize: 13, color: Colors.blue),
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ),
                     const SizedBox(height: 8),

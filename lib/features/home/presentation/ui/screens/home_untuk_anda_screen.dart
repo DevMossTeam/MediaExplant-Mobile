@@ -163,7 +163,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 mainAxisSpacing: 10,
                                 crossAxisSpacing: 10,
-                                childAspectRatio: 0.25,
+                                childAspectRatio: 0.27,
                                 crossAxisCount: 2),
                         itemBuilder: (contex, index) {
                           return ChangeNotifierProvider.value(
@@ -308,7 +308,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 mainAxisSpacing: 10,
                                 crossAxisSpacing: 10,
-                                childAspectRatio: 0.25,
+                                childAspectRatio: 0.27,
                                 crossAxisCount: 2),
                         itemBuilder: (contex, index) {
                           return ChangeNotifierProvider.value(

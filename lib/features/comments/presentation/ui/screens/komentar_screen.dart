@@ -62,7 +62,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
         children: [
           if (depth > 0)
             Text(
-              'Membalas komentar @${komentar.username}',
+              'Membalas komentar ${komentar.username}',
               style: const TextStyle(
                 fontSize: 12,
                 fontStyle: FontStyle.italic,
@@ -150,20 +150,23 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
               ),
             ),
 
-          // Jika sudah diklik, tampilkan semua balasan (flat & indent)
-          if (_openedKomentarIds.contains(komentar.id))
+          // Jika sudah dibuka, tampilkan semua balasan dan tombol sembunyikan
+          if (_openedKomentarIds.contains(komentar.id)) ...[
             ..._getAllNestedReplies(komentar.id!, map).map(
               (reply) => Padding(
-                padding: const EdgeInsets.only(left: 45), // indent flat
+                padding: const EdgeInsets.only(left: 45), // indent
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Membalas ${reply.username}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.blueGrey,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 62),
+                      child: Text(
+                        'Balas ${reply.username}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          // fontStyle: FontStyle.italic,
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
                     KomentarItem(
@@ -179,44 +182,41 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                 ),
               ),
             ),
+
+            // Tombol sembunyikan setelah semua child
+            Padding(
+              padding: const EdgeInsets.only(left: 60),
+              child: Row(
+                children: [
+                  Container(
+                    width: 25,
+                    height: 0.5,
+                    color: Colors.grey,
+                    margin: const EdgeInsets.only(right: 5),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _openedKomentarIds.remove(komentar.id!);
+                      });
+                    },
+                    child: const Text(
+                      'Sembunyikan',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(
+                    Icons.arrow_drop_up,
+                    size: 18,
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ));
-    }
-
-    // Menambahkan tombol sembunyikan balasan di akhir
-    if (_openedKomentarIds.isNotEmpty) {
-      widgets.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 105),
-          child: Row(
-            children: [
-              Container(
-                width: 25,
-                height: 0.5,
-                color: Colors.grey,
-                margin: const EdgeInsets.only(right: 5),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _openedKomentarIds.clear();
-                  });
-                },
-                child: const Text(
-                  'Sembunyikan',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ),
-              const SizedBox(width: 4),
-              const Icon(
-                Icons.arrow_drop_up,
-                size: 18,
-                color: Colors.grey,
-              ),
-            ],
-          ),
-        ),
-      );
     }
 
     return widgets;
