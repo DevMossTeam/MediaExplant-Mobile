@@ -123,6 +123,16 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                 ),
                 child: IconButton(
                   onPressed: () async {
+                    if (userLogin == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                              'Silakan login terlebih dahulu untuk menyimpan bookmark.'),
+                        ),
+                      );
+                      Navigator.pushNamed(context, '/login');
+                      return;
+                    }
                     await bookmarkProvider.toggleBookmark(
                       Bookmark(
                         userId: userLogin,
@@ -233,6 +243,16 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             // Tombol Like
                             IconButton(
                               onPressed: () async {
+                                if (userLogin == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Silakan login terlebih dahulu untuk menyimpan reaksi.'),
+                                    ),
+                                  );
+                                  Navigator.pushNamed(context, '/login');
+                                  return;
+                                }
                                 await reaksiProvider.toggleReaksi(Reaksi(
                                   userId: userLogin,
                                   itemId: berita.idBerita,
@@ -254,6 +274,16 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             const SizedBox(width: 10),
                             IconButton(
                               onPressed: () async {
+                                if (userLogin == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Silakan login terlebih dahulu untuk menyimpan reaksi.'),
+                                    ),
+                                  );
+                                  Navigator.pushNamed(context, '/login');
+                                  return;
+                                }
                                 await reaksiProvider.toggleReaksi(Reaksi(
                                   userId: userLogin,
                                   itemId: berita.idBerita,
@@ -426,7 +456,24 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
         shape: const CircleBorder(),
         backgroundColor: AppColors.primary,
         onPressed: () {
-          showKomentarBottomSheet(context, 'Berita', berita.idBerita, userLogin);
+          if (userLogin == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Silakan login terlebih dahulu untuk memberi komentar.',
+                ),
+              ),
+            );
+            Navigator.pushNamed(context, '/login');
+            return;
+          }
+
+          showKomentarBottomSheet(
+            context,
+            'Berita',
+            berita.idBerita,
+            userLogin,
+          );
         },
         child: const Icon(Icons.comment, color: Colors.white),
       ),
@@ -434,8 +481,8 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
   }
 }
 
-
-void showKomentarBottomSheet(BuildContext context, String komentarType, String itemId, String userId) {
+void showKomentarBottomSheet(
+    BuildContext context, String komentarType, String itemId, String? userId) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -444,7 +491,8 @@ void showKomentarBottomSheet(BuildContext context, String komentarType, String i
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (context) => ChangeNotifierProvider(
-      create: (_) => KomentarViewmodel()..fetchKomentar(komentarType: komentarType, itemId: itemId),
+      create: (_) => KomentarViewmodel()
+        ..fetchKomentar(komentarType: komentarType, itemId: itemId),
       child: KomentarBottomSheet(
         komentarType: komentarType,
         itemId: itemId,

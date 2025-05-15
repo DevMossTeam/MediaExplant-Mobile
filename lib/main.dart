@@ -183,6 +183,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ),
         //  _pages[_currentIndex],
         bottomNavigationBar: SizedBox(
+          height: 80,
           child: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.white,

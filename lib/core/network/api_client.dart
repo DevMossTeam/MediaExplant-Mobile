@@ -5,7 +5,7 @@ import 'dart:io';
 class ApiClient {
   // final String baseUrl;
 
-  static const String baseUrl = "http://192.168.1.6:8000/api";
+  static const String baseUrl = "http://192.168.1.31:8000/api";
 
   // ApiClient({this.baseUrl = "http://192.168.1.21:8000/api"});
 

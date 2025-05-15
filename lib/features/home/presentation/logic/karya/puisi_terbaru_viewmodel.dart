@@ -13,7 +13,7 @@ class PuisiTerbaruViewmodel with ChangeNotifier {
   List<Karya> get allPuisi => _allPuisi;
   bool get isLoaded => _isLoaded;
 
-  Future<void> fetchPuisiTerbaru(String userId) async {
+  Future<void> fetchPuisiTerbaru(String? userId) async {
     if (_isLoaded) return;
 
     final url = Uri.parse("${ApiClient.baseUrl}/puisi/terbaru?user_id=$userId");

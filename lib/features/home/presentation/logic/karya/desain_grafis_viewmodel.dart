@@ -12,7 +12,7 @@ class DesainGrafisViewmodel with ChangeNotifier {
   List<Karya> get allDesainGrafis => _allDesainGrafis;
   bool get isLoaded => _isLoaded;
 
-  Future<void> fetchDesainGrafis(String userId) async {
+  Future<void> fetchDesainGrafis(String? userId) async {
     if (_isLoaded) return;
 
     final url =

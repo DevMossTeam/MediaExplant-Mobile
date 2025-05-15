@@ -7,7 +7,7 @@ part of 'bookmark.dart';
 // **************************************************************************
 
 Bookmark _$BookmarkFromJson(Map<String, dynamic> json) => Bookmark(
-      userId: json['user_id'] as String,
+      userId: json['user_id'] as String?,
       itemId: json['item_id'] as String,
       bookmarkType: json['bookmark_type'] as String,
     );

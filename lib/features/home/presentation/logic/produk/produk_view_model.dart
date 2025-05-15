@@ -25,7 +25,7 @@ class ProdukViewModel with ChangeNotifier {
   bool get isBuletinLoaded => _isBuletinLoaded;
 
 
-  Future<void> fetchMajalah(String userId) async {
+  Future<void> fetchMajalah(String? userId) async {
     if (_isMajalahLoaded) return;
 
     final url =
@@ -57,7 +57,7 @@ class ProdukViewModel with ChangeNotifier {
   }
 
 // get buletin
-  Future<void> fetchBuletin(String userId) async {
+  Future<void> fetchBuletin(String? userId) async {
     if (_isBuletinLoaded) return;
 
     final url =

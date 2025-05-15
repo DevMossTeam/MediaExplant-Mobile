@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_berita_screen.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/home_karya_screen.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/home_produk_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_untuk_anda_screen.dart';
 
-const String userLogin = "4FUD7QhJ0hMLMMlF6VQHjvkXad4L";
+const String? userLogin = null;
+//  "4FUD7QhJ0hMLMMlF6VQHjvkXad4L";
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -35,8 +38,8 @@ class HomeScreen extends StatelessWidget {
               tabs: [
                 Tab(text: 'Untuk Anda'),
                 Tab(text: 'Berita'),
-                Tab(text: 'Produk'),
                 Tab(text: 'Karya'),
+                Tab(text: 'Produk'),
               ],
             ),
           ),
@@ -45,8 +48,8 @@ class HomeScreen extends StatelessWidget {
             children: [
               HomeUntukAndaScreen(),
               HomeBeritaScreen(),
-              Center(child: Text("Produk")), // sementara placeholder
-              Center(child: Text("Karya")), // sementara placeholder
+              HomeKaryaScreen(),
+              HomeProdukScreen()
             ],
           ),
         ),

@@ -12,7 +12,7 @@ class SyairTerbaruViewmodel with ChangeNotifier {
   List<Karya> get allSyair => _allSyair;
   bool get isLoaded => _isLoaded;
 
-  Future<void> fetchSyairTerbaru(String userId) async {
+  Future<void> fetchSyairTerbaru(String? userId) async {
     if (_isLoaded) return;
 
     final url = Uri.parse("${ApiClient.baseUrl}/syair/terbaru?user_id=$userId");

@@ -9,7 +9,7 @@ part 'komentar.g.dart';
 class Komentar with ChangeNotifier {
   final String id;
   @JsonKey(name: 'user_id')
-  final String userId;
+  final String? userId;
   @JsonKey(name: 'isi_komentar')
   final String isiKomentar;
   @JsonKey(name: 'tanggal_komentar')

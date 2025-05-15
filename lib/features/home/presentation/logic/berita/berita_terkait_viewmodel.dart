@@ -14,7 +14,7 @@ class BeritaTerkaitViewmodel with ChangeNotifier {
   List<Berita> get allBerita => _allBerita;
   bool get isLoaded => _isLoaded;
 
-  Future<void> fetchBeritaTerkait(String userId,String kategori,String beritaId) async {
+  Future<void> fetchBeritaTerkait(String? userId,String kategori,String beritaId) async {
     if (_isLoaded) return;
 
     final url =

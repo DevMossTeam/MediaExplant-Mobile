@@ -12,7 +12,7 @@ class BeritaPopulerViewmodel with ChangeNotifier {
   List<Berita> get allBerita => _allBerita;
   bool get isLoaded => _isLoaded;
 
-  Future<void> fetchBeritaPopuler(String userId) async {
+  Future<void> fetchBeritaPopuler(String? userId) async {
     if (_isLoaded) return;
 
     final url = Uri.parse("${ApiClient.baseUrl}/berita/populer?user_id=$userId");

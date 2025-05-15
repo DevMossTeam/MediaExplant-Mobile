@@ -12,7 +12,7 @@ class BeritaRekomendasiLainViewModel with ChangeNotifier {
   List<Berita> get allBerita => _allBerita;
   bool get isLoaded => _isLoaded;
 
-  Future<void> fetchBeritaRekomendasiLain(String userId) async {
+  Future<void> fetchBeritaRekomendasiLain(String? userId) async {
     if (_isLoaded) return;
 
     final url = Uri.parse("${ApiClient.baseUrl}/berita/rekomendasi-lainnya?user_id=$userId");

@@ -7,7 +7,7 @@ part of 'reaksi.dart';
 // **************************************************************************
 
 Reaksi _$ReaksiFromJson(Map<String, dynamic> json) => Reaksi(
-      userId: json['user_id'] as String,
+      userId: json['user_id'] as String?,
       itemId: json['item_id'] as String,
       jenisReaksi: json['jenis_reaksi'] as String,
       reaksiType: json['reaksi_type'] as String,

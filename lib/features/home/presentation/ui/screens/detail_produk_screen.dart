@@ -131,6 +131,16 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                     // Tombol Like
                     IconButton(
                       onPressed: () async {
+                        if (userLogin == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Silakan login terlebih dahulu untuk menyimpan reaksi.'),
+                            ),
+                          );
+                          Navigator.pushNamed(context, '/login');
+                          return;
+                        }
                         await reaksiProvider.toggleReaksi(Reaksi(
                           userId: userLogin,
                           itemId: produk.idproduk,
@@ -151,6 +161,16 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                     const SizedBox(width: 10),
                     IconButton(
                       onPressed: () async {
+                        if (userLogin == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Silakan login terlebih dahulu untuk menyimpan reaksi.'),
+                            ),
+                          );
+                          Navigator.pushNamed(context, '/login');
+                          return;
+                        }
                         await reaksiProvider.toggleReaksi(Reaksi(
                           userId: userLogin,
                           itemId: produk.idproduk,

@@ -1,5 +1,7 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:mediaexplant/features/comments/models/komentar.dart';
 import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/widgets/komentar_item.dart';
@@ -7,14 +9,15 @@ import 'package:mediaexplant/features/comments/presentation/ui/widgets/komentar_
 class KomentarBottomSheet extends StatefulWidget {
   final String komentarType;
   final String itemId;
-  final String userId;
-
+  final String? userId;
   const KomentarBottomSheet({
     Key? key,
     required this.komentarType,
     required this.itemId,
-    required this.userId,
+    this.userId,
   }) : super(key: key);
+
+
 
   @override
   State<KomentarBottomSheet> createState() => _KomentarBottomSheetState();
@@ -338,7 +341,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                               final isi = _komentarController.text.trim();
                               if (isi.isNotEmpty) {
                                 await komentarVM.postKomentar(
-                                  userId: widget.userId,
+                                  userId:widget.userId,
                                   isiKomentar: isi,
                                   komentarType: widget.komentarType,
                                   itemId: widget.itemId,

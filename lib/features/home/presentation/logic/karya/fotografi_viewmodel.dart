@@ -12,7 +12,7 @@ class FotografiViewmodel with ChangeNotifier {
   List<Karya> get allFotografi => _allFotografi;
   bool get siLoaded => _isLoaded;
 
-  Future<void> fetchFotografi(String userId) async {
+  Future<void> fetchFotografi(String? userId) async {
     if (_isLoaded) return;
     final url = Uri.parse("${ApiClient.baseUrl}/fotografi/terbaru?user_id=$userId");
 

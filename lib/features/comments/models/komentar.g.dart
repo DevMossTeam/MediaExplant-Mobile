@@ -8,7 +8,7 @@ part of 'komentar.dart';
 
 Komentar _$KomentarFromJson(Map<String, dynamic> json) => Komentar(
       id: json['id'] as String,
-      userId: json['user_id'] as String,
+      userId: json['user_id'] as String?,
       isiKomentar: json['isi_komentar'] as String,
       tanggalKomentar: json['tanggal_komentar'] as String,
       komentarType: json['komentar_type'] as String,

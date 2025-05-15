@@ -6,7 +6,7 @@ part 'bookmark.g.dart';
 @JsonSerializable()
 class Bookmark with ChangeNotifier {
   @JsonKey(name: 'user_id')
-  final String userId;
+  final String? userId;
   @JsonKey(name: 'item_id')
   final String itemId;
   @JsonKey(name: 'bookmark_type')

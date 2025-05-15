@@ -56,7 +56,7 @@ class KomentarViewmodel with ChangeNotifier {
   }
 
   Future<bool> postKomentar({
-    required String userId,
+    required String? userId,
     required String isiKomentar,
     required String komentarType,
     required String itemId,
