@@ -66,9 +66,6 @@ class _HomeProdukScreenState extends State<HomeProdukScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          const SizedBox(
-            height: 20,
-          ),
           Padding(
             padding: const EdgeInsets.only(
               left: 15,

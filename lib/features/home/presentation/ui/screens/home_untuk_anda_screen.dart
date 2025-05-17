@@ -107,10 +107,10 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
         Provider.of<DesainGrafisViewmodel>(context).allDesainGrafis;
     final fotografiList = Provider.of<FotografiViewmodel>(context).allFotografi;
 
-    // Jika ada data yang sedang dimuat, tampilkan loading indicator
-    if (_isLoading.values.contains(true)) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    // // Jika ada data yang sedang dimuat, tampilkan loading indicator
+    // if (_isLoading.values.contains(true)) {
+    //   return const Center(child: CircularProgressIndicator());
+    // }
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

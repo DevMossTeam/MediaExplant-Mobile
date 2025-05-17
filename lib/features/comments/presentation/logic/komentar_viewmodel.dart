@@ -7,7 +7,6 @@ import 'package:mediaexplant/features/comments/models/komentar.dart';
 class KomentarViewmodel with ChangeNotifier {
   List<Komentar> _komentarList = [];
   List<Komentar> get komentarList => _komentarList;
-  
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -33,12 +32,14 @@ class KomentarViewmodel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchKomentar({required String komentarType, required String itemId}) async {
+  Future<void> fetchKomentar(
+      {required String komentarType, required String itemId}) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final url = Uri.parse("${ApiClient.baseUrl}/get-komentar?komentar_type=$komentarType&item_id=$itemId");
+      final url = Uri.parse(
+          "${ApiClient.baseUrl}/get-komentar?komentar_type=$komentarType&item_id=$itemId");
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -90,6 +91,25 @@ class KomentarViewmodel with ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> deleteKomentar(String komentarId) async {
+    final url =
+        Uri.parse("${ApiClient.baseUrl}/delete-komentar?id=$komentarId");
+
+    try {
+      final response = await http.delete(url);
+
+      if (response.statusCode == 200) {
+        _komentarList.removeWhere((komentar) => komentar.id == komentarId);
+        notifyListeners();
+        return true;
+      } else {
+        print('Gagal hapus komentar: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error deleteKomentar: $e');
+      return false;
+    }
+  }
 }
-
-

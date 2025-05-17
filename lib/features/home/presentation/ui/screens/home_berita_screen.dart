@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_populer_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_dari_kami_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_rekomendasi_lain_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/logic/berita/berita_teratas_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/berita_selengkapnya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomandasi_lain_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terbaru_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terkini_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_berita.item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class HomeBeritaScreen extends StatefulWidget {
@@ -19,69 +24,66 @@ class HomeBeritaScreen extends StatefulWidget {
   State<HomeBeritaScreen> createState() => _HomeBeritaScreenState();
 }
 
-class _HomeBeritaScreenState extends State<HomeBeritaScreen>
-    with AutomaticKeepAliveClientMixin<HomeBeritaScreen> {
+class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
   var _isInit = true;
+
   final Map<String, bool> _isLoading = {
-    'terkini': false,
+    'teratas': false,
     'populer': false,
+    'terbaru': false,
     'rekomendasi': false,
     'rekomendasiLain': false,
   };
-
-  @override
-  bool get wantKeepAlive => true;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     if (_isInit) {
-      final beritaTerkiniVM =
-          Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
-      final beritaPopulerVM =
-          Provider.of<BeritaPopulerViewmodel>(context, listen: false);
-      final beritaRekomendasiVM =
-          Provider.of<BeritaDariKamiViewmodel>(context, listen: false);
-      final beritaRekomendasiLainVM =
-          Provider.of<BeritaRekomendasiLainViewModel>(context, listen: false);
-
-      setState(() {
-        _isLoading['terkini'] = true;
-        _isLoading['populer'] = true;
-        _isLoading['rekomendasi'] = true;
-        _isLoading['rekomendasiLain'] = true;
-      });
-
-      Future.wait([
-        beritaTerkiniVM.fetchBeritaTerbaru(userLogin),
-        beritaPopulerVM.fetchBeritaPopuler(userLogin),
-        beritaRekomendasiVM.fetchBeritaDariKami(userLogin),
-        beritaRekomendasiLainVM.fetchBeritaRekomendasiLain(userLogin),
-      ]).then((_) {
-        setState(() {
-          _isLoading['terkini'] = false;
-          _isLoading['populer'] = false;
-          _isLoading['rekomendasi'] = false;
-          _isLoading['rekomendasiLain'] = false;
-        });
-      }).catchError((error) {
-        setState(() {
-          _isLoading['terkini'] = false;
-          _isLoading['populer'] = false;
-          _isLoading['rekomendasi'] = false;
-          _isLoading['rekomendasiLain'] = false;
-        });
-      });
+      _fetchBeritaSecaraBerurutan();
 
       _isInit = false;
     }
   }
 
+  Future<void> _fetchBeritaSecaraBerurutan() async {
+    final beritaTeratasVM =
+        Provider.of<BeritaTeratasViewModel>(context, listen: false);
+    final beritaTerbaruVM =
+        Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
+    final beritaPopulerVM =
+        Provider.of<BeritaPopulerViewmodel>(context, listen: false);
+    final beritaRekomendasiVM =
+        Provider.of<BeritaDariKamiViewmodel>(context, listen: false);
+    final beritaRekomendasiLainVM =
+        Provider.of<BeritaRekomendasiLainViewModel>(context, listen: false);
+
+    setState(() => _isLoading['teratas'] = true);
+    await beritaTeratasVM.fetchBeritaTeratas(userLogin);
+    setState(() => _isLoading['teratas'] = false);
+
+    setState(() => _isLoading['terbaru'] = true);
+    await beritaTerbaruVM.fetchBeritaTerbaru(userLogin);
+    setState(() => _isLoading['terbaru'] = false);
+
+    setState(() => _isLoading['populer'] = true);
+    await beritaPopulerVM.fetchBeritaPopuler(userLogin);
+    setState(() => _isLoading['populer'] = false);
+
+    setState(() => _isLoading['rekomendasi'] = true);
+    await beritaRekomendasiVM.fetchBeritaDariKami(userLogin);
+    setState(() => _isLoading['rekomendasi'] = false);
+
+    setState(() => _isLoading['rekomendasiLain'] = true);
+    await beritaRekomendasiLainVM.fetchBeritaRekomendasiLain(userLogin);
+    setState(() => _isLoading['rekomendasiLain'] = false);
+  }
+
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    final beritaTerkiniList =
+    final beritaTeratas =
+        Provider.of<BeritaTeratasViewModel>(context).allBerita;
+    final beritaTerbaruList =
         Provider.of<BeritaTerbaruViewmodel>(context).allBerita;
     final beritaPopulerList =
         Provider.of<BeritaPopulerViewmodel>(context).allBerita;
@@ -90,10 +92,6 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
     final beritaRekomendasiLainList =
         Provider.of<BeritaRekomendasiLainViewModel>(context).allBerita;
 
-    // Jika ada data yang sedang dimuat, tampilkan loading indicator
-    if (_isLoading.values.contains(true)) {
-      return const Center(child: CircularProgressIndicator());
-    }
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,206 +100,257 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
             height: 10,
           ),
 
-          // Berita terkini
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 1,
-            itemBuilder: (context, index) {
-              return ChangeNotifierProvider.value(
-                value: beritaTerkiniList[index],
-                child: BeritaTerkiniItem(),
-              );
-            },
-          ),
+          // Berita teratas
+          if (_isLoading['teratas']! || _isLoading['terbaru']!)
+            // Tampilkan shimmer loading
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 1,
+              itemBuilder: (context, index) {
+                return ShimmerBeritaItem();
+              },
+            )
+          else ...[
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: beritaTeratas.length,
+              itemBuilder: (context, index) {
+                return ChangeNotifierProvider.value(
+                  value: beritaTeratas[index],
+                  child: BeritaTerkiniItem(),
+                );
+              },
+            ),
+          ],
 
           // terpopuler 5 teratas
           const SizedBox(height: 20),
 
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: titleHeader("Terpopuler", "5 Teratas untuk anda")),
-          const SizedBox(
-            height: 10,
-          ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+          if (_isLoading['terbaru']!)
+            const Center(child: CircularProgressIndicator())
+          else ...[
+            Container(
+              color: Colors.grey.withAlpha(50),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
+                child: Column(
                   children: [
-                    // Nomor Indexing
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10, right: 5),
-                      child: Text(
-                        "${index + 1}",
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    titleHeader("Terbaru", "Teratas untuk anda"),
+                    const SizedBox(
+                      height: 20,
                     ),
-                    // Item Berita
-                    Expanded(
-                      child: ChangeNotifierProvider.value(
-                        value: beritaPopulerList[index],
-                        child: BeritaPopulerItem(),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 10),
-
-          Container(
-            color: Colors.grey.withAlpha(50),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
-              child: Column(
-                children: [
-                  titleHeader("Terbaru", "Teratas untuk anda"),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  // berita terbaru
-                  SizedBox(
-                    height: 200,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 10,
-                      itemBuilder: (context, index) {
-                        return ChangeNotifierProvider.value(
-                          value: beritaTerkiniList[index],
-                          child: BeritaTerbaruItem(),
-                        );
-                      },
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          // aksi saat tombol ditekan
-                          print("Tombol ditekan");
+                    // berita terbaru
+                    SizedBox(
+                      height: 200,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: beritaTerbaruList.length,
+                        itemBuilder: (context, index) {
+                          return ChangeNotifierProvider.value(
+                            value: beritaTerbaruList[index],
+                            child: BeritaTerbaruItem(),
+                          );
                         },
-                        child: const Text(
-                          "Selengkapnya >>",
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 14,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Future.delayed(const Duration(milliseconds: 200),
+                                () {
+                              final beritaList =
+                                  Provider.of<BeritaTerbaruViewmodel>(
+                                context,
+                                listen: false,
+                              ).allBerita;
+
+                              Navigator.of(context).pushAndRemoveUntil(
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeftWithFade,
+                                  duration: const Duration(milliseconds: 1000),
+                                  reverseDuration:
+                                      const Duration(milliseconds: 500),
+                                  child: ChangeNotifierProvider(
+                                    create: (_) {
+                                      final viewModel =
+                                          BeritaSelengkapnyaViewModel();
+                                      viewModel.setBerita(beritaList);
+                                      return viewModel;
+                                    },
+                                    child: const BeritaSelengkapnya(),
+                                  ),
+                                ),
+                                (route) => route.isFirst,
+                              );
+                            });
+                          },
+                          child: const Text(
+                            "Selengkapnya >>",
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
 
           const SizedBox(
             height: 20,
           ),
           // Dari Kami mungkin anda suka
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: titleHeader("Dari Kami", "Mungkin anda suka")),
-          const SizedBox(
-            height: 10,
-          ),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return ChangeNotifierProvider.value(
-                  value: beritaRekomendasiList[index],
-                  child: BeritaPopulerItem(),
-                );
-              },
+          if (_isLoading['populer']!)
+            const Center(child: CircularProgressIndicator())
+          else ...[
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: titleHeader("Terpopuler", "5 Teratas untuk anda")),
+            const SizedBox(
+              height: 10,
             ),
-          ),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () {
-                  // aksi saat tombol ditekan
-                  print("Tombol ditekan");
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: beritaPopulerList.length,
+                itemBuilder: (context, index) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Nomor Indexing
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 5),
+                        child: Text(
+                          "${index + 1}",
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      // Item Berita
+                      Expanded(
+                        child: ChangeNotifierProvider.value(
+                          value: beritaPopulerList[index],
+                          child: BeritaPopulerItem(),
+                        ),
+                      ),
+                    ],
+                  );
                 },
-                child: const Text(
-                  "Selengkapnya >>",
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 14,
+              ),
+            ),
+          ],
+          const SizedBox(height: 20),
+
+          if (_isLoading['rekomendasi']!)
+            const Center(child: CircularProgressIndicator())
+          else ...[
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: titleHeader("Dari Kami", "Mungkin anda suka")),
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: beritaRekomendasiList.length,
+                itemBuilder: (context, index) {
+                  return ChangeNotifierProvider.value(
+                    value: beritaRekomendasiList[index],
+                    child: BeritaPopulerItem(),
+                  );
+                },
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    // aksi saat tombol ditekan
+                    print("Tombol ditekan");
+                  },
+                  child: const Text(
+                    "Selengkapnya >>",
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
 
           const SizedBox(
             height: 20,
           ),
 
           // berita rekomandasi lainnya
-          Container(
-            color: Colors.grey.withAlpha(50),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
-              child: Column(
-                children: [
-                  titleHeader("Rekomendasi Lain", "Mungkin anda suka"),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  SizedBox(
-                    height: 150,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 10,
-                      itemBuilder: (context, index) {
-                        return ChangeNotifierProvider.value(
-                          value: beritaRekomendasiLainList[index],
-                          child: BeritaRekomandasiLainItem(),
-                        );
-                      },
+          if (_isLoading['rekomendasiLain']!)
+            const Center(child: CircularProgressIndicator())
+          else ...[
+            Container(
+              color: Colors.grey.withAlpha(50),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
+                child: Column(
+                  children: [
+                    titleHeader("Rekomendasi Lain", "Mungkin anda suka"),
+                    const SizedBox(
+                      height: 20,
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          // aksi saat tombol ditekan
+                    SizedBox(
+                      height: 150,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: beritaRekomendasiLainList.length,
+                        itemBuilder: (context, index) {
+                          return ChangeNotifierProvider.value(
+                            value: beritaRekomendasiLainList[index],
+                            child: BeritaRekomandasiLainItem(),
+                          );
                         },
-                        child: const Text(
-                          "Selengkapnya >>",
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 14,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            // aksi saat tombol ditekan
+                          },
+                          child: const Text(
+                            "Selengkapnya >>",
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );

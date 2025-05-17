@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,8 +15,6 @@ class KomentarBottomSheet extends StatefulWidget {
     required this.itemId,
     this.userId,
   }) : super(key: key);
-
-
 
   @override
   State<KomentarBottomSheet> createState() => _KomentarBottomSheetState();
@@ -213,7 +210,8 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
         return DraggableScrollableSheet(
           initialChildSize: 0.7,
           minChildSize: 0.4,
-          maxChildSize: 0.95,
+          maxChildSize: 1.0,
+          expand:false,
           builder: (context, scrollController) {
             return AnimatedPadding(
               duration: const Duration(milliseconds: 300),
@@ -272,11 +270,10 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                           child: Center(child: CircularProgressIndicator()))
                     else
                       Expanded(
-                        child: SingleChildScrollView(
-                          controller: scrollController,
-                          child: Column(
-                            children: _buildKomentarList(komentarMap),
-                          ),
+                        child: ListView(
+                          physics: const ClampingScrollPhysics(),
+                          padding: EdgeInsets.zero,
+                          children: _buildKomentarList(komentarMap),
                         ),
                       ),
                     const Divider(
@@ -319,13 +316,18 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                                     color: Colors.grey.withAlpha(100),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: TextField(
-                                    controller: _komentarController,
-                                    focusNode: _focusNode,
-                                    maxLines: null,
-                                    decoration: const InputDecoration(
-                                      hintText: "Tambahkan komentar...",
-                                      border: InputBorder.none,
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxHeight: 120,
+                                    ),
+                                    child: TextField(
+                                      controller: _komentarController,
+                                      focusNode: _focusNode,
+                                      maxLines: null,
+                                      decoration: const InputDecoration(
+                                        hintText: "Tambahkan komentar...",
+                                        border: InputBorder.none,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -341,7 +343,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                               final isi = _komentarController.text.trim();
                               if (isi.isNotEmpty) {
                                 await komentarVM.postKomentar(
-                                  userId:widget.userId,
+                                  userId: widget.userId,
                                   isiKomentar: isi,
                                   komentarType: widget.komentarType,
                                   itemId: widget.itemId,
