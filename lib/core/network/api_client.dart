@@ -5,10 +5,11 @@ import 'dart:io';
 class ApiClient {
   // final String baseUrl;
 
-  static const String baseUrl = "https://mediaexplant.com/api";
+  // static const String baseUrl = "https://mediaexplant.com/api";
 
-  // static const String baseUrl = "http://10.0.2.2:8000/api";
+  // static const String baseUrl = "http://192.168.1.25:8000/api";
 
+  static const String baseUrl = "http://10.0.2.2:8000/api";
 
   // ApiClient({this.baseUrl = "http://192.168.1.21:8000/api"});
 

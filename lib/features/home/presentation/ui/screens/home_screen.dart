@@ -4,8 +4,11 @@ import 'package:mediaexplant/features/home/presentation/ui/screens/home_berita_s
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_karya_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_produk_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_untuk_anda_screen.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/pages.dart';
 
-const String? userLogin = "4FUD7QhJ0hMLMMlF6VQHjvkXad4L";
+// const String? userLogin = "4FUD7QhJ0hMLMMlF6VQHjvkXad4L";
+
+const String? userLogin = null;
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -47,6 +50,7 @@ class HomeScreen extends StatelessWidget {
             children: [
               HomeUntukAndaScreen(),
               HomeBeritaScreen(),
+              // Pages(),
               HomeKaryaScreen(),
               HomeProdukScreen()
             ],

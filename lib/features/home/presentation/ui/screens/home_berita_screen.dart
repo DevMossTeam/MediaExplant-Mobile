@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
-import 'package:mediaexplant/features/home/models/berita/berita.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita/berita_populer_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita/berita_dari_kami_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita/berita_rekomendasi_lain_view_model.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita/berita_teratas_view_model.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_populer_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_dari_kami_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_rekomendasi_lain_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_teratas_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/berita_selengkapnya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
@@ -24,16 +23,20 @@ class HomeBeritaScreen extends StatefulWidget {
   State<HomeBeritaScreen> createState() => _HomeBeritaScreenState();
 }
 
-class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
+class _HomeBeritaScreenState extends State<HomeBeritaScreen>
+    with AutomaticKeepAliveClientMixin {
   var _isInit = true;
 
   final Map<String, bool> _isLoading = {
     'teratas': false,
-    'populer': false,
     'terbaru': false,
+    'populer': false,
     'rekomendasi': false,
     'rekomendasiLain': false,
   };
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void didChangeDependencies() {
@@ -58,29 +61,40 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
     final beritaRekomendasiLainVM =
         Provider.of<BeritaRekomendasiLainViewModel>(context, listen: false);
 
-    setState(() => _isLoading['teratas'] = true);
-    await beritaTeratasVM.fetchBeritaTeratas(userLogin);
-    setState(() => _isLoading['teratas'] = false);
+    if (beritaTeratasVM.allBerita.isEmpty) {
+      setState(() => _isLoading['teratas'] = true);
+      await beritaTeratasVM.fetchBeritaTeratas(userLogin);
+      setState(() => _isLoading['teratas'] = false);
+    }
 
-    setState(() => _isLoading['terbaru'] = true);
-    await beritaTerbaruVM.fetchBeritaTerbaru(userLogin);
-    setState(() => _isLoading['terbaru'] = false);
+    if (beritaTerbaruVM.allBerita.isEmpty) {
+      setState(() => _isLoading['terbaru'] = true);
+      await beritaTerbaruVM.fetchBeritaTerbaru(userLogin);
+      setState(() => _isLoading['terbaru'] = false);
+    }
 
-    setState(() => _isLoading['populer'] = true);
-    await beritaPopulerVM.fetchBeritaPopuler(userLogin);
-    setState(() => _isLoading['populer'] = false);
+    if (beritaPopulerVM.allBerita.isEmpty) {
+      setState(() => _isLoading['populer'] = true);
+      await beritaPopulerVM.fetchBeritaPopuler(userLogin);
+      setState(() => _isLoading['populer'] = false);
+    }
 
-    setState(() => _isLoading['rekomendasi'] = true);
-    await beritaRekomendasiVM.fetchBeritaDariKami(userLogin);
-    setState(() => _isLoading['rekomendasi'] = false);
+    if (beritaRekomendasiVM.allBerita.isEmpty) {
+      setState(() => _isLoading['rekomendasi'] = true);
+      await beritaRekomendasiVM.fetchBeritaDariKami(userLogin);
+      setState(() => _isLoading['rekomendasi'] = false);
+    }
 
-    setState(() => _isLoading['rekomendasiLain'] = true);
-    await beritaRekomendasiLainVM.fetchBeritaRekomendasiLain(userLogin);
-    setState(() => _isLoading['rekomendasiLain'] = false);
+    if (beritaRekomendasiLainVM.allBerita.isEmpty) {
+      setState(() => _isLoading['rekomendasiLain'] = true);
+      await beritaRekomendasiLainVM.fetchBeritaRekomendasiLain(userLogin);
+      setState(() => _isLoading['rekomendasiLain'] = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final beritaTeratas =
         Provider.of<BeritaTeratasViewModel>(context).allBerita;
     final beritaTerbaruList =
@@ -115,7 +129,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: beritaTeratas.length,
+              itemCount: 1,
               itemBuilder: (context, index) {
                 return ChangeNotifierProvider.value(
                   value: beritaTeratas[index],
@@ -159,33 +173,29 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                          onPressed: () {
-                            Future.delayed(const Duration(milliseconds: 200),
-                                () {
-                              final beritaList =
-                                  Provider.of<BeritaTerbaruViewmodel>(
-                                context,
-                                listen: false,
-                              ).allBerita;
+                          onPressed: () async {
+                            final viewModel = BeritaSelengkapnyaViewModel();
 
-                              Navigator.of(context).pushAndRemoveUntil(
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeftWithFade,
-                                  duration: const Duration(milliseconds: 1000),
-                                  reverseDuration:
-                                      const Duration(milliseconds: 500),
-                                  child: ChangeNotifierProvider(
-                                    create: (_) {
-                                      final viewModel =
-                                          BeritaSelengkapnyaViewModel();
-                                      viewModel.setBerita(beritaList);
-                                      return viewModel;
-                                    },
-                                    child: const BeritaSelengkapnya(),
+                            if (!mounted) return;
+
+                            Navigator.of(context).push(
+                              PageTransition(
+                                type: PageTransitionType.rightToLeftWithFade,
+                                duration: const Duration(milliseconds: 500),
+                                reverseDuration:
+                                    const Duration(milliseconds: 500),
+                                child: ChangeNotifierProvider<
+                                    BeritaSelengkapnyaViewModel>.value(
+                                  value: viewModel,
+                                  child: const BeritaSelengkapnya(
+                                    kategori: KategoriBerita.terbaru,
                                   ),
                                 ),
-                                (route) => route.isFirst,
-                              );
+                              ),
+                            );
+                            Future.microtask(() async {
+                              await viewModel
+                                  .setKategori(KategoriBerita.terbaru);
                             });
                           },
                           child: const Text(
@@ -195,7 +205,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
                               fontSize: 14,
                             ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ],
@@ -282,9 +292,28 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: () {
-                    // aksi saat tombol ditekan
-                    print("Tombol ditekan");
+                  onPressed: () async {
+                    final viewModel = BeritaSelengkapnyaViewModel();
+
+                    if (!mounted) return;
+
+                    Navigator.of(context).push(
+                      PageTransition(
+                        type: PageTransitionType.rightToLeftWithFade,
+                        duration: const Duration(milliseconds: 500),
+                        reverseDuration: const Duration(milliseconds: 500),
+                        child: ChangeNotifierProvider<
+                            BeritaSelengkapnyaViewModel>.value(
+                          value: viewModel,
+                          child: const BeritaSelengkapnya(
+                            kategori: KategoriBerita.rekomendasi,
+                          ),
+                        ),
+                      ),
+                    );
+                    Future.microtask(() async {
+                      await viewModel.setKategori(KategoriBerita.rekomendasi);
+                    });
                   },
                   child: const Text(
                     "Selengkapnya >>",
@@ -333,8 +362,29 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                          onPressed: () {
-                            // aksi saat tombol ditekan
+                          onPressed: () async {
+                            final viewModel = BeritaSelengkapnyaViewModel();
+                            if (!mounted) return;
+
+                            Navigator.of(context).push(
+                              PageTransition(
+                                type: PageTransitionType.rightToLeftWithFade,
+                                duration: const Duration(milliseconds: 500),
+                                reverseDuration:
+                                    const Duration(milliseconds: 500),
+                                child: ChangeNotifierProvider<
+                                    BeritaSelengkapnyaViewModel>.value(
+                                  value: viewModel,
+                                  child: const BeritaSelengkapnya(
+                                    kategori: KategoriBerita.rekomendasiLain,
+                                  ),
+                                ),
+                              ),
+                            );
+                            Future.microtask(() async {
+                              await viewModel
+                                  .setKategori(KategoriBerita.rekomendasiLain);
+                            });
                           },
                           child: const Text(
                             "Selengkapnya >>",

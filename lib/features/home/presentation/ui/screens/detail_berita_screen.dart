@@ -7,14 +7,16 @@ import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terbaru_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/berita/berita_terkait_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terkait_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/berita_selengkapnya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terbaru_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class DetailBeritaScreen extends StatefulWidget {
@@ -376,8 +378,30 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: () {
-                    // aksi saat tombol ditekan
+                  onPressed: () async {
+                    final beritaId = berita.idBerita;
+                    final kategori = berita.kategori;
+                    final viewModel = BeritaSelengkapnyaViewModel();
+                    await viewModel.setKategori(KategoriBerita.terkait);
+
+                    if (!mounted) return;
+
+                    Navigator.of(context).push(
+                      PageTransition(
+                        type: PageTransitionType.rightToLeftWithFade,
+                        duration: const Duration(milliseconds: 1000),
+                        reverseDuration: const Duration(milliseconds: 500),
+                        child: ChangeNotifierProvider<
+                            BeritaSelengkapnyaViewModel>.value(
+                          value: viewModel,
+                          child: BeritaSelengkapnya(
+                            kategori: KategoriBerita.terkait,
+                            beritaIdTerkait: beritaId,
+                            kategoriTerkait: kategori,
+                          ),
+                        ),
+                      ),
+                    );
                   },
                   child: const Text(
                     "Selengkapnya >>",
@@ -424,8 +448,29 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             TextButton(
-                              onPressed: () {
-                                // aksi saat tombol ditekan
+                              onPressed: () async {
+                                final viewModel = BeritaSelengkapnyaViewModel();
+                                if (!mounted) return;
+                                Navigator.of(context).push(
+                                  PageTransition(
+                                    type:
+                                        PageTransitionType.rightToLeftWithFade,
+                                    duration: const Duration(milliseconds: 500),
+                                    reverseDuration:
+                                        const Duration(milliseconds: 500),
+                                    child: ChangeNotifierProvider<
+                                        BeritaSelengkapnyaViewModel>.value(
+                                      value: viewModel,
+                                      child: const BeritaSelengkapnya(
+                                        kategori: KategoriBerita.terbaru,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                                Future.microtask(() async {
+                                  await viewModel
+                                      .setKategori(KategoriBerita.terbaru);
+                                });
                               },
                               child: const Text(
                                 "Selengkapnya >>",

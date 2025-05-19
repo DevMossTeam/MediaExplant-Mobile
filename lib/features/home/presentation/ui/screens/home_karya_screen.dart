@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/features/home/presentation/logic/karya/desain_grafis_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/karya/fotografi_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/karya/puisi_terbaru_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/karya/syair_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/desain_grafis_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/fotografi_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/desain_grafis_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/fotografi_item.dart';

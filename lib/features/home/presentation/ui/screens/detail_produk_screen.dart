@@ -3,7 +3,7 @@ import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/home/models/produk/produk.dart';
-import 'package:mediaexplant/features/home/presentation/logic/produk/produk_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
