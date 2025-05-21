@@ -16,7 +16,6 @@ import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita
 import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class DetailBeritaScreen extends StatefulWidget {
@@ -387,11 +386,8 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                     if (!mounted) return;
 
                     Navigator.of(context).push(
-                      PageTransition(
-                        type: PageTransitionType.rightToLeftWithFade,
-                        duration: const Duration(milliseconds: 1000),
-                        reverseDuration: const Duration(milliseconds: 500),
-                        child: ChangeNotifierProvider<
+                      MaterialPageRoute(builder: (context) {
+                        return ChangeNotifierProvider<
                             BeritaSelengkapnyaViewModel>.value(
                           value: viewModel,
                           child: BeritaSelengkapnya(
@@ -399,8 +395,8 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             beritaIdTerkait: beritaId,
                             kategoriTerkait: kategori,
                           ),
-                        ),
-                      ),
+                        );
+                      }),
                     );
                   },
                   child: const Text(
@@ -452,20 +448,15 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                                 final viewModel = BeritaSelengkapnyaViewModel();
                                 if (!mounted) return;
                                 Navigator.of(context).push(
-                                  PageTransition(
-                                    type:
-                                        PageTransitionType.rightToLeftWithFade,
-                                    duration: const Duration(milliseconds: 500),
-                                    reverseDuration:
-                                        const Duration(milliseconds: 500),
-                                    child: ChangeNotifierProvider<
+                                  MaterialPageRoute(builder: (context) {
+                                    return ChangeNotifierProvider<
                                         BeritaSelengkapnyaViewModel>.value(
                                       value: viewModel,
                                       child: const BeritaSelengkapnya(
                                         kategori: KategoriBerita.terbaru,
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  }),
                                 );
                                 Future.microtask(() async {
                                   await viewModel

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_karya_screen.dart';
-import 'package:page_transition/page_transition.dart';
+
 import 'package:provider/provider.dart';
 
 class FotografiItem extends StatelessWidget {
@@ -88,21 +88,18 @@ class FotografiItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 child: InkWell(
                   onTap: () {
-                    Future.delayed(const Duration(milliseconds: 200), () {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        PageTransition(
-                          type: PageTransitionType.rightToLeftWithFade,
-                          duration: const Duration(milliseconds: 1000),
-                          reverseDuration: const Duration(milliseconds: 500),
-                          child: ChangeNotifierProvider.value(
-                            value: karya,
-                            child: DetailKaryaScreen(),
-                          ),
+                  Future.delayed(const Duration(milliseconds: 200), () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider.value(
+                          value: karya,
+                          child: DetailKaryaScreen(),
                         ),
-                        (route) => route.isFirst,
-                      );
-                    });
-                  },
+                      ),
+                      (route) => route.isFirst,
+                    );
+                  });
+                },
                   splashColor: Colors.black.withAlpha(50),
                   highlightColor: Colors.white.withAlpha(100),
                   borderRadius: BorderRadius.circular(5),

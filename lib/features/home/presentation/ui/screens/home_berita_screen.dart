@@ -13,7 +13,7 @@ import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terkini_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_berita.item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
-import 'package:page_transition/page_transition.dart';
+
 import 'package:provider/provider.dart';
 
 class HomeBeritaScreen extends StatefulWidget {
@@ -179,19 +179,15 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                             if (!mounted) return;
 
                             Navigator.of(context).push(
-                              PageTransition(
-                                type: PageTransitionType.rightToLeftWithFade,
-                                duration: const Duration(milliseconds: 500),
-                                reverseDuration:
-                                    const Duration(milliseconds: 500),
-                                child: ChangeNotifierProvider<
+                              MaterialPageRoute(builder: (context) {
+                                return ChangeNotifierProvider<
                                     BeritaSelengkapnyaViewModel>.value(
                                   value: viewModel,
                                   child: const BeritaSelengkapnya(
                                     kategori: KategoriBerita.terbaru,
                                   ),
-                                ),
-                              ),
+                                );
+                              }),
                             );
                             Future.microtask(() async {
                               await viewModel
@@ -298,18 +294,15 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                     if (!mounted) return;
 
                     Navigator.of(context).push(
-                      PageTransition(
-                        type: PageTransitionType.rightToLeftWithFade,
-                        duration: const Duration(milliseconds: 500),
-                        reverseDuration: const Duration(milliseconds: 500),
-                        child: ChangeNotifierProvider<
+                      MaterialPageRoute(builder: (context) {
+                        return ChangeNotifierProvider<
                             BeritaSelengkapnyaViewModel>.value(
                           value: viewModel,
                           child: const BeritaSelengkapnya(
                             kategori: KategoriBerita.rekomendasi,
                           ),
-                        ),
-                      ),
+                        );
+                      }),
                     );
                     Future.microtask(() async {
                       await viewModel.setKategori(KategoriBerita.rekomendasi);
@@ -367,19 +360,15 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                             if (!mounted) return;
 
                             Navigator.of(context).push(
-                              PageTransition(
-                                type: PageTransitionType.rightToLeftWithFade,
-                                duration: const Duration(milliseconds: 500),
-                                reverseDuration:
-                                    const Duration(milliseconds: 500),
-                                child: ChangeNotifierProvider<
+                              MaterialPageRoute(builder: (context) {
+                                return ChangeNotifierProvider<
                                     BeritaSelengkapnyaViewModel>.value(
                                   value: viewModel,
                                   child: const BeritaSelengkapnya(
                                     kategori: KategoriBerita.rekomendasiLain,
                                   ),
-                                ),
-                              ),
+                                );
+                              }),
                             );
                             Future.microtask(() async {
                               await viewModel

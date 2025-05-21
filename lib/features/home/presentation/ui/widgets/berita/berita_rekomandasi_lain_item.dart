@@ -4,7 +4,6 @@ import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/time_ago_util.dart';
 import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class BeritaRekomandasiLainItem extends StatelessWidget {
@@ -65,7 +64,9 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
                   children: [
                     Text(
                       "${berita.kategori} | ${timeAgoFormat(DateTime.parse(berita.tanggalDibuat))}",
-                      style: const TextStyle(color: Colors.white, fontSize: 12,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
                       ),
                       maxLines: 1,
                     ),
@@ -92,11 +93,8 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
                 onTap: () {
                   Future.delayed(const Duration(milliseconds: 200), () {
                     Navigator.of(context).pushAndRemoveUntil(
-                      PageTransition(
-                        type: PageTransitionType.rightToLeftWithFade,
-                        duration: const Duration(milliseconds: 1000),
-                        reverseDuration: const Duration(milliseconds: 500),
-                        child: ChangeNotifierProvider.value(
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider.value(
                           value: berita,
                           child: DetailBeritaScreen(),
                         ),

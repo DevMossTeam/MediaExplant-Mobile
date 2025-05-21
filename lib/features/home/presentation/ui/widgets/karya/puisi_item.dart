@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_karya_screen.dart';
-import 'package:page_transition/page_transition.dart';
+
 import 'package:provider/provider.dart';
 
 class PuisiItem extends StatefulWidget {
@@ -75,11 +75,8 @@ class _PuisiItemState extends State<PuisiItem> {
                 onTap: () {
                   Future.delayed(const Duration(milliseconds: 200), () {
                     Navigator.of(context).pushAndRemoveUntil(
-                      PageTransition(
-                        type: PageTransitionType.rightToLeftWithFade,
-                        duration: const Duration(milliseconds: 1000),
-                        reverseDuration: const Duration(milliseconds: 500),
-                        child: ChangeNotifierProvider.value(
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider.value(
                           value: karya,
                           child: DetailKaryaScreen(),
                         ),

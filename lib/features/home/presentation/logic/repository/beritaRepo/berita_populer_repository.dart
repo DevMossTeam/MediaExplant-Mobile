@@ -13,10 +13,10 @@ class BeritaTerpopulerRepository {
       headers: {'Accept': 'application/json'},
     );
 
-    if (kDebugMode) {
-      print("Response status: ${response.statusCode}");
-      print("Response body: ${response.body}");
-    }
+    // if (kDebugMode) {
+    //   print("Response status: ${response.statusCode}");
+    //   print("Response body: ${response.body}");
+    // }
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);
