@@ -34,18 +34,15 @@ class SignUpViewModel extends ChangeNotifier {
     required String email,
   }) async {
     _setLoading(true);
-
     try {
       final response = await registerStep1UseCase(
         namaLengkap: namaLengkap,
         namaPengguna: namaPengguna,
         email: email,
       );
-      
       if (response['success'] != true) {
         _setError(response['message']);
       }
-      
       return response;
     } catch (e) {
       _setError(e.toString());
@@ -60,11 +57,11 @@ class SignUpViewModel extends ChangeNotifier {
     required String otp,
   }) async {
     _setLoading(true);
-
     try {
       final response = await verifyOtpUseCase(email: email, otp: otp);
       if (response['success'] == true) {
         _otpVerified = true;
+        notifyListeners();
       } else {
         _setError(response['message']);
       }
@@ -77,12 +74,14 @@ class SignUpViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> registerStep3({
+  /// Sekarang mengembalikan AuthResponse? agar UI bisa langsung cek hasilnya
+  Future<AuthResponse?> registerStep3({
     required String email,
     required String password,
     required String passwordConfirmation,
   }) async {
     _setLoading(true);
+    _setError(null);
 
     try {
       final authRes = await registerStep3UseCase(
@@ -90,10 +89,11 @@ class SignUpViewModel extends ChangeNotifier {
         password: password,
         passwordConfirmation: passwordConfirmation,
       );
-      _authResponse = authRes;
 
-      // Simpan data pengguna ke AuthStorage.
-      // Pastikan properti di authRes.user sesuai dengan definisi (misalnya: uid, namaPengguna, email, profilePic, role, namaLengkap).
+      _authResponse = authRes;
+      notifyListeners();
+
+      // Simpan data pengguna dan token
       await AuthStorage.saveUserData(
         token: authRes.token,
         uid: authRes.user.uid,
@@ -103,8 +103,11 @@ class SignUpViewModel extends ChangeNotifier {
         role: authRes.user.role,
         namaLengkap: authRes.user.namaLengkap,
       );
+
+      return _authResponse;
     } catch (e) {
       _setError(e.toString());
+      return null;
     } finally {
       _setLoading(false);
     }
