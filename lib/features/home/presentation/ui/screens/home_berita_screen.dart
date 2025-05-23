@@ -7,14 +7,12 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/b
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_teratas_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/berita_selengkapnya.dart';
-import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomandasi_lain_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terbaru_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terkini_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_berita.item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
-import 'package:mediaexplant/main.dart';
 
 import 'package:provider/provider.dart';
 
@@ -108,185 +106,163 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
     final beritaRekomendasiLainList =
         Provider.of<BeritaRekomendasiLainViewModel>(context).allBerita;
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 10,
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: SizedBox(height: 10)),
+
+        // Berita teratas
+        if (_isLoading['teratas']! || _isLoading['terbaru']!)
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => ShimmerBeritaItem(),
+              childCount: 1,
+            ),
+          )
+        else
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => ChangeNotifierProvider.value(
+                value: beritaTeratas[index],
+                child: BeritaTerkiniItem(),
+              ),
+              childCount: 1,
+            ),
           ),
 
-          // Berita teratas
-          if (_isLoading['teratas']! || _isLoading['terbaru']!)
-            // Tampilkan shimmer loading
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 1,
-              itemBuilder: (context, index) {
-                return ShimmerBeritaItem();
-              },
-            )
-          else ...[
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 1,
-              itemBuilder: (context, index) {
-                return ChangeNotifierProvider.value(
-                  value: beritaTeratas[index],
-                  child: BeritaTerkiniItem(),
-                );
-              },
-            ),
-          ],
+        SliverToBoxAdapter(child: SizedBox(height: 20)),
 
-          // terpopuler 5 teratas
-          const SizedBox(height: 20),
-
-          if (_isLoading['terbaru']!)
-            const Center(child: CircularProgressIndicator())
-          else ...[
-            Container(
+        if (_isLoading['terbaru']!)
+          const SliverToBoxAdapter(
+              child: Center(child: CircularProgressIndicator()))
+        else
+          SliverToBoxAdapter(
+            child: Container(
               color: Colors.grey.withAlpha(50),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
-                child: Column(
-                  children: [
-                    titleHeader("Terbaru", "Teratas untuk anda"),
-                    const SizedBox(
-                      height: 20,
+              padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  titleHeader("Terbaru", "Teratas untuk anda"),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    height: 200,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: beritaTerbaruList.length,
+                      itemBuilder: (context, index) {
+                        return ChangeNotifierProvider.value(
+                          value: beritaTerbaruList[index],
+                          child: BeritaTerbaruItem(),
+                        );
+                      },
                     ),
-                    // berita terbaru
-                    SizedBox(
-                      height: 200,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: beritaTerbaruList.length,
-                        itemBuilder: (context, index) {
-                          return ChangeNotifierProvider.value(
-                            value: beritaTerbaruList[index],
-                            child: BeritaTerbaruItem(),
-                          );
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          final viewModel = BeritaSelengkapnyaViewModel();
+                          if (!mounted) return;
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider.value(
+                              value: viewModel,
+                              child: const BeritaSelengkapnya(
+                                kategori: KategoriBerita.terbaru,
+                              ),
+                            ),
+                          ));
+                          Future.microtask(() async {
+                            await viewModel.setKategori(KategoriBerita.terbaru);
+                          });
                         },
+                        child: const Text(
+                          "Selengkapnya >>",
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+
+        SliverToBoxAdapter(child: SizedBox(height: 20)),
+
+        if (_isLoading['populer']!)
+          const SliverToBoxAdapter(
+              child: Center(child: CircularProgressIndicator()))
+        else ...[
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            sliver: SliverToBoxAdapter(
+              child: titleHeader("Terpopuler", "5 Teratas untuk anda"),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 10)),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 5),
+                      child: Text(
+                        "${index + 1}",
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () async {
-                            final viewModel = BeritaSelengkapnyaViewModel();
-
-                            if (!mounted) return;
-
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) {
-                                return ChangeNotifierProvider<
-                                    BeritaSelengkapnyaViewModel>.value(
-                                  value: viewModel,
-                                  child: const BeritaSelengkapnya(
-                                    kategori: KategoriBerita.terbaru,
-                                  ),
-                                );
-                              }),
-                            );
-                            Future.microtask(() async {
-                              await viewModel
-                                  .setKategori(KategoriBerita.terbaru);
-                            });
-                          },
-                          child: const Text(
-                            "Selengkapnya >>",
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 14,
-                            ),
-                          ),
-                        )
-                      ],
+                    Expanded(
+                      child: ChangeNotifierProvider.value(
+                        value: beritaPopulerList[index],
+                        child: BeritaPopulerItem(),
+                      ),
                     ),
                   ],
                 ),
+                childCount: beritaPopulerList.length,
               ),
             ),
-          ],
-
-          const SizedBox(
-            height: 20,
           ),
-          // Dari Kami mungkin anda suka
+        ],
 
-          if (_isLoading['populer']!)
-            const Center(child: CircularProgressIndicator())
-          else ...[
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: titleHeader("Terpopuler", "5 Teratas untuk anda")),
-            const SizedBox(
-              height: 10,
+        SliverToBoxAdapter(child: SizedBox(height: 20)),
+
+        if (_isLoading['rekomendasi']!)
+          const SliverToBoxAdapter(
+              child: Center(child: CircularProgressIndicator()))
+        else ...[
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            sliver: SliverToBoxAdapter(
+              child: titleHeader("Dari Kami", "Mungkin anda suka"),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: beritaPopulerList.length,
-                itemBuilder: (context, index) {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Nomor Indexing
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10, right: 5),
-                        child: Text(
-                          "${index + 1}",
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      // Item Berita
-                      Expanded(
-                        child: ChangeNotifierProvider.value(
-                          value: beritaPopulerList[index],
-                          child: BeritaPopulerItem(),
-                        ),
-                      ),
-                    ],
-                  );
-                },
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 10)),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => ChangeNotifierProvider.value(
+                  value: beritaRekomendasiList[index],
+                  child: BeritaPopulerItem(),
+                ),
+                childCount: beritaRekomendasiList.length,
               ),
             ),
-          ],
-          const SizedBox(height: 20),
-
-          if (_isLoading['rekomendasi']!)
-            const Center(child: CircularProgressIndicator())
-          else ...[
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: titleHeader("Dari Kami", "Mungkin anda suka")),
-            const SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: beritaRekomendasiList.length,
-                itemBuilder: (context, index) {
-                  return ChangeNotifierProvider.value(
-                    value: beritaRekomendasiList[index],
-                    child: BeritaPopulerItem(),
-                  );
-                },
-              ),
-            ),
-            Row(
+          ),
+          SliverToBoxAdapter(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
@@ -320,21 +296,22 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                 ),
               ],
             ),
-          ],
-
-          const SizedBox(
-            height: 20,
           ),
+        ],
 
-          // berita rekomandasi lainnya
-          if (_isLoading['rekomendasiLain']!)
-            const Center(child: CircularProgressIndicator())
-          else ...[
-            Container(
+        SliverToBoxAdapter(child: SizedBox(height: 20)),
+
+        if (_isLoading['rekomendasiLain']!)
+          const SliverToBoxAdapter(
+              child: Center(child: CircularProgressIndicator()))
+        else ...[
+          SliverToBoxAdapter(
+            child: Container(
               color: Colors.grey.withAlpha(50),
               child: Padding(
                 padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     titleHeader("Rekomendasi Lain", "Mungkin anda suka"),
                     const SizedBox(
@@ -391,9 +368,9 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                 ),
               ),
             ),
-          ],
+          ),
         ],
-      ),
+      ],
     );
   }
 }

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/home/models/berita/berita.dart';
