@@ -3,6 +3,8 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/utils/userID.dart';
+
 import 'package:provider/provider.dart';
 
 import 'package:mediaexplant/features/home/models/berita/berita.dart';
@@ -10,7 +12,6 @@ import 'package:mediaexplant/features/home/presentation/logic/repository/beritaR
 import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_rekomendasi_lain_repository.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_terbaru_repository.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_terkait_repository.dart';
-import 'package:mediaexplant/features/home/presentation/ui/screens/home_screen.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
 
 enum KategoriBerita { terbaru, rekomendasiLain, rekomendasi, terkait }

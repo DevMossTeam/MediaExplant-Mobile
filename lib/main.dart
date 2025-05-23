@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mediaexplant/core/utils/time_ago_util.dart';
+import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_populer_viewmodel.dart';
@@ -37,7 +38,9 @@ import 'package:timeago/timeago.dart' as timeago;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // ← inisialisasi Firebase
+  await loadUserLogin();
   timeago.setLocaleMessages('id', CustomIdMessages());
+
   runApp(
     MultiProvider(
       providers: [

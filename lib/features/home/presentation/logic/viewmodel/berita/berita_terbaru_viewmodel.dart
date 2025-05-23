@@ -37,6 +37,7 @@ class BeritaTerbaruViewmodel with ChangeNotifier {
   Future<void> refresh(String? userId) async {
     _page = 1;
     hasMore = true;
+    isLoading = false;
     _beritas = [];
 
     await fetchBeritaTerbaru(userId);
