@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:provider/provider.dart';
 
 import 'package:mediaexplant/core/utils/time_ago_util.dart';
@@ -169,17 +170,18 @@ class _KomentarItemState extends State<KomentarItem> {
                 }
               },
               itemBuilder: (context) {
-                final isOwner = comment.userId == widget.userId;
+                final isOwner = comment.userId == userLogin;
                 return [
                   if (isOwner)
                     const PopupMenuItem(
                       value: 'hapus',
                       child: Text('Hapus Komentar'),
                     ),
-                  const PopupMenuItem(
-                    value: 'lapor',
-                    child: Text('Laporkan Komentar'),
-                  ),
+                  if (!isOwner)
+                    const PopupMenuItem(
+                      value: 'lapor',
+                      child: Text('Laporkan Komentar'),
+                    ),
                 ];
               },
             ),
