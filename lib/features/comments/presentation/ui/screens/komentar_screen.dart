@@ -211,7 +211,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
           initialChildSize: 0.7,
           minChildSize: 0.4,
           maxChildSize: 1.0,
-          expand:false,
+          expand: false,
           builder: (context, scrollController) {
             return AnimatedPadding(
               duration: const Duration(milliseconds: 300),

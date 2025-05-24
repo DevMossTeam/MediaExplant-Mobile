@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
@@ -8,6 +9,7 @@ import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
+import 'package:mediaexplant/features/report/report_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 class DetailKaryaScreen extends StatefulWidget {
@@ -99,6 +101,37 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                   icon: Icon(
                     karya.isBookmark ? Icons.bookmark : Icons.bookmark_outline,
                     color: Colors.white,
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(right: 20),
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.black.withAlpha(100),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  onPressed: () async {
+                    showModalBottomSheet(
+                      backgroundColor: AppColors.background,
+                      context: context,
+                      isScrollControlled: true,
+                      shape: const RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20))),
+                      builder: (context) => ReportBottomSheet(
+                        itemId: karya.idKarya,
+                        pesanType: "Karya",
+                      ),
+                    );
+                  },
+                  icon: SvgPicture.asset(
+                    'assets/images/ic_report.svg',
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
@@ -289,12 +322,6 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                               onPressed: () {},
                             ),
                             const SizedBox(width: 10),
-
-                            // Tombol Report
-                            IconButton(
-                              icon: const Icon(Icons.report, color: Colors.red),
-                              onPressed: () {},
-                            ),
                           ],
                         ),
 

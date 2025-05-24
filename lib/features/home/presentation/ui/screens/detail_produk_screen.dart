@@ -214,8 +214,8 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                       },
                       icon: Icon(
                         produk.isBookmark
-                            ? Icons.bookmark_add_outlined
-                            : Icons.bookmark_add,
+                            ? Icons.bookmark_add
+                            : Icons.bookmark_add_outlined,
                         size: 30,
                         color: Colors.grey,
                       ),

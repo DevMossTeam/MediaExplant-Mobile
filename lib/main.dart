@@ -15,6 +15,8 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/fo
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_view_model.dart';
+import 'package:mediaexplant/features/report/report_repository.dart';
+import 'package:mediaexplant/features/report/report_viewmodel.dart';
 import 'package:mediaexplant/features/search/search_screen.dart';
 import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
@@ -129,6 +131,11 @@ Future<void> main() async {
         //komentar
         ChangeNotifierProvider(
           create: (_) => KomentarViewmodel(),
+        ),
+
+        // report
+        ChangeNotifierProvider(
+          create: (_) => ReportViewModel(ReportRepository()),
         ),
       ],
       child: const MyApp(),

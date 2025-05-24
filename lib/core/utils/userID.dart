@@ -5,3 +5,7 @@ Future<void> loadUserLogin() async {
   final userData = await AuthStorage.getUserData();
   userLogin = userData['uid'];
 }
+
+void loadUserLogout() {
+  userLogin = null;
+}

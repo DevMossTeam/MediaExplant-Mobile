@@ -17,7 +17,7 @@ Berita _$BeritaFromJson(Map<String, dynamic> json) => Berita(
       kategori: json['kategori'] as String,
       jumlahLike: (json['jumlahLike'] as num).toInt(),
       jumlahDislike: (json['jumlahDislike'] as num).toInt(),
-      jumlahKomentar: (json['jumlahKomentar'] as num).toInt(),
+      jumlahKomentar: (json['jumlahKomentar'] as  num).toInt(),
       tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
       isBookmark: json['isBookmark'] as bool,
       isLike: json['isLike'] as bool,
