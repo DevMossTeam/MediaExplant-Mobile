@@ -9,7 +9,6 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/sy
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomendasi_untuk_anda_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_teratas_untuk_anda.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_berita.item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/desain_grafis_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/fotografi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/puisi_item.dart';

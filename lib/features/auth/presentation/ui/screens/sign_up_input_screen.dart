@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/features/auth/presentation/logic/sign_up_viewmodel.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
@@ -74,6 +75,7 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
             duration: Duration(seconds: 2),
           ),
         );
+        await loadUserLogin();
         Navigator.pushReplacementNamed(context, '/home');
       }
     }

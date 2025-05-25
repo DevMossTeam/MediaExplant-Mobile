@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/core/utils/auth_storage.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
@@ -56,6 +57,8 @@ Future<void> _signIn() async {
     // Debug: Ambil dan tampilkan data AuthStorage
     final authData = await AuthStorage.getUserData();
     debugPrint("AuthStorage Data after signIn: $authData");
+
+    await loadUserLogin();
 
     if (signInViewModel.errorMessage != null) {
       // Tampilkan pesan error jika terjadi kesalahan
