@@ -10,7 +10,7 @@ part 'produk.g.dart';
 @JsonSerializable()
 class Produk with ChangeNotifier {
   final String idproduk;
-  final String penulis;
+  final String? penulis;
   final String judul;
   final String deskripsi;
   final String release_date;

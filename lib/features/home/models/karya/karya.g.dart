@@ -8,7 +8,7 @@ part of 'karya.dart';
 
 Karya _$KaryaFromJson(Map<String, dynamic> json) => Karya(
       idKarya: json['idKarya'] as String,
-      penulis: json['penulis'] as String,
+      penulis: json['penulis'] as String?,
       profil: json['profil'] as String?,
       krator: json['krator'] as String,
       judul: json['judul'] as String,

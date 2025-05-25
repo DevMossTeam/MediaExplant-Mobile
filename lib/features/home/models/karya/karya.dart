@@ -10,7 +10,7 @@ part 'karya.g.dart';
 @JsonSerializable()
 class Karya with ChangeNotifier {
   final String idKarya;
-  final String penulis;
+  final String? penulis;
   final String? profil;
   final String krator;
   final String judul;

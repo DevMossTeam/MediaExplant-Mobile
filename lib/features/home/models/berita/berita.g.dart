@@ -12,7 +12,7 @@ Berita _$BeritaFromJson(Map<String, dynamic> json) => Berita(
       kontenBerita: json['kontenBerita'] as String,
       gambar: json['gambar'] as String?,
       tanggalDibuat: json['tanggalDibuat'] as String,
-      penulis: json['penulis'] as String,
+      penulis: json['penulis'] as String?,
       profil: json['profil'] as String?,
       kategori: json['kategori'] as String,
       jumlahLike: (json['jumlahLike'] as num).toInt(),

@@ -12,7 +12,7 @@ class Berita with ChangeNotifier {
   final String kontenBerita;
   final String? gambar;
   final String tanggalDibuat;
-  final String penulis;
+  final String? penulis;
   final String? profil;
   final String kategori;
   int jumlahLike;
@@ -39,6 +39,8 @@ class Berita with ChangeNotifier {
     required this.isLike,
     required this.isDislike,
   });
+
+  
  
 
   // // Fungsi untuk mengambil gambar pertama dari konten HTML

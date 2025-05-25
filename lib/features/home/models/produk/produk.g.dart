@@ -8,7 +8,7 @@ part of 'produk.dart';
 
 Produk _$ProdukFromJson(Map<String, dynamic> json) => Produk(
       idproduk: json['idproduk'] as String,
-      penulis: json['penulis'] as String,
+      penulis: json['penulis'] as String?,
       judul: json['judul'] as String,
       deskripsi: json['deskripsi'] as String,
       release_date: json['release_date'] as String,
