@@ -68,6 +68,7 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
       } else {
         // Jika sign up berhasil, refresh data profil agar status login berubah
         await Provider.of<ProfileViewModel>(context, listen: false).refreshUserData();
+        await loadUserLogin();
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -75,7 +76,7 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
             duration: Duration(seconds: 2),
           ),
         );
-        await loadUserLogin();
+        
         Navigator.pushReplacementNamed(context, '/home');
       }
     }

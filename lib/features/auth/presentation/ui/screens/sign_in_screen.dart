@@ -53,12 +53,13 @@ Future<void> _signIn() async {
 
     // Hide SnackBar
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    await loadUserLogin();
 
     // Debug: Ambil dan tampilkan data AuthStorage
     final authData = await AuthStorage.getUserData();
     debugPrint("AuthStorage Data after signIn: $authData");
 
-    await loadUserLogin();
+    
 
     if (signInViewModel.errorMessage != null) {
       // Tampilkan pesan error jika terjadi kesalahan
