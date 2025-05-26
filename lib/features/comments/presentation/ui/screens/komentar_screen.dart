@@ -270,11 +270,19 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                           child: Center(child: CircularProgressIndicator()))
                     else
                       Expanded(
-                        child: ListView(
-                          physics: const ClampingScrollPhysics(),
-                          padding: EdgeInsets.zero,
-                          children: _buildKomentarList(komentarMap),
-                        ),
+                        child: komentarVM.komentarList.isEmpty
+                            ? const Center(
+                                child: Text(
+                                  'Belum ada komentar.',
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.grey),
+                                ),
+                              )
+                            : ListView(
+                                physics: const ClampingScrollPhysics(),
+                                padding: EdgeInsets.zero,
+                                children: _buildKomentarList(komentarMap),
+                              ),
                       ),
                     const Divider(
                       thickness: 1,

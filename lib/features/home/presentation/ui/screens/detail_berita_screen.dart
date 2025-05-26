@@ -21,7 +21,6 @@ import 'package:mediaexplant/features/report/report_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-
 class DetailBeritaScreen extends StatefulWidget {
   const DetailBeritaScreen({super.key});
 
@@ -30,19 +29,29 @@ class DetailBeritaScreen extends StatefulWidget {
 }
 
 class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
+  bool _isInit = true;
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    final berita = Provider.of<Berita>(context, listen: false);
-    final beritaTerkaitViewmodel =
-        Provider.of<BeritaTerkaitViewmodel>(context, listen: false);
-    beritaTerkaitViewmodel.fetchBeritaTerkait(
-        userLogin, berita.kategori, berita.idBerita);
+    if (_isInit) {
+      final berita = Provider.of<Berita>(context, listen: false);
 
-    final beritaTerbaruViewmodel =
-        Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
-    beritaTerbaruViewmodel.fetchBeritaTerbaru(userLogin);
+      final beritaTerkaitViewmodel =
+          Provider.of<BeritaTerkaitViewmodel>(context, listen: false);
+      beritaTerkaitViewmodel.refresh(
+        userLogin,
+        berita.kategori,
+        berita.idBerita,
+      );
+
+      final beritaTerbaruViewmodel =
+          Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
+      beritaTerbaruViewmodel.fetchBeritaTerbaru(userLogin);
+
+      _isInit = false; // Pastikan hanya dipanggil sekali per instance
+    }
   }
 
   String removeFirstImageFromKonten(String konten) {

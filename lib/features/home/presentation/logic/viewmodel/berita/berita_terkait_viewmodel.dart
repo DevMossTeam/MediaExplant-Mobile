@@ -8,7 +8,7 @@ class BeritaTerkaitViewmodel with ChangeNotifier {
   int _page = 1;
   bool hasMore = true;
   List<Berita> _beritas = [];
-  bool isLoading = false;
+  // bool isLoading = false;
 
   List<Berita> get allBerita => _beritas;
 
@@ -17,8 +17,8 @@ class BeritaTerkaitViewmodel with ChangeNotifier {
     String kategori,
     String beritaId,
   ) async {
-    if (isLoading) return;
-    isLoading = true;
+    // if (isLoading) return;
+    // isLoading = true;
     try {
       final response = await _repository.fetchBeritaTerkait(
         _page,
@@ -39,7 +39,7 @@ class BeritaTerkaitViewmodel with ChangeNotifier {
     } catch (e) {
       if (kDebugMode) print("Error fetchBeritaTerkait: $e");
     } finally {
-      isLoading = false;
+      // isLoading = false;
     }
   }
 

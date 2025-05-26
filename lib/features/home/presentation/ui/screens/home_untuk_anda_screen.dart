@@ -9,6 +9,7 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/sy
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomendasi_untuk_anda_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_teratas_untuk_anda.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_berita.item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/desain_grafis_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/fotografi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/puisi_item.dart';
@@ -234,74 +235,6 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
             ),
           ],
 
-          // Produk Majalah
-          if (_isLoading['majalah']!)
-            const SliverToBoxAdapter(
-                child: Center(child: CircularProgressIndicator()))
-          else ...[
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 15),
-                child: titleHeader("Majalah", "Terbaru untuk anda"),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 15),
-                child: SizedBox(
-                  height: 240,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: majalahList.length.clamp(0, 10),
-                    itemBuilder: (context, index) {
-                      return ChangeNotifierProvider.value(
-                        value: majalahList[index],
-                        child: ProdukItem(),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 30),
-            ),
-          ],
-
-          // Produk Buletin
-          if (_isLoading['buletin']!)
-            const SliverToBoxAdapter(
-                child: Center(child: CircularProgressIndicator()))
-          else ...[
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 15),
-                child: titleHeader("Buletin", "Terbaru untuk anda"),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 15),
-                child: SizedBox(
-                  height: 240,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: buletinList.length.clamp(0, 10),
-                    itemBuilder: (context, index) {
-                      return ChangeNotifierProvider.value(
-                        value: buletinList[index],
-                        child: ProdukItem(),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 30),
-            ),
-          ],
-
           // Puisi Terbaru
           if (_isLoading['puisi']!)
             const SliverToBoxAdapter(
@@ -399,9 +332,6 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                 ),
               ),
             ),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 30),
-            ),
           ],
 
           // Fotografi
@@ -459,6 +389,76 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                 ),
               ),
             ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 30),
+            ),
+            // Produk Majalah
+            if (_isLoading['majalah']!)
+              const SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator()))
+            else ...[
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: titleHeader("Majalah", "Terbaru untuk anda"),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: SizedBox(
+                    height: 240,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: majalahList.length.clamp(0, 10),
+                      itemBuilder: (context, index) {
+                        return ChangeNotifierProvider.value(
+                          value: majalahList[index],
+                          child: ProdukItem(),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 30),
+              ),
+            ],
+
+            // Produk Buletin
+            if (_isLoading['buletin']!)
+              const SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator()))
+            else ...[
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: titleHeader("Buletin", "Terbaru untuk anda"),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: SizedBox(
+                    height: 240,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: buletinList.length.clamp(0, 10),
+                      itemBuilder: (context, index) {
+                        return ChangeNotifierProvider.value(
+                          value: buletinList[index],
+                          child: ProdukItem(),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 30),
+              ),
+            ],
             const SliverToBoxAdapter(
               child: SizedBox(height: 40),
             ),
