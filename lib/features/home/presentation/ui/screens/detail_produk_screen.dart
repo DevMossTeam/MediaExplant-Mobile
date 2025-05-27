@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:html/parser.dart' as html_parser;
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
@@ -8,12 +9,19 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/p
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailProdukScreen extends StatefulWidget {
   const DetailProdukScreen({super.key});
 
   @override
   State<DetailProdukScreen> createState() => _DetailProdukScreenState();
+}
+
+String cleanDeskripsi(String html) {
+  final document = html_parser.parse(html);
+  return document.body?.text.trim() ?? '';
 }
 
 class _DetailProdukScreenState extends State<DetailProdukScreen> {
@@ -193,7 +201,15 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
 
                     IconButton(
                       icon: const Icon(Icons.share, color: Colors.blue),
-                      onPressed: () {},
+                      onPressed: () async {
+                        final kategori =
+                            produk.kategori.toLowerCase().replaceAll(' ', '-');
+                        final url =
+                            "http://mediaexplant.com/produk/$kategori/browse?f=${produk.idproduk}";
+
+                        await Share.share(
+                            "Baca karya menarik ini di MediaExplant:\n\n${produk.judul}\n$url");
+                      },
                     ),
                     Container(
                       height: 25,
@@ -225,49 +241,49 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                          await produkVW.downloadProduk(produk.idproduk);
-                        },
-                        icon: const Icon(Icons.download),
-                        label: const Text('Download'),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          backgroundColor: AppColors.button_download,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                          // pratinjau
-                        },
-                        icon: const Icon(Icons.remove_red_eye),
-                        label: const Text('Pratinjau'),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     Expanded(
+                //       child: ElevatedButton.icon(
+                //         onPressed: () async {
+                //           await produkVW.downloadProduk(produk.idproduk);
+                //         },
+                //         icon: const Icon(Icons.download),
+                //         label: const Text('Download'),
+                //         style: ElevatedButton.styleFrom(
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(10),
+                //           ),
+                //           backgroundColor: AppColors.button_download,
+                //           foregroundColor: Colors.white,
+                //         ),
+                //       ),
+                //     ),
+                //     const SizedBox(
+                //       width: 10,
+                //     ),
+                //     Expanded(
+                //       child: ElevatedButton.icon(
+                //         onPressed: () async {
+                //           // pratinjau
+                //         },
+                //         icon: const Icon(Icons.remove_red_eye),
+                //         label: const Text('Pratinjau'),
+                //         style: ElevatedButton.styleFrom(
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(10),
+                //           ),
+                //           backgroundColor: Colors.black,
+                //           foregroundColor: Colors.white,
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // const SizedBox(
+                //   height: 20,
+                // ),
                 Text(
                   "Tentang ${produk.kategori} ini",
                   style: const TextStyle(
@@ -276,11 +292,33 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                     color: Colors.black,
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
+                const SizedBox(height: 10),
+                GestureDetector(
+                  onTap: () async {
+                    final kategori =
+                        produk.kategori.toLowerCase().replaceAll(' ', '-');
+                    final url =
+                        "http://mediaexplant.com/produk/$kategori/pdf-preview/${produk.idproduk}#page=1";
+                    final uri = Uri.parse(url);
+
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri,
+                          mode: LaunchMode.externalApplication);
+                    } else {
+                      debugPrint("Tidak dapat membuka URL: $url");
+                    }
+                  },
+                  child: const Text(
+                    "🔗 Kunjungi halaman produk ini",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
                 ),
                 Text(
-                  produk.deskripsi,
+                  cleanDeskripsi(produk.deskripsi),
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.black,

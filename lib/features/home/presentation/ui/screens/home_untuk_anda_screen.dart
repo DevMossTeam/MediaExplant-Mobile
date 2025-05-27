@@ -156,8 +156,12 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
 
           // Berita loading atau list horizontal rekomendasi berita
           if (_isLoading['berita']!)
-            const SliverToBoxAdapter(
-                child: Center(child: CircularProgressIndicator()))
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => ShimmerBeritaItem(),
+                childCount: 1,
+              ),
+            )
           else ...[
             SliverToBoxAdapter(
               child: Padding(

@@ -20,6 +20,7 @@ import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:mediaexplant/features/report/report_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailBeritaScreen extends StatefulWidget {
   const DetailBeritaScreen({super.key});
@@ -260,11 +261,16 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             "body": Style(
                               fontSize: FontSize(16),
                               color: Colors.black87,
-                              // lineHeight: LineHeight.number(1.5),
                             ),
                             "p": Style(
                               margin: Margins.symmetric(horizontal: 0),
                             ),
+                          },
+                          onLinkTap: (url, _, __, ) {
+                            if (url != null) {
+                              launchUrl(Uri.parse(url),
+                                  mode: LaunchMode.externalApplication);
+                            }
                           },
                         ),
 
@@ -352,14 +358,15 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
 
                             IconButton(
                               icon: const Icon(Icons.share, color: Colors.blue),
-                              onPressed: () {
-                                final berita =
-                                    Provider.of<Berita>(context, listen: false);
-                                final String shareText = '${berita.judul}\n\n'
-                                    'Baca selengkapnya di aplikasi MediaExplant.\n\n'
-                                    'Kategori: ${berita.kategori}\n'
-                                    'Penulis: ${berita.penulis}';
-                                Share.share(shareText);
+                              onPressed: () async {
+                                final kategori = berita.kategori
+                                    .toLowerCase()
+                                    .replaceAll(' ', '-');
+                                final url =
+                                    "http://mediaexplant.com/kategori/$kategori/read?a=${berita.idBerita}";
+
+                                await Share.share(
+                                    "Baca berita menarik ini di MediaExplant:\n\n${berita.judul}\n$url");
                               },
                             ),
 

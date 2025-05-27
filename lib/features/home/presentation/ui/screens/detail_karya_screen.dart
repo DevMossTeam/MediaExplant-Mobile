@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:html/parser.dart' as html_parser;
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
@@ -11,6 +12,7 @@ import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:mediaexplant/features/report/report_bottom_sheet.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class DetailKaryaScreen extends StatefulWidget {
   const DetailKaryaScreen({super.key});
@@ -26,8 +28,11 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
 
     // provider
     // view model
+  }
 
-    ;
+  String cleanDeskripsi(String html) {
+    final document = html_parser.parse(html);
+    return document.body?.text.trim() ?? '';
   }
 
   @override
@@ -195,7 +200,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          karya.deskripsi,
+                          cleanDeskripsi(karya.deskripsi),
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.black,
@@ -319,7 +324,16 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
 
                             IconButton(
                               icon: const Icon(Icons.share, color: Colors.blue),
-                              onPressed: () {},
+                              onPressed: () async {
+                                final kategori = karya.kategori
+                                    .toLowerCase()
+                                    .replaceAll(' ', '-');
+                                final url =
+                                    "http://mediaexplant.com/karya/$kategori/read?k=${karya.idKarya}";
+
+                                await Share.share(
+                                    "Baca karya menarik ini di MediaExplant:\n\n${karya.judul}\n$url");
+                              },
                             ),
                             const SizedBox(width: 10),
                           ],
@@ -329,6 +343,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 50),
                   const Divider(color: Colors.grey, thickness: 0.5),
                 ],
               ),
