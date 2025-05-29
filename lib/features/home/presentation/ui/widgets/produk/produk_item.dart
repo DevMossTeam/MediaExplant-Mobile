@@ -46,9 +46,9 @@ class _ProdukItemState extends State<ProdukItem> {
                   borderRadius: BorderRadius.circular(5),
                   child: AspectRatio(
                     aspectRatio: 3 / 4,
-                    child: produk.thumbnail != null
+                    child: produk.cover.isNotEmpty
                         ? Image.memory(
-                            produk.thumbnail!,
+                            produk.gambar(),
                             fit: BoxFit.cover,
                           )
                         : const Center(child: CircularProgressIndicator()),
@@ -90,7 +90,10 @@ class _ProdukItemState extends State<ProdukItem> {
                       MaterialPageRoute(
                         builder: (context) => ChangeNotifierProvider.value(
                           value: produk,
-                          child: DetailProdukScreen(),
+                          child: DetailProdukScreen(
+                            idProduk: produk.idproduk,
+                            kategori: produk.kategori,
+                          ),
                         ),
                       ),
                       (route) => route.isFirst,

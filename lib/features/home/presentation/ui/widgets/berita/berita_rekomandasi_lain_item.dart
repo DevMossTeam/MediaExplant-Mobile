@@ -27,8 +27,7 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
               child: CachedNetworkImage(
                 height: double.infinity,
                 width: double.infinity,
-                imageUrl: berita.gambar ??
-                    berita.firstImageFromKonten ??
+                imageUrl: berita.firstImageFromKonten ??
                     'https://via.placeholder.com/150',
                 fit: BoxFit.cover,
                 placeholder: (context, url) => const Center(
@@ -96,7 +95,10 @@ class BeritaRekomandasiLainItem extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => ChangeNotifierProvider.value(
                           value: berita,
-                          child: DetailBeritaScreen(),
+                          child: DetailBeritaScreen(
+                            idBerita: berita.idBerita,
+                            kategori: berita.kategori,
+                          ),
                         ),
                       ),
                       (route) => route.isFirst,

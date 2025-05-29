@@ -106,226 +106,55 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
     final beritaRekomendasiLainList =
         Provider.of<BeritaRekomendasiLainViewModel>(context).allBerita;
 
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(child: SizedBox(height: 10)),
+    return RefreshIndicator(
+      onRefresh: _fetchBeritaSecaraBerurutan,
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: SizedBox(height: 10)),
 
-        // Berita teratas
-        if (_isLoading['teratas']! || _isLoading['terbaru']!)
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => ShimmerBeritaItem(),
-              childCount: 1,
-            ),
-          )
-        else
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => ChangeNotifierProvider.value(
-                value: beritaTeratas[index],
-                child: BeritaTerkiniItem(),
-              ),
-              childCount: 1,
-            ),
-          ),
-
-        SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-        if (_isLoading['terbaru']!)
-          const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()))
-        else
-          SliverToBoxAdapter(
-            child: Container(
-              color: Colors.grey.withAlpha(50),
-              padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  titleHeader("Terbaru", "Teratas untuk anda"),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 200,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: beritaTerbaruList.length,
-                      itemBuilder: (context, index) {
-                        return ChangeNotifierProvider.value(
-                          value: beritaTerbaruList[index],
-                          child: BeritaTerbaruItem(),
-                        );
-                      },
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () async {
-                          final viewModel = BeritaSelengkapnyaViewModel();
-                          if (!mounted) return;
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProvider.value(
-                              value: viewModel,
-                              child: const BeritaSelengkapnya(
-                                kategori: KategoriBerita.terbaru,
-                              ),
-                            ),
-                          ));
-                          Future.microtask(() async {
-                            await viewModel.setKategori(KategoriBerita.terbaru);
-                          });
-                        },
-                        child: const Text(
-                          "Selengkapnya >>",
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 14,
-                          ),
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ),
-
-        SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-        if (_isLoading['populer']!)
-          const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()))
-        else ...[
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            sliver: SliverToBoxAdapter(
-              child: titleHeader("Terpopuler", "5 Teratas untuk anda"),
-            ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 10)),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            sliver: SliverList(
+          // Berita teratas
+          if (_isLoading['teratas']! || _isLoading['terbaru']!)
+            SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) => Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10, right: 5),
-                      child: Text(
-                        "${index + 1}",
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: ChangeNotifierProvider.value(
-                        value: beritaPopulerList[index],
-                        child: BeritaPopulerItem(),
-                      ),
-                    ),
-                  ],
-                ),
-                childCount: beritaPopulerList.length,
+                (context, index) => ShimmerBeritaItem(),
+                childCount: 1,
               ),
-            ),
-          ),
-        ],
-
-        SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-        if (_isLoading['rekomendasi']!)
-          const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()))
-        else ...[
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            sliver: SliverToBoxAdapter(
-              child: titleHeader("Dari Kami", "Mungkin anda suka"),
-            ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 10)),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            sliver: SliverList(
+            )
+          else
+            SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) => ChangeNotifierProvider.value(
-                  value: beritaRekomendasiList[index],
-                  child: BeritaPopulerItem(),
+                  value: beritaTeratas[index],
+                  child: BeritaTerkiniItem(),
                 ),
-                childCount: beritaRekomendasiList.length,
+                childCount: 1,
               ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () async {
-                    final viewModel = BeritaSelengkapnyaViewModel();
 
-                    if (!mounted) return;
+          SliverToBoxAdapter(child: SizedBox(height: 20)),
 
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) {
-                        return ChangeNotifierProvider<
-                            BeritaSelengkapnyaViewModel>.value(
-                          value: viewModel,
-                          child: const BeritaSelengkapnya(
-                            kategori: KategoriBerita.rekomendasi,
-                          ),
-                        );
-                      }),
-                    );
-                    Future.microtask(() async {
-                      await viewModel.setKategori(KategoriBerita.rekomendasi);
-                    });
-                  },
-                  child: const Text(
-                    "Selengkapnya >>",
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-
-        SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-        if (_isLoading['rekomendasiLain']!)
-          const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()))
-        else ...[
-          SliverToBoxAdapter(
-            child: Container(
-              color: Colors.grey.withAlpha(50),
-              child: Padding(
+          if (_isLoading['terbaru']!)
+            const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator()))
+          else
+            SliverToBoxAdapter(
+              child: Container(
+                color: Colors.grey.withAlpha(50),
                 padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    titleHeader("Rekomendasi Lain", "Mungkin anda suka"),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    titleHeader("Terbaru", "Teratas untuk anda"),
+                    const SizedBox(height: 20),
                     SizedBox(
-                      height: 150,
+                      height: 200,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: beritaRekomendasiLainList.length,
+                        itemCount: beritaTerbaruList.length,
                         itemBuilder: (context, index) {
                           return ChangeNotifierProvider.value(
-                            value: beritaRekomendasiLainList[index],
-                            child: BeritaRekomandasiLainItem(),
+                            value: beritaTerbaruList[index],
+                            child: BeritaTerbaruItem(),
                           );
                         },
                       ),
@@ -337,21 +166,18 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                           onPressed: () async {
                             final viewModel = BeritaSelengkapnyaViewModel();
                             if (!mounted) return;
-
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) {
-                                return ChangeNotifierProvider<
-                                    BeritaSelengkapnyaViewModel>.value(
-                                  value: viewModel,
-                                  child: const BeritaSelengkapnya(
-                                    kategori: KategoriBerita.rekomendasiLain,
-                                  ),
-                                );
-                              }),
-                            );
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  ChangeNotifierProvider.value(
+                                value: viewModel,
+                                child: const BeritaSelengkapnya(
+                                  kategori: KategoriBerita.terbaru,
+                                ),
+                              ),
+                            ));
                             Future.microtask(() async {
                               await viewModel
-                                  .setKategori(KategoriBerita.rekomendasiLain);
+                                  .setKategori(KategoriBerita.terbaru);
                             });
                           },
                           child: const Text(
@@ -361,16 +187,195 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                               fontSize: 14,
                             ),
                           ),
-                        ),
+                        )
                       ],
-                    ),
+                    )
                   ],
                 ),
               ),
             ),
-          ),
+
+          SliverToBoxAdapter(child: SizedBox(height: 20)),
+
+          if (_isLoading['populer']!)
+            const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator()))
+          else ...[
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              sliver: SliverToBoxAdapter(
+                child: titleHeader("Terpopuler", "5 Teratas untuk anda"),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 10)),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 5),
+                        child: Text(
+                          "${index + 1}",
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ChangeNotifierProvider.value(
+                          value: beritaPopulerList[index],
+                          child: BeritaPopulerItem(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  childCount: beritaPopulerList.length,
+                ),
+              ),
+            ),
+          ],
+
+          SliverToBoxAdapter(child: SizedBox(height: 20)),
+
+          if (_isLoading['rekomendasi']!)
+            const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator()))
+          else ...[
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              sliver: SliverToBoxAdapter(
+                child: titleHeader("Dari Kami", "Mungkin anda suka"),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 10)),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => ChangeNotifierProvider.value(
+                    value: beritaRekomendasiList[index],
+                    child: BeritaPopulerItem(),
+                  ),
+                  childCount: beritaRekomendasiList.length,
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () async {
+                      final viewModel = BeritaSelengkapnyaViewModel();
+
+                      if (!mounted) return;
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) {
+                          return ChangeNotifierProvider<
+                              BeritaSelengkapnyaViewModel>.value(
+                            value: viewModel,
+                            child: const BeritaSelengkapnya(
+                              kategori: KategoriBerita.rekomendasi,
+                            ),
+                          );
+                        }),
+                      );
+                      Future.microtask(() async {
+                        await viewModel.setKategori(KategoriBerita.rekomendasi);
+                      });
+                    },
+                    child: const Text(
+                      "Selengkapnya >>",
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
+          SliverToBoxAdapter(child: SizedBox(height: 20)),
+
+          if (_isLoading['rekomendasiLain']!)
+            const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator()))
+          else ...[
+            SliverToBoxAdapter(
+              child: Container(
+                color: Colors.grey.withAlpha(50),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      titleHeader("Rekomendasi Lain", "Mungkin anda suka"),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        height: 150,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: beritaRekomendasiLainList.length,
+                          itemBuilder: (context, index) {
+                            return ChangeNotifierProvider.value(
+                              value: beritaRekomendasiLainList[index],
+                              child: BeritaRekomandasiLainItem(),
+                            );
+                          },
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () async {
+                              final viewModel = BeritaSelengkapnyaViewModel();
+                              if (!mounted) return;
+
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) {
+                                  return ChangeNotifierProvider<
+                                      BeritaSelengkapnyaViewModel>.value(
+                                    value: viewModel,
+                                    child: const BeritaSelengkapnya(
+                                      kategori: KategoriBerita.rekomendasiLain,
+                                    ),
+                                  );
+                                }),
+                              );
+                              Future.microtask(() async {
+                                await viewModel.setKategori(
+                                    KategoriBerita.rekomendasiLain);
+                              });
+                            },
+                            child: const Text(
+                              "Selengkapnya >>",
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }

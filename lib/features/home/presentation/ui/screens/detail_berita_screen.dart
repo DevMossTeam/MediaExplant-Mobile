@@ -1,14 +1,19 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_detail_berita_item.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
-import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_detail_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terkait_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/berita_selengkapnya.dart';
@@ -18,12 +23,15 @@ import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:mediaexplant/features/report/report_bottom_sheet.dart';
-import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DetailBeritaScreen extends StatefulWidget {
-  const DetailBeritaScreen({super.key});
+  final String idBerita;
+  final String kategori;
+  const DetailBeritaScreen({
+    Key? key,
+    required this.idBerita,
+    required this.kategori,
+  }) : super(key: key);
 
   @override
   State<DetailBeritaScreen> createState() => _DetailBeritaScreenState();
@@ -37,14 +45,17 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
     super.didChangeDependencies();
 
     if (_isInit) {
-      final berita = Provider.of<Berita>(context, listen: false);
+      final beritaDetailVM =
+          Provider.of<BeritaDetailViewmodel>(context, listen: false);
+
+      beritaDetailVM.refresh(userLogin, widget.idBerita);
 
       final beritaTerkaitViewmodel =
           Provider.of<BeritaTerkaitViewmodel>(context, listen: false);
       beritaTerkaitViewmodel.refresh(
         userLogin,
-        berita.kategori,
-        berita.idBerita,
+        widget.kategori,
+        widget.idBerita,
       );
 
       final beritaTerbaruViewmodel =
@@ -68,16 +79,27 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final beritaTerkaitViewmodel = Provider.of<BeritaTerkaitViewmodel>(context);
-    final beritaTerkaitList = beritaTerkaitViewmodel.allBerita;
+    final beritaDetailVM = Provider.of<BeritaDetailViewmodel>(context);
+    final berita = beritaDetailVM.berita;
 
-    final beritaTerbaruViewmodel = Provider.of<BeritaTerbaruViewmodel>(context);
-    final beritaTerbaruList = beritaTerbaruViewmodel.allBerita;
+    final beritaTerkaitList =
+        Provider.of<BeritaTerkaitViewmodel>(context).allBerita;
+
+    final beritaTerbaruList =
+        Provider.of<BeritaTerbaruViewmodel>(context).allBerita;
 
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
     final reaksiProvider = Provider.of<ReaksiProvider>(context, listen: false);
-    final berita = Provider.of<Berita>(context);
+
+    if (berita == null) {
+      return const Scaffold(
+        body: Center(
+          child: ShimmerDetailBeritaItem(),
+        ),
+      );
+    }
+
     String kontenTanpaGambar = removeFirstImageFromKonten(berita.kontenBerita);
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -96,8 +118,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                   fit: StackFit.expand,
                   children: [
                     CachedNetworkImage(
-                      imageUrl: berita.gambar ??
-                          berita.firstImageFromKonten ??
+                      imageUrl: berita.firstImageFromKonten ??
                           'https://via.placeholder.com/150',
                       fit: BoxFit.cover,
                       placeholder: (context, url) => const Center(
@@ -266,7 +287,11 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                               margin: Margins.symmetric(horizontal: 0),
                             ),
                           },
-                          onLinkTap: (url, _, __, ) {
+                          onLinkTap: (
+                            url,
+                            _,
+                            __,
+                          ) {
                             if (url != null) {
                               launchUrl(Uri.parse(url),
                                   mode: LaunchMode.externalApplication);

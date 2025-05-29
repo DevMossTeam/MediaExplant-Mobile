@@ -27,8 +27,7 @@ class BeritaRekomendasiUntukAndaItem extends StatelessWidget {
             child: AspectRatio(
               aspectRatio: 16 / 9, // Sesuai kebutuhan
               child: CachedNetworkImage(
-                imageUrl: berita.gambar ??
-                    berita.firstImageFromKonten ??
+                imageUrl: berita.firstImageFromKonten ??
                     'https://via.placeholder.com/150',
                 fit: BoxFit.cover,
                 placeholder: (context, url) => const Center(
@@ -92,7 +91,10 @@ class BeritaRekomendasiUntukAndaItem extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => ChangeNotifierProvider.value(
                           value: berita,
-                          child: DetailBeritaScreen(),
+                          child: DetailBeritaScreen(
+                            idBerita: berita.idBerita,
+                            kategori: berita.kategori,
+                          ),
                         ),
                       ),
                       (route) => route.isFirst,

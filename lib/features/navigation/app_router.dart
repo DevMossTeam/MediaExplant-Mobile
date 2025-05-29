@@ -41,14 +41,14 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const WelcomeScreen());
       case '/home':
         return MaterialPageRoute(builder: (_) => const MainNavigationScreen());
-      case '/detail_article':
-        if (settings.arguments is Berita) {
-          final berita = settings.arguments as Berita;
-          return MaterialPageRoute(
-            builder: (_) => DetailBeritaScreen(),
-          );
-        }
-        return _errorRoute(settings.name);
+      // case '/detail_article':
+      //   if (settings.arguments is Berita) {
+      //     final berita = settings.arguments as Berita;
+      //     return MaterialPageRoute(
+      //       builder: (_) => DetailBeritaScreen(),
+      //     );
+      //   }
+      //   return _errorRoute(settings.name);
       // Halaman Settings dan turunannya dengan transisi slide left.
       case '/settings':
         return _slideLeftRoute(const SettingsScreen());

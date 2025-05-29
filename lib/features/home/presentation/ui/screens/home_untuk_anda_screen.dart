@@ -4,8 +4,8 @@ import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/desain_grafis_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/fotografi_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_terbaru_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomendasi_untuk_anda_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_teratas_untuk_anda.dart';
@@ -54,8 +54,8 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
   Future<void> _fetchKontenSecaraBerurutan() async {
     final beritaVM =
         Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
-    final puisiVM = Provider.of<PuisiTerbaruViewmodel>(context, listen: false);
-    final syairVM = Provider.of<SyairTerbaruViewmodel>(context, listen: false);
+    final puisiVM = Provider.of<PuisiViewmodel>(context, listen: false);
+    final syairVM = Provider.of<SyairViewmodel>(context, listen: false);
     final desainGrafisVM =
         Provider.of<DesainGrafisViewmodel>(context, listen: false);
     final fotografiVM = Provider.of<FotografiViewmodel>(context, listen: false);
@@ -74,7 +74,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     if (puisiVM.allPuisi.isEmpty) {
       setState(() => _isLoading['puisi'] = true);
       try {
-        await puisiVM.fetchPuisiTerbaru(userLogin);
+        await puisiVM.fetchPuisi(userLogin);
       } catch (e) {
         debugPrint("Gagal fetch puisi: $e");
       } finally {
@@ -84,7 +84,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     if (syairVM.allSyair.isEmpty) {
       setState(() => _isLoading['syair'] = true);
       try {
-        await syairVM.fetchSyairTerbaru(userLogin);
+        await syairVM.fetchSyair(userLogin);
       } catch (e) {
         debugPrint("Gagal fetch syair: $e");
       } finally {
@@ -139,8 +139,8 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     final beritaList = Provider.of<BeritaTerbaruViewmodel>(context).allBerita;
     final majalahList = Provider.of<ProdukViewModel>(context).allMajalah;
     final buletinList = Provider.of<ProdukViewModel>(context).allBuletin;
-    final puisiList = Provider.of<PuisiTerbaruViewmodel>(context).allPuisi;
-    final syairList = Provider.of<SyairTerbaruViewmodel>(context).allSyair;
+    final puisiList = Provider.of<PuisiViewmodel>(context).allPuisi;
+    final syairList = Provider.of<SyairViewmodel>(context).allSyair;
     final desainGrafisList =
         Provider.of<DesainGrafisViewmodel>(context).allDesainGrafis;
     final fotografiList = Provider.of<FotografiViewmodel>(context).allFotografi;

@@ -1,19 +1,26 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_detail_viewmodel.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
-import 'package:mediaexplant/features/home/models/produk/produk.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DetailProdukScreen extends StatefulWidget {
-  const DetailProdukScreen({super.key});
+  final String idProduk;
+  final String kategori;
+
+  const DetailProdukScreen({
+    Key? key,
+    required this.idProduk,
+    required this.kategori,
+  }) : super(key: key);
 
   @override
   State<DetailProdukScreen> createState() => _DetailProdukScreenState();
@@ -25,15 +32,38 @@ String cleanDeskripsi(String html) {
 }
 
 class _DetailProdukScreenState extends State<DetailProdukScreen> {
+  bool _isInit = true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_isInit) {
+      final produkDetailVM =
+          Provider.of<ProdukDetailViewmodel>(context, listen: false);
+
+      produkDetailVM.refresh(userLogin, widget.idProduk);
+
+      _isInit = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
     final reaksiProvider = Provider.of<ReaksiProvider>(context, listen: false);
-    // final berita = Provider.of<Berita>(context);
 
-    final produk = Provider.of<Produk>(context);
-    final produkVW = Provider.of<ProdukViewModel>(context, listen: false);
+    // Ambil data DetailProduk dari ProdukDetailViewmodel
+    final produkDetailVM = Provider.of<ProdukDetailViewmodel>(context);
+    final produk = produkDetailVM.detailProduk;
+
+    // Jika produk belum ada (data masih loading), tampilkan loading spinner
+    if (produk == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
         backgroundColor: AppColors.background,
@@ -74,10 +104,12 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                       child: SizedBox(
                         height: 190,
                         width: 120,
-                        child: produk.thumbnail == null
-                            ? const Center(child: CircularProgressIndicator())
-                            : Image.memory(produk.thumbnail!,
-                                fit: BoxFit.cover),
+                        child: produk.cover.isNotEmpty
+                            ? Image.memory(
+                                produk.gambar(),
+                                fit: BoxFit.cover,
+                              )
+                            : const Center(child: CircularProgressIndicator()),
                       ),
                     ),
                     Expanded(

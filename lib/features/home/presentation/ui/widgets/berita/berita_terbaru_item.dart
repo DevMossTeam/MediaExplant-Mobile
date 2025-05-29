@@ -5,7 +5,6 @@ import 'package:mediaexplant/core/utils/time_ago_util.dart';
 import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_berita_screen.dart';
 
-
 import 'package:provider/provider.dart';
 
 class BeritaTerbaruItem extends StatelessWidget {
@@ -29,8 +28,7 @@ class BeritaTerbaruItem extends StatelessWidget {
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
                   child: CachedNetworkImage(
-                    imageUrl: berita.gambar ??
-                        berita.firstImageFromKonten ??
+                    imageUrl: berita.firstImageFromKonten ??
                         'https://via.placeholder.com/150',
                     fit: BoxFit.cover,
                     placeholder: (context, url) => const Center(
@@ -79,7 +77,10 @@ class BeritaTerbaruItem extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => ChangeNotifierProvider.value(
                           value: berita,
-                          child: DetailBeritaScreen(),
+                          child: DetailBeritaScreen(
+                            idBerita: berita.idBerita,
+                            kategori: berita.kategori,
+                          ),
                         ),
                       ),
                       (route) => route.isFirst,

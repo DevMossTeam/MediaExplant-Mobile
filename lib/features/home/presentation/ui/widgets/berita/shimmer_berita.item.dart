@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ShimmerBeritaItem extends StatelessWidget {
@@ -15,7 +16,7 @@ class ShimmerBeritaItem extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.background,
           borderRadius: radius ?? BorderRadius.circular(5),
         ),
       ),

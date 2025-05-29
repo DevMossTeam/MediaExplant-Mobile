@@ -31,8 +31,7 @@ class BeritaPopulerItem extends StatelessWidget {
                 child: AspectRatio(
                   aspectRatio: 16 / 8,
                   child: CachedNetworkImage(
-                    imageUrl: berita.gambar ??
-                        berita.firstImageFromKonten ??
+                    imageUrl: berita.firstImageFromKonten ??
                         'https://via.placeholder.com/150',
                     fit: BoxFit.cover,
                     placeholder: (context, url) => const Center(
@@ -103,7 +102,10 @@ class BeritaPopulerItem extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => ChangeNotifierProvider.value(
                           value: berita,
-                          child: DetailBeritaScreen(),
+                          child: DetailBeritaScreen(
+                            idBerita: berita.idBerita,
+                            kategori: berita.kategori,
+                          ),
                         ),
                       ),
                       (route) => route.isFirst,

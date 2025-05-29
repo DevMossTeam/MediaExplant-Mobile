@@ -32,8 +32,7 @@ class BeritaTeratasUntukAnda extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 5 / 3, // Misalnya 4:3, bisa disesuaikan
                     child: CachedNetworkImage(
-                      imageUrl: berita.gambar ??
-                          berita.firstImageFromKonten ??
+                      imageUrl: berita.firstImageFromKonten ??
                           'https://via.placeholder.com/150',
                       fit: BoxFit.cover,
                       placeholder: (context, url) => const Center(
@@ -103,7 +102,10 @@ class BeritaTeratasUntukAnda extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => ChangeNotifierProvider.value(
                             value: berita,
-                            child: DetailBeritaScreen(),
+                            child: DetailBeritaScreen(
+                              idBerita: berita.idBerita,
+                              kategori: berita.kategori,
+                            ),
                           ),
                         ),
                         (route) => route.isFirst,

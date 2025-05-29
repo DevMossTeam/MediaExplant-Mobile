@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/desain_grafis_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/fotografi_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_terbaru_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/desain_grafis_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/fotografi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/puisi_item.dart';
@@ -36,9 +36,9 @@ class _HomeKaryaScreenState extends State<HomeKaryaScreen>
 
     if (_isInit) {
       final puisiVM =
-          Provider.of<PuisiTerbaruViewmodel>(context, listen: false);
+          Provider.of<PuisiViewmodel>(context, listen: false);
       final syairVM =
-          Provider.of<SyairTerbaruViewmodel>(context, listen: false);
+          Provider.of<SyairViewmodel>(context, listen: false);
       final desainGrafisVM =
           Provider.of<DesainGrafisViewmodel>(context, listen: false);
       final fotografiVM =
@@ -51,8 +51,8 @@ class _HomeKaryaScreenState extends State<HomeKaryaScreen>
       });
 
       Future.wait([
-        puisiVM.fetchPuisiTerbaru(userLogin),
-        syairVM.fetchSyairTerbaru(userLogin),
+        puisiVM.fetchPuisi(userLogin),
+        syairVM.fetchSyair(userLogin),
         desainGrafisVM.fetchDesainGrafis(userLogin),
         fotografiVM.fetchFotografi(userLogin),
       ]).then((_) {
@@ -78,8 +78,8 @@ class _HomeKaryaScreenState extends State<HomeKaryaScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final puisiList = Provider.of<PuisiTerbaruViewmodel>(context).allPuisi;
-    final syairList = Provider.of<SyairTerbaruViewmodel>(context).allSyair;
+    final puisiList = Provider.of<PuisiViewmodel>(context).allPuisi;
+    final syairList = Provider.of<SyairViewmodel>(context).allSyair;
     final desainGrafisList =
         Provider.of<DesainGrafisViewmodel>(context).allDesainGrafis;
     final fotografiList = Provider.of<FotografiViewmodel>(context).allFotografi;

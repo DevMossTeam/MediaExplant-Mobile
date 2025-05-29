@@ -4,6 +4,9 @@ import 'package:mediaexplant/core/utils/time_ago_util.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/repository/karya/karya_repository.dart';
+import 'package:mediaexplant/features/home/presentation/logic/repository/produkRepo/produk_repository.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_detail_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_populer_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_dari_kami_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_rekomendasi_lain_view_model.dart';
@@ -12,8 +15,9 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/b
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terkait_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/desain_grafis_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/fotografi_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_terbaru_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_terbaru_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_detail_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/report/report_repository.dart';
 import 'package:mediaexplant/features/report/report_viewmodel.dart';
@@ -85,6 +89,7 @@ Future<void> main() async {
         ),
 
         // Provider untuk Berita
+        ChangeNotifierProvider(create: (_) => BeritaDetailViewmodel()),
         ChangeNotifierProvider(
           create: (_) => BeritaTerbaruViewmodel(),
         ),
@@ -105,22 +110,23 @@ Future<void> main() async {
         ),
 
         // Provider produk
+        ChangeNotifierProvider(create: (_) => ProdukDetailViewmodel()),
         ChangeNotifierProvider(
-          create: (_) => ProdukViewModel(),
+          create: (_) => ProdukViewModel(ProdukRepository()),
         ),
 
         // provider karya
         ChangeNotifierProvider(
-          create: (_) => PuisiTerbaruViewmodel(),
+          create: (_) => PuisiViewmodel(KaryaRepository()),
         ),
         ChangeNotifierProvider(
-          create: (_) => SyairTerbaruViewmodel(),
+          create: (_) => SyairViewmodel(KaryaRepository()),
         ),
         ChangeNotifierProvider(
-          create: (_) => DesainGrafisViewmodel(),
+          create: (_) => FotografiViewmodel(KaryaRepository()),
         ),
         ChangeNotifierProvider(
-          create: (_) => FotografiViewmodel(),
+          create: (_) => DesainGrafisViewmodel(KaryaRepository()),
         ),
 
         // Provider untuk Bookmark

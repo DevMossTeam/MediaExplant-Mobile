@@ -1,35 +1,24 @@
-import 'dart:convert';
-
-import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
-import 'package:mediaexplant/core/network/api_client.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
+import 'package:mediaexplant/features/home/presentation/logic/repository/karya/karya_repository.dart';
+
 
 class DesainGrafisViewmodel with ChangeNotifier {
+  final KaryaRepository _repository;
   List<Karya> _allDesainGrafis = [];
   bool _isLoaded = false;
+
+  DesainGrafisViewmodel(this._repository);
 
   List<Karya> get allDesainGrafis => _allDesainGrafis;
   bool get isLoaded => _isLoaded;
 
   Future<void> fetchDesainGrafis(String? userId) async {
     if (_isLoaded) return;
-
-    final url =
-        Uri.parse("${ApiClient.baseUrl}/desain-grafis/terbaru?user_id=$userId");
-
-    try {
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        _allDesainGrafis = data.map((item) => Karya.fromJson(item)).toList();
-        _isLoaded = true;
-        notifyListeners();
-      }
-    } catch (error) {
-      rethrow;
-    }
+    _allDesainGrafis =
+        await _repository.fetchKarya("desain-grafis/terbaru", userId);
+    _isLoaded = true;
+    notifyListeners();
   }
 
   void resetCache() {

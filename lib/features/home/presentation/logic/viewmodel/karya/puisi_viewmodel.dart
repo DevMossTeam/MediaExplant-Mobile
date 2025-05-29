@@ -2,26 +2,27 @@ import 'package:flutter/foundation.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/karya/karya_repository.dart';
 
-class FotografiViewmodel with ChangeNotifier {
+
+class PuisiViewmodel with ChangeNotifier {
   final KaryaRepository _repository;
-  List<Karya> _allFotografi = [];
+  List<Karya> _allPuisi = [];
   bool _isLoaded = false;
 
-  FotografiViewmodel(this._repository);
+  PuisiViewmodel(this._repository);
 
-  List<Karya> get allFotografi => _allFotografi;
+  List<Karya> get allPuisi => _allPuisi;
   bool get isLoaded => _isLoaded;
 
-  Future<void> fetchFotografi(String? userId) async {
+  Future<void> fetchPuisi(String? userId) async {
     if (_isLoaded) return;
-    _allFotografi = await _repository.fetchKarya("fotografi/terbaru", userId);
+    _allPuisi = await _repository.fetchKarya("puisi/terbaru", userId);
     _isLoaded = true;
     notifyListeners();
   }
 
   void resetCache() {
     _isLoaded = false;
-    _allFotografi = [];
+    _allPuisi = [];
     notifyListeners();
   }
 }
