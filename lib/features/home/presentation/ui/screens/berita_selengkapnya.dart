@@ -3,6 +3,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
 
 import 'package:provider/provider.dart';
@@ -60,7 +61,11 @@ class _BeritaSelengkapnyaState extends State<BeritaSelengkapnya> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Semua Berita")),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text("Semua Berita"),
+        backgroundColor: AppColors.background,
+      ),
       body: Consumer<BeritaSelengkapnyaViewModel>(
         builder: (context, vm, _) {
           return Padding(
