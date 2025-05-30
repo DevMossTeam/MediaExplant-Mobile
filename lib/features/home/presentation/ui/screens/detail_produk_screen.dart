@@ -186,12 +186,14 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                               Navigator.pushNamed(context, '/login');
                               return;
                             }
-                            await reaksiProvider.toggleReaksi(Reaksi(
-                              userId: userLogin,
-                              itemId: produk.idproduk,
-                              jenisReaksi: "Suka",
-                              reaksiType: "Produk",
-                            ));
+                            await reaksiProvider.toggleReaksi(
+                                context,
+                                Reaksi(
+                                  userId: userLogin,
+                                  itemId: produk.idproduk,
+                                  jenisReaksi: "Suka",
+                                  reaksiType: "Produk",
+                                ));
                             produk.statusLike();
                           },
                           icon: Icon(
@@ -220,12 +222,14 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                               Navigator.pushNamed(context, '/login');
                               return;
                             }
-                            await reaksiProvider.toggleReaksi(Reaksi(
-                              userId: userLogin,
-                              itemId: produk.idproduk,
-                              jenisReaksi: "Tidak Suka",
-                              reaksiType: "Produk",
-                            ));
+                            await reaksiProvider.toggleReaksi(
+                                context,
+                                Reaksi(
+                                  userId: userLogin,
+                                  itemId: produk.idproduk,
+                                  jenisReaksi: "Tidak Suka",
+                                  reaksiType: "Produk",
+                                ));
                             produk.statusDislike();
                           },
                           icon: Icon(
@@ -266,6 +270,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                         return IconButton(
                           onPressed: () async {
                             await bookmarkProvider.toggleBookmark(
+                              context,
                               Bookmark(
                                 userId: userLogin,
                                 itemId: produk.idproduk,

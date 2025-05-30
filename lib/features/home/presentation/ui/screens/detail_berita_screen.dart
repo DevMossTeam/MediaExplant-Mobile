@@ -175,6 +175,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             return;
                           }
                           await bookmarkProvider.toggleBookmark(
+                            context,
                             Bookmark(
                               userId: userLogin,
                               itemId: berita.idBerita,
@@ -341,12 +342,14 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                                       Navigator.pushNamed(context, '/login');
                                       return;
                                     }
-                                    await reaksiProvider.toggleReaksi(Reaksi(
-                                      userId: userLogin,
-                                      itemId: berita.idBerita,
-                                      jenisReaksi: "Suka",
-                                      reaksiType: "Berita",
-                                    ));
+                                    await reaksiProvider.toggleReaksi(
+                                        context,
+                                        Reaksi(
+                                          userId: userLogin,
+                                          itemId: berita.idBerita,
+                                          jenisReaksi: "Suka",
+                                          reaksiType: "Berita",
+                                        ));
                                     berita.statusLike();
                                   },
                                   icon: Icon(
@@ -380,12 +383,14 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                                       Navigator.pushNamed(context, '/login');
                                       return;
                                     }
-                                    await reaksiProvider.toggleReaksi(Reaksi(
-                                      userId: userLogin,
-                                      itemId: berita.idBerita,
-                                      jenisReaksi: "Tidak Suka",
-                                      reaksiType: "Berita",
-                                    ));
+                                    await reaksiProvider.toggleReaksi(
+                                        context,
+                                        Reaksi(
+                                          userId: userLogin,
+                                          itemId: berita.idBerita,
+                                          jenisReaksi: "Tidak Suka",
+                                          reaksiType: "Berita",
+                                        ));
                                     berita.statusDislike();
                                   },
                                   icon: Icon(

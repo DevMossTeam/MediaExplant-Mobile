@@ -88,18 +88,21 @@ class FotografiItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 child: InkWell(
                   onTap: () {
-                  Future.delayed(const Duration(milliseconds: 200), () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                        builder: (context) => ChangeNotifierProvider.value(
-                          value: karya,
-                          child: DetailKaryaScreen(),
+                    Future.delayed(const Duration(milliseconds: 200), () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider.value(
+                            value: karya,
+                            child: DetailKaryaScreen(
+                              idKarya: karya.idKarya,
+                              kategori: karya.kategori,
+                            ),
+                          ),
                         ),
-                      ),
-                      (route) => route.isFirst,
-                    );
-                  });
-                },
+                        (route) => route.isFirst,
+                      );
+                    });
+                  },
                   splashColor: Colors.black.withAlpha(50),
                   highlightColor: Colors.white.withAlpha(100),
                   borderRadius: BorderRadius.circular(5),

@@ -1,6 +1,5 @@
-
 import 'dart:convert';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart'; // Ganti dari 'widgets.dart'
 import 'package:http/http.dart' as http;
 import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
@@ -11,7 +10,7 @@ class BookmarkProvider with ChangeNotifier {
   List<Bookmark> get bookmarks => _bookmarks;
 
   // Toggle bookmark
-  Future<void> toggleBookmark(Bookmark request) async {
+  Future<void> toggleBookmark(BuildContext context, Bookmark request) async {
     final url = Uri.parse("${ApiClient.baseUrl}/bookmark/toggle");
 
     try {
@@ -27,8 +26,24 @@ class BookmarkProvider with ChangeNotifier {
         if (responseData['status'] == 'added') {
           final newBookmark = Bookmark.fromJson(responseData['data']);
           _bookmarks.add(newBookmark);
+
+          // Show snackbar for added
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Berhasil menambahkan ke bookmark'),
+              duration: Duration(seconds: 2),
+            ),
+          );
         } else if (responseData['status'] == 'removed') {
           _bookmarks.removeWhere((b) => b.itemId == request.itemId);
+
+          // Show snackbar for removed
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Berhasil menghapus dari bookmark'),
+              duration: Duration(seconds: 2),
+            ),
+          );
         }
 
         notifyListeners();
@@ -37,6 +52,14 @@ class BookmarkProvider with ChangeNotifier {
       }
     } catch (error) {
       print('Error toggling bookmark: $error');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Terjadi kesalahan saat toggle bookmark'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
       rethrow;
     }
   }

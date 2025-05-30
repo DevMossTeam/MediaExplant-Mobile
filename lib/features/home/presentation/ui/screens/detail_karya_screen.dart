@@ -1,38 +1,56 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:mediaexplant/features/home/models/karya/detail_karya.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/karya_detail_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_detail_berita_item.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/bookmark/models/bookmark.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
-import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/reaksi/models/reaksi.dart';
 import 'package:mediaexplant/features/reaksi/provider/Reaksi_provider.dart';
 import 'package:mediaexplant/features/report/report_bottom_sheet.dart';
-import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 
 class DetailKaryaScreen extends StatefulWidget {
-  const DetailKaryaScreen({super.key});
+  final String idKarya;
+  final String kategori;
+
+  const DetailKaryaScreen({
+    Key? key,
+    required this.idKarya,
+    required this.kategori,
+  }) : super(key: key);
 
   @override
   State<DetailKaryaScreen> createState() => _DetailKaryaScreenState();
 }
 
+String cleanDeskripsi(String html) {
+  final document = html_parser.parse(html);
+  return document.body?.text.trim() ?? '';
+}
+
 class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
+  bool _isInit = true;
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    // provider
-    // view model
-  }
+    if (_isInit) {
+      final karyaDetailVM =
+          Provider.of<KaryaDetailViewmodel>(context, listen: false);
 
-  String cleanDeskripsi(String html) {
-    final document = html_parser.parse(html);
-    return document.body?.text.trim() ?? '';
+      karyaDetailVM.refresh(userLogin, widget.idKarya);
+
+      _isInit = false;
+    }
   }
 
   @override
@@ -40,51 +58,49 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
     final reaksiProvider = Provider.of<ReaksiProvider>(context, listen: false);
-    final karya = Provider.of<Karya>(context);
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 250, // Tinggi awal sebelum di-scroll
-            collapsedHeight: 60, // Tinggi minimum saat di-scroll
-            floating: false,
-            pinned: true, // Agar tetap terlihat saat di-scroll
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            flexibleSpace: LayoutBuilder(
-              builder: (context, constraints) {
-                return Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    karya.media.isNotEmpty
-                        ? Image.memory(
-                            karya.gambar(),
-                            fit: BoxFit.cover,
-                          )
-                        : const Center(child: CircularProgressIndicator()),
-                  ],
-                );
-              },
-            ),
-            leading: Container(
-              margin: const EdgeInsets.only(left: 15),
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.black.withAlpha(100),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () {
-                  Navigator.pop(context);
+
+    // Ambil data Detailkarya dari karyaDetailViewmodel
+    final karyaDetailVM = Provider.of<KaryaDetailViewmodel>(context);
+    final karya = karyaDetailVM.detailKarya;
+
+    // Jika karya belum ada (data masih loading), tampilkan loading spinner
+    if (karya == null) {
+      return const Scaffold(
+        body: Center(
+          child: ShimmerDetailBeritaItem(),
+        ),
+      );
+    }
+    return ChangeNotifierProvider.value(
+      value: karya,
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 250, // Tinggi awal sebelum di-scroll
+              collapsedHeight: 60, // Tinggi minimum saat di-scroll
+              floating: false,
+              pinned: true, // Agar tetap terlihat saat di-scroll
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              flexibleSpace: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      karya.media.isNotEmpty
+                          ? Image.memory(
+                              karya.gambar(),
+                              fit: BoxFit.cover,
+                            )
+                          : const Center(child: CircularProgressIndicator()),
+                    ],
+                  );
                 },
               ),
-            ),
-            actions: [
-              Container(
-                margin: const EdgeInsets.only(right: 20),
+              leading: Container(
+                margin: const EdgeInsets.only(left: 15),
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
@@ -92,432 +108,476 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
-                  onPressed: () async {
-                    await bookmarkProvider.toggleBookmark(
-                      Bookmark(
-                        userId: userLogin,
-                        itemId: karya.idKarya,
-                        bookmarkType: "Karya",
-                      ),
-                    );
-
-                    karya.statusBookmark();
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.pop(context);
                   },
-                  icon: Icon(
-                    karya.isBookmark ? Icons.bookmark : Icons.bookmark_outline,
-                    color: Colors.white,
-                  ),
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.only(right: 20),
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(100),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  onPressed: () async {
-                    showModalBottomSheet(
-                      backgroundColor: AppColors.background,
-                      context: context,
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(20))),
-                      builder: (context) => ReportBottomSheet(
-                        itemId: karya.idKarya,
-                        pesanType: "Karya",
-                      ),
-                    );
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/images/ic_report.svg',
-                    width: 24,
-                    height: 24,
-                    fit: BoxFit.contain,
+              actions: [
+                Container(
+                  margin: const EdgeInsets.only(right: 20),
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(100),
+                    shape: BoxShape.circle,
                   ),
-                ),
-              ),
-            ],
-          ),
-
-          // Konten Berita
-          SliverList(
-            delegate: SliverChildListDelegate([
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Image.asset(
-                              'assets/images/app_logo.png',
-                              height: 30,
-                              width: 30,
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              karya.kategoriFormatted,
-                              style: const TextStyle(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          karya.judul,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                  child: Consumer<DetailKarya>(builder: (context, karya, _) {
+                    return IconButton(
+                      onPressed: () async {
+                        await bookmarkProvider.toggleBookmark(
+                          context,
+                          Bookmark(
+                            userId: userLogin,
+                            itemId: karya.idKarya,
+                            bookmarkType: "Karya",
                           ),
+                        );
+
+                        karya.statusBookmark();
+                      },
+                      icon: Icon(
+                        karya.isBookmark
+                            ? Icons.bookmark
+                            : Icons.bookmark_outline,
+                        color: Colors.white,
+                      ),
+                    );
+                  }),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(right: 20),
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(100),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: () async {
+                      showModalBottomSheet(
+                        backgroundColor: AppColors.background,
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(20))),
+                        builder: (context) => ReportBottomSheet(
+                          itemId: karya.idKarya,
+                          pesanType: "Karya",
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          'Oleh: ${karya.penulis}  |  ${karya.release}',
-                          style: const TextStyle(color: Colors.grey),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                      );
+                    },
+                    icon: SvgPicture.asset(
+                      'assets/images/ic_report.svg',
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.contain,
                     ),
                   ),
-                  const Divider(color: Colors.grey, thickness: 0.5),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          cleanDeskripsi(karya.deskripsi),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
+                ),
+              ],
+            ),
 
-                        if (karya.kategori != 'desain_grafis' &&
-                            karya.kategori != 'fotografi') ...[
-                          Center(
-                            child: Text(
-                              karya.judul,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
+            // Konten Berita
+            SliverList(
+              delegate: SliverChildListDelegate([
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Image.asset(
+                                'assets/images/app_logo.png',
+                                height: 30,
+                                width: 30,
                               ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                karya.kategoriFormatted,
+                                style: const TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            karya.judul,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
-                          Center(
-                            child: Text(
-                              "(Oleh ${karya.penulis})",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Oleh: ${karya.penulis}  |  ${karya.release}',
+                            style: const TextStyle(color: Colors.grey),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
-
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Text(
-                          karya.kontenKarya,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        const Text(
-                          "Berikan Tanggapanmu :",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-
-                        // Tombol interaksi
-                        Row(
-                          children: [
-                            // Tombol Like
-                            IconButton(
-                              onPressed: () async {
-                                if (userLogin == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Silakan login terlebih dahulu untuk menyimpan reaksi.'),
-                                    ),
-                                  );
-                                  Navigator.pushNamed(context, '/login');
-                                  return;
-                                }
-                                await reaksiProvider.toggleReaksi(Reaksi(
-                                  userId: userLogin,
-                                  itemId: karya.idKarya,
-                                  jenisReaksi: "Suka",
-                                  reaksiType: "Karya",
-                                ));
-                                karya.statusLike();
-                              },
-                              icon: Icon(
-                                Icons.thumb_up,
-                                color: karya.isLike ? Colors.blue : Colors.grey,
-                              ),
-                            ),
-                            Text(
-                              '${karya.jumlahLike}',
-                              style: const TextStyle(color: Colors.blue),
-                            ),
-                            const SizedBox(width: 10),
-                            IconButton(
-                              onPressed: () async {
-                                if (userLogin == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Silakan login terlebih dahulu untuk menyimpan reaksi.'),
-                                    ),
-                                  );
-                                  Navigator.pushNamed(context, '/login');
-                                  return;
-                                }
-                                await reaksiProvider.toggleReaksi(Reaksi(
-                                  userId: userLogin,
-                                  itemId: karya.idKarya,
-                                  jenisReaksi: "Tidak Suka",
-                                  reaksiType: "Karya",
-                                ));
-                                karya.statusDislike();
-                              },
-                              icon: Icon(
-                                Icons.thumb_down,
-                                color:
-                                    karya.isDislike ? Colors.red : Colors.grey,
-                              ),
-                            ),
-
-                            Text(
-                              '${karya.jumlahDislike}',
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                            const SizedBox(width: 10),
-
-                            IconButton(
-                              icon: const Icon(Icons.share, color: Colors.blue),
-                              onPressed: () async {
-                                final kategori = karya.kategori
-                                    .toLowerCase()
-                                    .replaceAll(' ', '-');
-                                final url =
-                                    "http://mediaexplant.com/karya/$kategori/read?k=${karya.idKarya}";
-
-                                await Share.share(
-                                    "Baca karya menarik ini di MediaExplant:\n\n${karya.judul}\n$url");
-                              },
-                            ),
-                            const SizedBox(width: 10),
-                          ],
-                        ),
-
-                        // Tag berita
-                      ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 50),
-                  const Divider(color: Colors.grey, thickness: 0.5),
-                ],
-              ),
-            ]),
-          ),
+                    const Divider(color: Colors.grey, thickness: 0.5),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            cleanDeskripsi(karya.deskripsi),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
 
-          // const SliverToBoxAdapter(
-          //   child: Padding(
-          //     padding: EdgeInsets.only(left: 15, top: 15, bottom: 10),
-          //     child: Row(
-          //       children: [
-          //         Text(
-          //           "Berita Terkait",
-          //           style: TextStyle(
-          //             fontSize: 16,
-          //             fontWeight: FontWeight.bold,
-          //             color: Colors.black,
-          //           ),
-          //         ),
-          //         SizedBox(
-          //           width: 10,
-          //         ),
-          //         Text(
-          //           "Mungkin anda sukai",
-          //           style: TextStyle(
-          //             fontSize: 12,
-          //             color: Colors.grey,
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          // // // BERITA terkait
-          // // SliverPadding(
-          // //   padding: const EdgeInsets.symmetric(horizontal: 5),
-          // //   sliver: SliverList(
-          // //     delegate: SliverChildBuilderDelegate(
-          // //       (context, index) {
-          // //         return ChangeNotifierProvider.value(
-          // //           value: beritaTerkaitList[index],
-          // //           child: BeritaPopulerItem(),
-          // //         );
-          // //       },
-          // //       childCount: beritaTerkaitList.length,
-          // //     ),
-          // //   ),
-          // // ),
-          // // SliverToBoxAdapter(
-          // //   child: Row(
-          // //     mainAxisAlignment: MainAxisAlignment.end,
-          // //     children: [
-          // //       TextButton(
-          // //         onPressed: () {
-          // //           // aksi saat tombol ditekan
-          // //         },
-          // //         child: const Text(
-          // //           "Selengkapnya >>",
-          // //           style: TextStyle(
-          // //             color: AppColors.primary,
-          // //             fontSize: 14,
-          // //           ),
-          // //         ),
-          // //       ),
-          // //     ],
-          // //   ),
-          // // ),
+                          if (karya.kategori != 'desain_grafis' &&
+                              karya.kategori != 'fotografi') ...[
+                            Center(
+                              child: Text(
+                                karya.judul,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                "(Oleh ${karya.penulis})",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ],
 
-          // // // berita terbaru
-          // // SliverPadding(
-          // //   padding: const EdgeInsets.only(top: 20),
-          // //   sliver: SliverList(
-          // //     delegate: SliverChildListDelegate([
-          // //       Container(
-          // //         color: Colors.grey.withAlpha(50),
-          // //         child: Padding(
-          // //           padding:
-          // //               const EdgeInsets.only(left: 10, top: 20, bottom: 20),
-          // //           child: Column(
-          // //             crossAxisAlignment: CrossAxisAlignment.start,
-          // //             children: [
-          // //               const Row(
-          // //                 children: [
-          // //                   Text(
-          // //                     "Terbaru",
-          // //                     style: TextStyle(
-          // //                       fontSize: 16,
-          // //                       fontWeight: FontWeight.bold,
-          // //                       color: Colors.black,
-          // //                     ),
-          // //                   ),
-          // //                   SizedBox(
-          // //                     width: 10,
-          // //                   ),
-          // //                   Text(
-          // //                     "Teratas untuk anda",
-          // //                     style: TextStyle(
-          // //                       fontSize: 12,
-          // //                       color: Colors.grey,
-          // //                     ),
-          // //                   ),
-          // //                 ],
-          // //               ),
-          // //               const SizedBox(height: 10),
-          // //               // BERITA TERBARU
-          // //               // SizedBox(
-          // //               //   height: 180,
-          // //               //   child: ListView.builder(
-          // //               //     scrollDirection: Axis.horizontal,
-          // //               //     itemCount: 10,
-          // //               //     itemBuilder: (context, index) {
-          // //               //       return ChangeNotifierProvider.value(
-          // //               //         value: beritaTerbaruList[index],
-          // //               //         child: BeritaTerbaruItem(),
-          // //               //       );
-          // //               //     },
-          // //               //   ),
-          // //               // ),
-          // //               Row(
-          // //                 mainAxisAlignment: MainAxisAlignment.end,
-          // //                 children: [
-          // //                   TextButton(
-          // //                     onPressed: () {
-          // //                       // aksi saat tombol ditekan
-          // //                     },
-          // //                     child: const Text(
-          // //                       "Selengkapnya >>",
-          // //                       style: TextStyle(
-          // //                         color: AppColors.primary,
-          // //                         fontSize: 14,
-          // //                       ),
-          // //                     ),
-          // //                   ),
-          // //                 ],
-          // //               ),
-          // //               const SizedBox(
-          // //                 height: 50,
-          // //               ),
-          // //             ],
-          // //           ),
-          // //         ),
-          // //       ),
-          // //       // const Divider(color: Colors.grey, thickness: 0.5),
-          // //     ]),
-          // //   ),
-          // // ),
-        ],
-      ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Text(
+                            karya.kontenKarya,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
 
-      // FAB untuk membuka komentar
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        backgroundColor: AppColors.primary,
-        onPressed: () {
-          if (userLogin == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Silakan login terlebih dahulu untuk memberi komentar.',
+                          const SizedBox(height: 20),
+
+                          const Text(
+                            "Berikan Tanggapanmu :",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+
+                          // Tombol interaksi
+                          Row(
+                            children: [
+                              // Tombol Like
+                              Consumer<DetailKarya>(
+                                  builder: (context, karya, _) {
+                                return IconButton(
+                                  onPressed: () async {
+                                    if (userLogin == null) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Silakan login terlebih dahulu untuk menyimpan reaksi.'),
+                                        ),
+                                      );
+                                      Navigator.pushNamed(context, '/login');
+                                      return;
+                                    }
+                                    await reaksiProvider.toggleReaksi(
+                                        context,
+                                        Reaksi(
+                                          userId: userLogin,
+                                          itemId: karya.idKarya,
+                                          jenisReaksi: "Suka",
+                                          reaksiType: "Karya",
+                                        ));
+                                    karya.statusLike();
+                                  },
+                                  icon: Icon(
+                                    Icons.thumb_up,
+                                    color: karya.isLike
+                                        ? Colors.blue
+                                        : Colors.grey,
+                                  ),
+                                );
+                              }),
+                              Consumer<DetailKarya>(
+                                  builder: (context, karya, _) {
+                                return Text(
+                                  '${karya.jumlahLike}',
+                                  style: const TextStyle(color: Colors.blue),
+                                );
+                              }),
+                              const SizedBox(width: 10),
+                              Consumer<DetailKarya>(
+                                  builder: (context, karya, _) {
+                                return IconButton(
+                                  onPressed: () async {
+                                    if (userLogin == null) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Silakan login terlebih dahulu untuk menyimpan reaksi.'),
+                                        ),
+                                      );
+                                      Navigator.pushNamed(context, '/login');
+                                      return;
+                                    }
+                                    await reaksiProvider.toggleReaksi(
+                                        context,
+                                        Reaksi(
+                                          userId: userLogin,
+                                          itemId: karya.idKarya,
+                                          jenisReaksi: "Tidak Suka",
+                                          reaksiType: "Karya",
+                                        ));
+                                    karya.statusDislike();
+                                  },
+                                  icon: Icon(
+                                    Icons.thumb_down,
+                                    color: karya.isDislike
+                                        ? Colors.red
+                                        : Colors.grey,
+                                  ),
+                                );
+                              }),
+
+                              Consumer<DetailKarya>(
+                                  builder: (context, karya, _) {
+                                return Text(
+                                  '${karya.jumlahDislike}',
+                                  style: const TextStyle(color: Colors.red),
+                                );
+                              }),
+                              const SizedBox(width: 10),
+
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.share, color: Colors.blue),
+                                onPressed: () async {
+                                  final kategori = karya.kategori
+                                      .toLowerCase()
+                                      .replaceAll(' ', '-');
+                                  final url =
+                                      "http://mediaexplant.com/karya/$kategori/read?k=${karya.idKarya}";
+
+                                  await Share.share(
+                                      "Baca karya menarik ini di MediaExplant:\n\n${karya.judul}\n$url");
+                                },
+                              ),
+                              const SizedBox(width: 10),
+                            ],
+                          ),
+
+                          // Tag berita
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+                    const Divider(color: Colors.grey, thickness: 0.5),
+                  ],
                 ),
-              ),
-            );
-            Navigator.pushNamed(context, '/login');
-            return;
-          }
+              ]),
+            ),
 
-          showKomentarBottomSheet(
-            context,
-            'Karya',
-            karya.idKarya,
-            userLogin,
-          );
-        },
-        child: const Icon(Icons.comment, color: Colors.white),
+            // const SliverToBoxAdapter(
+            //   child: Padding(
+            //     padding: EdgeInsets.only(left: 15, top: 15, bottom: 10),
+            //     child: Row(
+            //       children: [
+            //         Text(
+            //           "Berita Terkait",
+            //           style: TextStyle(
+            //             fontSize: 16,
+            //             fontWeight: FontWeight.bold,
+            //             color: Colors.black,
+            //           ),
+            //         ),
+            //         SizedBox(
+            //           width: 10,
+            //         ),
+            //         Text(
+            //           "Mungkin anda sukai",
+            //           style: TextStyle(
+            //             fontSize: 12,
+            //             color: Colors.grey,
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            // // // BERITA terkait
+            // // SliverPadding(
+            // //   padding: const EdgeInsets.symmetric(horizontal: 5),
+            // //   sliver: SliverList(
+            // //     delegate: SliverChildBuilderDelegate(
+            // //       (context, index) {
+            // //         return ChangeNotifierProvider.value(
+            // //           value: beritaTerkaitList[index],
+            // //           child: BeritaPopulerItem(),
+            // //         );
+            // //       },
+            // //       childCount: beritaTerkaitList.length,
+            // //     ),
+            // //   ),
+            // // ),
+            // // SliverToBoxAdapter(
+            // //   child: Row(
+            // //     mainAxisAlignment: MainAxisAlignment.end,
+            // //     children: [
+            // //       TextButton(
+            // //         onPressed: () {
+            // //           // aksi saat tombol ditekan
+            // //         },
+            // //         child: const Text(
+            // //           "Selengkapnya >>",
+            // //           style: TextStyle(
+            // //             color: AppColors.primary,
+            // //             fontSize: 14,
+            // //           ),
+            // //         ),
+            // //       ),
+            // //     ],
+            // //   ),
+            // // ),
+
+            // // // berita terbaru
+            // // SliverPadding(
+            // //   padding: const EdgeInsets.only(top: 20),
+            // //   sliver: SliverList(
+            // //     delegate: SliverChildListDelegate([
+            // //       Container(
+            // //         color: Colors.grey.withAlpha(50),
+            // //         child: Padding(
+            // //           padding:
+            // //               const EdgeInsets.only(left: 10, top: 20, bottom: 20),
+            // //           child: Column(
+            // //             crossAxisAlignment: CrossAxisAlignment.start,
+            // //             children: [
+            // //               const Row(
+            // //                 children: [
+            // //                   Text(
+            // //                     "Terbaru",
+            // //                     style: TextStyle(
+            // //                       fontSize: 16,
+            // //                       fontWeight: FontWeight.bold,
+            // //                       color: Colors.black,
+            // //                     ),
+            // //                   ),
+            // //                   SizedBox(
+            // //                     width: 10,
+            // //                   ),
+            // //                   Text(
+            // //                     "Teratas untuk anda",
+            // //                     style: TextStyle(
+            // //                       fontSize: 12,
+            // //                       color: Colors.grey,
+            // //                     ),
+            // //                   ),
+            // //                 ],
+            // //               ),
+            // //               const SizedBox(height: 10),
+            // //               // BERITA TERBARU
+            // //               // SizedBox(
+            // //               //   height: 180,
+            // //               //   child: ListView.builder(
+            // //               //     scrollDirection: Axis.horizontal,
+            // //               //     itemCount: 10,
+            // //               //     itemBuilder: (context, index) {
+            // //               //       return ChangeNotifierProvider.value(
+            // //               //         value: beritaTerbaruList[index],
+            // //               //         child: BeritaTerbaruItem(),
+            // //               //       );
+            // //               //     },
+            // //               //   ),
+            // //               // ),
+            // //               Row(
+            // //                 mainAxisAlignment: MainAxisAlignment.end,
+            // //                 children: [
+            // //                   TextButton(
+            // //                     onPressed: () {
+            // //                       // aksi saat tombol ditekan
+            // //                     },
+            // //                     child: const Text(
+            // //                       "Selengkapnya >>",
+            // //                       style: TextStyle(
+            // //                         color: AppColors.primary,
+            // //                         fontSize: 14,
+            // //                       ),
+            // //                     ),
+            // //                   ),
+            // //                 ],
+            // //               ),
+            // //               const SizedBox(
+            // //                 height: 50,
+            // //               ),
+            // //             ],
+            // //           ),
+            // //         ),
+            // //       ),
+            // //       // const Divider(color: Colors.grey, thickness: 0.5),
+            // //     ]),
+            // //   ),
+            // // ),
+          ],
+        ),
+
+        // FAB untuk membuka komentar
+        floatingActionButton: FloatingActionButton(
+          shape: const CircleBorder(),
+          backgroundColor: AppColors.primary,
+          onPressed: () {
+            if (userLogin == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Silakan login terlebih dahulu untuk memberi komentar.',
+                  ),
+                ),
+              );
+              Navigator.pushNamed(context, '/login');
+              return;
+            }
+
+            showKomentarBottomSheet(
+              context,
+              'Karya',
+              karya.idKarya,
+              userLogin,
+            );
+          },
+          child: const Icon(Icons.comment, color: Colors.white),
+        ),
       ),
     );
   }

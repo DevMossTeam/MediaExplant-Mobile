@@ -78,7 +78,10 @@ class _PuisiItemState extends State<PuisiItem> {
                       MaterialPageRoute(
                         builder: (context) => ChangeNotifierProvider.value(
                           value: karya,
-                          child: DetailKaryaScreen(),
+                          child: DetailKaryaScreen(
+                            idKarya: karya.idKarya,
+                            kategori: karya.kategori,
+                          ),
                         ),
                       ),
                       (route) => route.isFirst,
