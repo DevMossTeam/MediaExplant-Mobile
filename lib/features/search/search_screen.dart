@@ -1,8 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
+import 'package:mediaexplant/features/search/search_item.dart';
+import 'package:mediaexplant/features/search/search_repository.dart';
 import 'package:mediaexplant/features/search/search_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +12,7 @@ class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => SearchBeritaViewModel(),
+      create: (_) => SearchViewModel(SearchRepository()),
       child: const _SearchView(),
     );
   }
@@ -30,21 +30,17 @@ class _SearchViewState extends State<_SearchView> {
   Timer? _debounce;
 
   void _onSearch(String query) {
-  if (_debounce?.isActive ?? false) _debounce!.cancel();
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-  _debounce = Timer(const Duration(milliseconds: 500), () {
-    final viewModel = context.read<SearchBeritaViewModel>();
-    if (query.trim().isEmpty) {
-      viewModel.clearSearch();
-      return;
-    }
-    viewModel.searchBerita(
-      query: query,
-      userId: "4FUD7QhJ0hMLMMlF6VQHjvkXad4L",
-    );
-  });
-}
-
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      final viewModel = context.read<SearchViewModel>();
+      if (query.trim().isEmpty) {
+        viewModel.cari(""); // bisa juga tambahkan metode clear kalau mau
+        return;
+      }
+      viewModel.cari(query);
+    });
+  }
 
   @override
   void dispose() {
@@ -55,7 +51,7 @@ class _SearchViewState extends State<_SearchView> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<SearchBeritaViewModel>();
+    final viewModel = context.watch<SearchViewModel>();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -78,7 +74,7 @@ class _SearchViewState extends State<_SearchView> {
               controller: _controller,
               onChanged: _onSearch,
               decoration: const InputDecoration(
-                hintText: 'Cari berita...',
+                hintText: 'Cari berita, produk, karya...',
                 border: InputBorder.none,
                 suffixIcon: Icon(Icons.search, color: Colors.grey),
               ),
@@ -91,39 +87,30 @@ class _SearchViewState extends State<_SearchView> {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Text(
-              "Gunakan fitur pencarian ini untuk menemukan konten berita yang kamu butuhkan. Cukup ketik kata kuncinya, dan biar kami bantu carikan!",
+              "Gunakan fitur pencarian ini untuk menemukan konten seperti berita, produk, atau karya. Ketik kata kunci, dan kami bantu carikan!",
               style: TextStyle(color: Colors.grey),
             ),
           ),
           const Divider(thickness: 1),
-          
 
-
-
-          // hasil pencarian
           if (_controller.text.trim().isNotEmpty)
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: Builder(
                   builder: (context) {
                     if (viewModel.isLoading) {
                       return const Center(child: CircularProgressIndicator());
-                    } else if (viewModel.errorMessage != null) {
-                      return Center(child: Text(viewModel.errorMessage!));
-                    } else if (viewModel.hasilPencarian.isEmpty) {
-                      return const Center(
-                        child: Text('Tidak ada hasil'),
-                      );
+                    } else if (viewModel.error != null) {
+                      return Center(child: Text(viewModel.error!));
+                    } else if (viewModel.hasil.isEmpty) {
+                      return const Center(child: Text('Tidak ada hasil'));
                     } else {
                       return ListView.builder(
-                        itemCount: viewModel.hasilPencarian.length,
+                        itemCount: viewModel.hasil.length,
                         itemBuilder: (context, index) {
-                          final berita = viewModel.hasilPencarian[index];
-                          return ChangeNotifierProvider.value(
-                            value: berita,
-                            child: const BeritaPopulerItem(),
-                          );
+                          final item = viewModel.hasil[index];
+                          return SearchItem(hasil: item);
                         },
                       );
                     }

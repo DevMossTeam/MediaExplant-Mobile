@@ -1,99 +1,39 @@
-import 'package:flutter/foundation.dart';
-import 'package:mediaexplant/features/home/models/berita/berita.dart';
+import 'package:flutter/material.dart';
+import 'package:mediaexplant/features/search/models/search.dart';
 import 'package:mediaexplant/features/search/search_repository.dart';
 
-class SearchBeritaViewModel extends ChangeNotifier {
-  final SearchBeritaRepository _repository = SearchBeritaRepository();
-  final int _limit = 10;
+class SearchViewModel extends ChangeNotifier {
+  final SearchRepository _repository;
 
-  int _page = 1;
-  bool _hasMore = true;
+  SearchViewModel(this._repository);
+
+  List<Search> _hasil = [];
   bool _isLoading = false;
-  String? _errorMessage;
-  List<Berita> _hasilPencarian = [];
+  String? _error;
 
-  List<Berita> get hasilPencarian => _hasilPencarian;
+  List<Search> get hasil => _hasil;
   bool get isLoading => _isLoading;
-  bool get hasMore => _hasMore;
-  String? get errorMessage => _errorMessage;
+  String? get error => _error;
 
-  String _currentQuery = '';
-  String? _currentKategori;
-
-  Future<void> searchBerita({required String query, String? userId}) async {
-    if (_isLoading || !_hasMore) return;
-
-    if (_currentQuery != query) {
-      _resetState();
-      _currentQuery = query;
-    }
-
+  Future<void> cari(String keyword) async {
     _isLoading = true;
+    _error = null;
     notifyListeners();
 
     try {
-      final results = await _repository.searchBerita(
-        query: query,
-        page: _page,
-        limit: _limit,
-        userId: userId,
-      );
-
-      if (results.length < _limit) _hasMore = false;
-
-      _hasilPencarian.addAll(results);
-      _page++;
+      _hasil = await _repository.search(keyword);
     } catch (e) {
-      _errorMessage = e.toString();
+      _error = e.toString();
+      _hasil = [];
     }
 
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> searchByKategori({required String kategori, String? userId}) async {
-    if (_isLoading || !_hasMore) return;
-
-    if (_currentKategori != kategori) {
-      _resetState();
-      _currentKategori = kategori;
-    }
-
-    _isLoading = true;
+  void clear() {
+    _hasil = [];
+    _error = null;
     notifyListeners();
-
-    try {
-      final results = await _repository.searchByKategori(
-        kategori: kategori,
-        page: _page,
-        limit: _limit,
-        userId: userId,
-      );
-
-      if (results.length < _limit) _hasMore = false;
-
-      _hasilPencarian.addAll(results);
-      _page++;
-    } catch (e) {
-      _errorMessage = e.toString();
-    }
-
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  void clearSearch() {
-    _resetState();
-    notifyListeners();
-  }
-
-  void _resetState() {
-    _hasilPencarian = [];
-    _page = 1;
-    _hasMore = true;
-    _isLoading = false;
-    _errorMessage = null;
-    _currentQuery = '';
-    _currentKategori = null;
   }
 }
