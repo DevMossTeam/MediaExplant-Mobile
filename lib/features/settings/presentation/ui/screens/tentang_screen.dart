@@ -75,7 +75,7 @@ class TentangScreen extends StatelessWidget {
             // Logo Aplikasi (gunakan SvgPicture)
             Center(
               child: SvgPicture.asset(
-                'assets/images/app_logo.svg', // Pastikan asset sudah dideklarasikan di pubspec.yaml
+                'assets/images/app_logo.png', // Pastikan asset sudah dideklarasikan di pubspec.yaml
                 width: 120,
                 height: 120,
                 fit: BoxFit.contain,

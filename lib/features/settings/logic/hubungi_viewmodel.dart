@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
-import 'package:mediaexplant/core/network/api_client.dart' show ApiException;
 
 class HubungiViewModel extends ChangeNotifier {
   final ApiClient _apiClient;
