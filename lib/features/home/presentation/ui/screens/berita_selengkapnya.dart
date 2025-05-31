@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
+import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_topik_lainnya_repository.dart';
 
 import 'package:provider/provider.dart';
 
@@ -15,7 +16,13 @@ import 'package:mediaexplant/features/home/presentation/logic/repository/beritaR
 import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_terkait_repository.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
 
-enum KategoriBerita { terbaru, rekomendasiLain, rekomendasi, terkait }
+enum KategoriBerita {
+  terbaru,
+  rekomendasiLain,
+  rekomendasi,
+  terkait,
+  topiklainnya
+}
 
 class BeritaSelengkapnya extends StatefulWidget {
   final KategoriBerita kategori;
@@ -48,7 +55,15 @@ class _BeritaSelengkapnyaState extends State<BeritaSelengkapnya> {
   @override
   void initState() {
     super.initState();
-    context.read<BeritaSelengkapnyaViewModel>().setKategori(widget.kategori);
+    if (kDebugMode) {
+      print(
+          "BeritaSelengkapnya.initState => kategori: ${widget.kategori}, beritaIdTerkait: ${widget.beritaIdTerkait}, kategoriTerkait: ${widget.kategoriTerkait}");
+    }
+    context.read<BeritaSelengkapnyaViewModel>().setKategori(
+          widget.kategori,
+          beritaId: widget.beritaIdTerkait,
+          kategoriBerita: widget.kategoriTerkait,
+        );
     _scrollController.addListener(_onScroll);
   }
 
@@ -112,6 +127,10 @@ class BeritaSelengkapnyaViewModel with ChangeNotifier {
     kategori = kategoriDipilih;
     beritaIdTerkait = beritaId;
     kategoriTerkait = kategoriBerita;
+    if (kDebugMode) {
+      print(
+          "setKategori called => kategori: $kategori, beritaIdTerkait: $beritaIdTerkait, kategoriTerkait: $kategoriTerkait");
+    }
     _beritas = [];
     _page = 1;
     hasMore = true;
@@ -127,6 +146,24 @@ class BeritaSelengkapnyaViewModel with ChangeNotifier {
       List<Berita> result = [];
 
       switch (kategori) {
+        case KategoriBerita.terkait:
+          result = await BeritaTerkaitRepository().fetchBeritaTerkait(
+            _page,
+            _limit,
+            userLogin,
+            kategoriTerkait!,
+            beritaIdTerkait!,
+          );
+          break;
+        case KategoriBerita.topiklainnya:
+          result = await BeritaTopikLainnyaRepository().fetchBeritaTopikLainnya(
+            _page,
+            _limit,
+            userLogin,
+            kategoriTerkait!,
+            beritaIdTerkait!,
+          );
+          break;
         case KategoriBerita.terbaru:
           result = await BeritaTerbaruRepository()
               .fetchBeritaTerbaru(_page, _limit, userLogin);
@@ -138,15 +175,6 @@ class BeritaSelengkapnyaViewModel with ChangeNotifier {
         case KategoriBerita.rekomendasi:
           result = await BeritaDariKamiRepository()
               .fetchBeritaDariKami(_page, _limit, userLogin);
-          break;
-        case KategoriBerita.terkait:
-          result = await BeritaTerkaitRepository().fetchBeritaTerkait(
-            _page,
-            _limit,
-            userLogin,
-            kategoriTerkait!,
-            beritaIdTerkait!,
-          );
           break;
       }
 

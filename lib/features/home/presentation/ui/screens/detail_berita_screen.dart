@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mediaexplant/features/home/models/berita/detail_berita.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_topik_lainnya_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_detail_berita_item.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -59,9 +60,10 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
         widget.idBerita,
       );
 
-      final beritaTerbaruViewmodel =
-          Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
-      beritaTerbaruViewmodel.fetchBeritaTerbaru(userLogin);
+      final beritaTopikLainnyaViewmodel =
+          Provider.of<BeritaTopikLainnyaViewmodel>(context, listen: false);
+      beritaTopikLainnyaViewmodel.fetchBeritaTopikLainnya(
+          userLogin, widget.kategori, widget.idBerita);
 
       _isInit = false; // Pastikan hanya dipanggil sekali per instance
     }
@@ -86,8 +88,8 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
     final beritaTerkaitList =
         Provider.of<BeritaTerkaitViewmodel>(context).allBerita;
 
-    final beritaTerbaruList =
-        Provider.of<BeritaTerbaruViewmodel>(context).allBerita;
+    final beritaTopikLainnyaList =
+        Provider.of<BeritaTopikLainnyaViewmodel>(context).allBerita;
 
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
@@ -487,19 +489,24 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () async {
+                    onPressed: () {
                       final beritaId = berita.idBerita;
                       final kategori = berita.kategori;
-                      final viewModel = BeritaSelengkapnyaViewModel();
-                      await viewModel.setKategori(KategoriBerita.terkait);
-
-                      if (!mounted) return;
 
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) {
+                          final viewModel = BeritaSelengkapnyaViewModel();
                           return ChangeNotifierProvider<
-                              BeritaSelengkapnyaViewModel>.value(
-                            value: viewModel,
+                              BeritaSelengkapnyaViewModel>(
+                            create: (_) {
+                              // Pastikan parameter lengkap dikirim di awal
+                              viewModel.setKategori(
+                                KategoriBerita.terkait,
+                                beritaId: beritaId,
+                                kategoriBerita: kategori,
+                              );
+                              return viewModel;
+                            },
                             child: BeritaSelengkapnya(
                               kategori: KategoriBerita.terkait,
                               beritaIdTerkait: beritaId,
@@ -534,7 +541,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          titleHeader("Terbaru", "Teratas untuk anda"),
+                          titleHeader("Topik Lainnya", "Teratas untuk anda"),
                           const SizedBox(height: 10),
                           // BERITA TERBARU
                           SizedBox(
@@ -544,7 +551,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                               itemCount: 10,
                               itemBuilder: (context, index) {
                                 return ChangeNotifierProvider.value(
-                                  value: beritaTerbaruList[index],
+                                  value: beritaTopikLainnyaList[index],
                                   child: BeritaTerbaruItem(),
                                 );
                               },
@@ -554,25 +561,33 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               TextButton(
-                                onPressed: () async {
-                                  final viewModel =
-                                      BeritaSelengkapnyaViewModel();
-                                  if (!mounted) return;
+                                onPressed: () {
+                                  final beritaId = berita.idBerita;
+                                  final kategori = berita.kategori;
+
                                   Navigator.of(context).push(
                                     MaterialPageRoute(builder: (context) {
+                                      final viewModel =
+                                          BeritaSelengkapnyaViewModel();
                                       return ChangeNotifierProvider<
-                                          BeritaSelengkapnyaViewModel>.value(
-                                        value: viewModel,
-                                        child: const BeritaSelengkapnya(
-                                          kategori: KategoriBerita.terbaru,
+                                          BeritaSelengkapnyaViewModel>(
+                                        create: (_) {
+                                          // Pastikan parameter lengkap dikirim di awal
+                                          viewModel.setKategori(
+                                            KategoriBerita.topiklainnya,
+                                            beritaId: beritaId,
+                                            kategoriBerita: kategori,
+                                          );
+                                          return viewModel;
+                                        },
+                                        child: BeritaSelengkapnya(
+                                          kategori: KategoriBerita.topiklainnya,
+                                          beritaIdTerkait: beritaId,
+                                          kategoriTerkait: kategori,
                                         ),
                                       );
                                     }),
                                   );
-                                  Future.microtask(() async {
-                                    await viewModel
-                                        .setKategori(KategoriBerita.terbaru);
-                                  });
                                 },
                                 child: const Text(
                                   "Selengkapnya >>",

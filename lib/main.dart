@@ -13,6 +13,7 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/b
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_teratas_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terkait_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_topik_lainnya_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/desain_grafis_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/fotografi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/karya_detail_viewmodel.dart';
@@ -108,6 +109,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => BeritaTerkaitViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BeritaTopikLainnyaViewmodel(),
         ),
 
         // Provider produk

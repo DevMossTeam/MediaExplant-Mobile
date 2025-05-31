@@ -133,6 +133,51 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
 
           SliverToBoxAdapter(child: SizedBox(height: 20)),
 
+          if (_isLoading['populer']!)
+            const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator()))
+          else ...[
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              sliver: SliverToBoxAdapter(
+                child: titleHeader("Terpopuler", "5 Teratas untuk anda"),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 10)),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 5),
+                        child: Text(
+                          "${index + 1}",
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ChangeNotifierProvider.value(
+                          value: beritaPopulerList[index],
+                          child: BeritaPopulerItem(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  childCount: beritaPopulerList.length,
+                ),
+              ),
+            ),
+          ],
+
+          SliverToBoxAdapter(child: SizedBox(height: 20)),
+
           if (_isLoading['terbaru']!)
             const SliverToBoxAdapter(
                 child: Center(child: CircularProgressIndicator()))
@@ -194,51 +239,6 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                 ),
               ),
             ),
-
-          SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-          if (_isLoading['populer']!)
-            const SliverToBoxAdapter(
-                child: Center(child: CircularProgressIndicator()))
-          else ...[
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              sliver: SliverToBoxAdapter(
-                child: titleHeader("Terpopuler", "5 Teratas untuk anda"),
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 10)),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10, right: 5),
-                        child: Text(
-                          "${index + 1}",
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: ChangeNotifierProvider.value(
-                          value: beritaPopulerList[index],
-                          child: BeritaPopulerItem(),
-                        ),
-                      ),
-                    ],
-                  ),
-                  childCount: beritaPopulerList.length,
-                ),
-              ),
-            ),
-          ],
 
           SliverToBoxAdapter(child: SizedBox(height: 20)),
 

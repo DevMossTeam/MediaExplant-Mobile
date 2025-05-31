@@ -222,7 +222,13 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                             height: 10,
                           ),
                           Text(
-                            'Oleh: ${karya.penulis}  |  ${karya.release}',
+                            'Oleh: ${karya.penulis}  |  Kreator: ${karya.krator}',
+                            style: const TextStyle(color: Colors.grey),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                           Text(
+                            'Rilis: ${karya.release}',
                             style: const TextStyle(color: Colors.grey),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
