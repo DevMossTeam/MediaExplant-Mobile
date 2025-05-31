@@ -1,10 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:mediaexplant/features/home/models/berita/berita.dart';
-import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_rekomendasi_lain_repository.dart';
+import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_hot_repository.dart';
 
-class BeritaRekomendasiLainViewModel with ChangeNotifier {
-  final BeritaRekomendasiLainRepository _repository =
-      BeritaRekomendasiLainRepository();
+class BeritaHotViewmodel with ChangeNotifier {
+  final BeritaHotRepository _repository = BeritaHotRepository();
   final int _limit = 10;
   int _page = 1;
   bool hasMore = true;
@@ -13,12 +12,12 @@ class BeritaRekomendasiLainViewModel with ChangeNotifier {
 
   List<Berita> get allBerita => _beritas;
 
-  Future<void> fetchBeritaRekomendasiLain(String? userId) async {
+  Future<void> fetchBeritaHot(String? userId) async {
     if (isLoading) return;
     isLoading = true;
 
     try {
-      final response = await _repository.fetchBeritaRekomendasiLain(
+      final response = await _repository.fetchBeritaHot(
         _page,
         _limit,
         userId,
@@ -32,7 +31,7 @@ class BeritaRekomendasiLainViewModel with ChangeNotifier {
       _page++;
       notifyListeners();
     } catch (e) {
-      if (kDebugMode) print("Error fetchBeritaRekomendasiLain: $e");
+      if (kDebugMode) print("Error fetchBeritaHot: $e");
     } finally {
       isLoading = false;
     }
@@ -42,6 +41,6 @@ class BeritaRekomendasiLainViewModel with ChangeNotifier {
     _page = 1;
     hasMore = true;
     _beritas = [];
-    await fetchBeritaRekomendasiLain(userId);
+    await fetchBeritaHot(userId);
   }
 }

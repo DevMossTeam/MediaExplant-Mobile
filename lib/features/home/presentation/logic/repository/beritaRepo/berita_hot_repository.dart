@@ -4,12 +4,12 @@ import 'package:http/http.dart' as http;
 import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/features/home/models/berita/berita.dart';
 
-class BeritaRekomendasiLainRepository {
-  Future<List<Berita>> fetchBeritaRekomendasiLain(
+class BeritaHotRepository {
+  Future<List<Berita>> fetchBeritaHot(
       int page, int limit, String? userId) async {
     final response = await http.get(
       Uri.parse(
-        "${ApiClient.baseUrl}/berita/rekomendasi-lainnya?page=$page&limit=$limit&user_id=$userId",
+        "${ApiClient.baseUrl}/berita/hot?page=$page&limit=$limit&user_id=$userId",
       ),
       headers: {'Accept': 'application/json'},
     );

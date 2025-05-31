@@ -9,7 +9,7 @@ import 'package:mediaexplant/features/home/presentation/logic/repository/produkR
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_detail_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_populer_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_dari_kami_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_rekomendasi_lain_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_hot_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_teratas_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terkait_viewmodel.dart';
@@ -105,7 +105,7 @@ Future<void> main() async {
           create: (_) => BeritaDariKamiViewmodel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => BeritaRekomendasiLainViewModel(),
+          create: (_) => BeritaHotViewmodel(),
         ),
         ChangeNotifierProvider(
           create: (_) => BeritaTerkaitViewmodel(),

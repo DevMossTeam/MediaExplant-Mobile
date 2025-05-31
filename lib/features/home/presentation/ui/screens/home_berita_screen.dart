@@ -3,7 +3,7 @@ import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_populer_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_dari_kami_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_rekomendasi_lain_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_hot_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_teratas_view_model.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/berita_selengkapnya.dart';
@@ -58,8 +58,8 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
         Provider.of<BeritaPopulerViewmodel>(context, listen: false);
     final beritaRekomendasiVM =
         Provider.of<BeritaDariKamiViewmodel>(context, listen: false);
-    final beritaRekomendasiLainVM =
-        Provider.of<BeritaRekomendasiLainViewModel>(context, listen: false);
+    final beritaHotVM =
+        Provider.of<BeritaHotViewmodel>(context, listen: false);
 
     if (beritaTeratasVM.allBerita.isEmpty) {
       setState(() => _isLoading['teratas'] = true);
@@ -85,9 +85,9 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
       setState(() => _isLoading['rekomendasi'] = false);
     }
 
-    if (beritaRekomendasiLainVM.allBerita.isEmpty) {
+    if (beritaHotVM.allBerita.isEmpty) {
       setState(() => _isLoading['rekomendasiLain'] = true);
-      await beritaRekomendasiLainVM.fetchBeritaRekomendasiLain(userLogin);
+      await beritaHotVM.fetchBeritaHot(userLogin);
       setState(() => _isLoading['rekomendasiLain'] = false);
     }
   }
@@ -104,7 +104,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
     final beritaRekomendasiList =
         Provider.of<BeritaDariKamiViewmodel>(context).allBerita;
     final beritaRekomendasiLainList =
-        Provider.of<BeritaRekomendasiLainViewModel>(context).allBerita;
+        Provider.of<BeritaHotViewmodel>(context).allBerita;
 
     return RefreshIndicator(
       onRefresh: _fetchBeritaSecaraBerurutan,
@@ -189,7 +189,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    titleHeader("Terbaru", "Teratas untuk anda"),
+                    titleHeader("Terbaru", "Yang baru saja terbit"),
                     const SizedBox(height: 20),
                     SizedBox(
                       height: 200,
@@ -249,7 +249,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               sliver: SliverToBoxAdapter(
-                child: titleHeader("Dari Kami", "Mungkin anda suka"),
+                child: titleHeader("Direkomendasikan", "Mungkin anda suka"),
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 10)),
@@ -317,7 +317,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      titleHeader("Rekomendasi Lain", "Mungkin anda suka"),
+                      titleHeader("Berita Hot", "Paling banyak dikomentari"),
                       const SizedBox(
                         height: 20,
                       ),
