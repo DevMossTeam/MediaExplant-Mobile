@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart'; // Sesuaikan path jika diperlukan
 
 class TentangScreen extends StatelessWidget {
@@ -72,10 +71,10 @@ class TentangScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Logo Aplikasi (gunakan SvgPicture)
+            // Logo Aplikasi (gunakan Image.asset untuk PNG)
             Center(
-              child: SvgPicture.asset(
-                'assets/images/app_logo.png', // Pastikan asset sudah dideklarasikan di pubspec.yaml
+              child: Image.asset(
+                'assets/images/app_logo.png', // Pastikan ini ada dan sudah dideklarasikan di pubspec.yaml
                 width: 120,
                 height: 120,
                 fit: BoxFit.contain,
@@ -128,8 +127,8 @@ class TentangScreen extends StatelessWidget {
                     context: context,
                     applicationName: 'Media Explant',
                     applicationVersion: '1.0.0',
-                    applicationIcon: SvgPicture.asset(
-                      'assets/images/app_logo.svg',
+                    applicationIcon: Image.asset(
+                      'assets/images/app_logo.png', // Gunakan asset yang sama
                       width: 50,
                       height: 50,
                     ),
