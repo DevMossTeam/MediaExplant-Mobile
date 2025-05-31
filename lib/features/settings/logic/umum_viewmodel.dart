@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
 import 'package:mediaexplant/core/utils/auth_storage.dart';
 
@@ -19,7 +22,7 @@ class UmumViewModel extends ChangeNotifier {
   String     _username    = "";
   String     _namaLengkap = "";
   String     _role        = "";
-  String     _profilePic  = "";
+  String     _profilePic  = "";     // raw Data URI / URL
 
   bool _isLoading = true;
 
@@ -38,18 +41,39 @@ class UmumViewModel extends ChangeNotifier {
   String get username            => _username;
   String get namaLengkap         => _namaLengkap;
   String get role                => _role;
-  String get profilePic          => _profilePic;
-  bool   get isLoading           => _isLoading;
 
+  /// Raw string Data URI Base64 atau URL
+  String get profilePic          => _profilePic;
+
+  bool   get isLoading           => _isLoading;
   bool   get isCheckingUsername  => _isCheckingUsername;
   bool   get isUsernameAvailable => _isUsernameAvailable;
   String get usernameError       => _usernameErrorMessage;
 
-  /// Tombol Simpan aktif jika:
-  /// 1) tidak loading global
-  /// 2) tidak ada error
   bool get canSave =>
       !_isLoading && _usernameErrorMessage.isEmpty;
+
+  // —————————————————————
+  // ImageProvider untuk foto profil (nullable)
+  // —————————————————————
+  ImageProvider? get profileImageProvider {
+    final pic = _profilePic.trim();
+    if (pic.isEmpty) {
+      // Tidak ada foto → kembalikan null
+      return null;
+    }
+
+    // Jika Data URI Base64 (misalnya "data:image/png;base64,...")
+    final dataUri = RegExp(r'^data:image\/[a-zA-Z]+;base64,');
+    if (dataUri.hasMatch(pic)) {
+      final raw = pic.replaceFirst(dataUri, '');
+      final bytes = base64Decode(raw);
+      return MemoryImage(bytes);
+    }
+
+    // Bukan Base64 → asumsikan URL jaringan
+    return CachedNetworkImageProvider(pic);
+  }
 
   // —————————————————————
   // Load data & reset state
@@ -60,15 +84,14 @@ class UmumViewModel extends ChangeNotifier {
 
     try {
       final data = await AuthStorage.getUserData();
-      _originalUsername       = data['nama_pengguna'] ?? "";
-      _username               = _originalUsername;
-      _namaLengkap            = data['nama_lengkap']  ?? "";
-      _role                   = data['role']         ?? "";
-      _profilePic             = data['profile_pic']  ?? "";
+      _originalUsername     = data['nama_pengguna'] ?? "";
+      _username             = _originalUsername;
+      _namaLengkap          = data['nama_lengkap']  ?? "";
+      _role                 = data['role']         ?? "";
+      _profilePic           = data['profile_pic']  ?? "";
 
-      // Reset validasi (username awal dianggap tersedia)
-      _isUsernameAvailable    = true;
-      _usernameErrorMessage   = "";
+      _isUsernameAvailable  = true;
+      _usernameErrorMessage = "";
     } catch (_) {
       _originalUsername = _username = "";
       _namaLengkap = _role = _profilePic = "";
@@ -90,22 +113,17 @@ class UmumViewModel extends ChangeNotifier {
     _isUsernameAvailable  = false;
     _debounceTimer?.cancel();
 
-    // 1) jika kosong → langsung error
     if (value.isEmpty) {
       _usernameErrorMessage = "Username tidak boleh kosong.";
       notifyListeners();
       return;
     }
-
-    // 2) jika sama dengan original → skip server, valid
     if (value == _originalUsername) {
       _isUsernameAvailable  = true;
       _usernameErrorMessage = "";
       notifyListeners();
       return;
     }
-
-    // 3) debounce cek ke server setelah 500ms
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       _checkUsername(value);
     });
@@ -113,49 +131,45 @@ class UmumViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
- Future<void> _checkUsername(String username) async {
-  if (username.isEmpty) {
-    _usernameErrorMessage = "Username tidak boleh kosong.";
-    _isUsernameAvailable = false;
-    notifyListeners();
-    return;
-  }
-
-  // Kalau sama dengan username awal, anggap available
-  if (username == _originalUsername) {
-    _isUsernameAvailable = true;
-    _usernameErrorMessage = "";
-    notifyListeners();
-    return;
-  }
-
-  _isCheckingUsername = true;
-  notifyListeners();
-
-  try {
-    final current = await AuthStorage.getUserData();
-    final token = current['token'] as String? ?? "";
-    final available = await _apiClient.checkUsernameAvailability(
-      token: token,
-      username: username,
-    );
-
-    if (available) {
+  Future<void> _checkUsername(String username) async {
+    if (username.isEmpty) {
+      _usernameErrorMessage = "Username tidak boleh kosong.";
+      _isUsernameAvailable = false;
+      notifyListeners();
+      return;
+    }
+    if (username == _originalUsername) {
       _isUsernameAvailable = true;
       _usernameErrorMessage = "";
-    } else {
-      _isUsernameAvailable = false;
-      _usernameErrorMessage = "Username sudah dipakai.";
+      notifyListeners();
+      return;
     }
-  } catch (e) {
-    _isUsernameAvailable = false;
-    _usernameErrorMessage = "Gagal mengecek username.";
-  } finally {
-    _isCheckingUsername = false;
-    notifyListeners();
-  }
-}
 
+    _isCheckingUsername = true;
+    notifyListeners();
+
+    try {
+      final current  = await AuthStorage.getUserData();
+      final token    = current['token'] as String? ?? "";
+      final available = await _apiClient.checkUsernameAvailability(
+        token: token,
+        username: username,
+      );
+      if (available) {
+        _isUsernameAvailable = true;
+        _usernameErrorMessage = "";
+      } else {
+        _isUsernameAvailable = false;
+        _usernameErrorMessage = "Username sudah dipakai.";
+      }
+    } catch (e) {
+      _isUsernameAvailable = false;
+      _usernameErrorMessage = "Gagal mengecek username.";
+    } finally {
+      _isCheckingUsername = false;
+      notifyListeners();
+    }
+  }
 
   // —————————————————————
   // Update profile teks
@@ -183,20 +197,18 @@ class UmumViewModel extends ChangeNotifier {
         token: token,
       );
 
-      // Sync kembali ke local storage
+      // Sync ke AuthStorage
       await AuthStorage.saveUserData(
         token:        token,
         uid:          updated['user']['uid']           ?? current['uid'],
-        namaPengguna: updated['user']['nama_pengguna'] ?? username  ?? current['nama_pengguna'],
-        namaLengkap:  updated['user']['nama_lengkap']  ?? namaLengkap ?? current['nama_lengkap'],
+        namaPengguna: updated['user']['nama_pengguna'] ?? current['nama_pengguna'],
+        namaLengkap:  updated['user']['nama_lengkap']  ?? current['nama_lengkap'],
         email:        updated['user']['email']         ?? current['email'],
         profilePic:   updated['user']['profile_pic']   ?? current['profile_pic'],
         role:         updated['user']['role']          ?? current['role'],
       );
 
-      // Reload & reset originalUsername
       await loadUserData();
-
     } catch (e) {
       debugPrint("Error updateUserData: $e");
     } finally {
@@ -232,7 +244,7 @@ class UmumViewModel extends ChangeNotifier {
   }
 
   // —————————————————————
-  // Upload foto profil
+  // Upload foto profil (file → Base64)
   // —————————————————————
   Future<void> updateProfileImage(File imageFile) async {
     final current = await AuthStorage.getUserData();
@@ -244,6 +256,7 @@ class UmumViewModel extends ChangeNotifier {
         imageFile: imageFile,
       );
 
+      // Simpan Data URI (API mengembalikan data URI Base64)
       await AuthStorage.saveUserData(
         token:        token,
         uid:          updated['user']['uid']           ?? current['uid'],

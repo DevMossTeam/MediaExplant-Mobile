@@ -1,14 +1,20 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:mediaexplant/core/constants/app_colors.dart';
-import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/network/api_client.dart';
-// Import UmumViewModel dari path yang sesuai.
+import 'package:mediaexplant/core/utils/auth_storage.dart';
+import 'package:provider/provider.dart';
+
+// Ganti path berikut sesuai lokasi UmumViewModel-mu:
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
 
+/// Helper untuk membuat MaterialColor dari Color biasa
 MaterialColor createMaterialColor(Color color) {
   List<double> strengths = <double>[.05];
   Map<int, Color> swatch = {};
@@ -52,8 +58,16 @@ class MyApp extends StatelessWidget {
           backgroundColor: AppColors.primary,
         ),
         textTheme: const TextTheme(
-          titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.text),
-          titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.text),
+          titleLarge: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColors.text,
+          ),
+          titleMedium: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: AppColors.text,
+          ),
           bodyMedium: TextStyle(fontSize: 14, color: AppColors.text),
         ),
         textSelectionTheme: TextSelectionThemeData(
@@ -75,11 +89,10 @@ class UmumScreen extends StatefulWidget {
 }
 
 class _UmumScreenState extends State<UmumScreen> {
-  // Controller untuk field edit; awalnya kosong.
   late TextEditingController _usernameController;
   late TextEditingController _namaLengkapController;
 
-  // Untuk foto profil, jika dipilih secara lokal.
+  // File lokal untuk preview sebelum upload
   File? _profileImage;
   final ImagePicker _picker = ImagePicker();
 
@@ -97,10 +110,10 @@ class _UmumScreenState extends State<UmumScreen> {
     super.dispose();
   }
 
-  /// Mengembalikan warna latar untuk avatar berdasarkan huruf pertama nama lengkap.
-  Color _getAvatarColor() {
-    if (_namaLengkapController.text.trim().isEmpty) return Colors.grey;
-    int code = _namaLengkapController.text.trim()[0].toUpperCase().codeUnitAt(0);
+  /// Warna latar avatar berdasarkan huruf pertama nama lengkap
+  Color _getAvatarColor(String namaLengkap) {
+    if (namaLengkap.isEmpty) return Colors.grey;
+    int code = namaLengkap.trim()[0].toUpperCase().codeUnitAt(0);
     List<Color> colors = [
       Colors.red,
       Colors.green,
@@ -118,7 +131,7 @@ class _UmumScreenState extends State<UmumScreen> {
     return colors[index];
   }
 
-  /// Meng-crop gambar menggunakan ImageCropper.
+  /// Crop gambar seleksi
   Future<File?> _cropImage(File imageFile) async {
     try {
       final croppedFile = await ImageCropper().cropImage(
@@ -147,183 +160,220 @@ class _UmumScreenState extends State<UmumScreen> {
     }
   }
 
-/// Menampilkan opsi pemilihan gambar (hapus, ambil dari kamera, pilih dari galeri).
-Future<void> _showImageOptions() async {
-  final vm       = context.read<UmumViewModel>();
-  final scaffold = ScaffoldMessenger.of(context);
+  /// Tampilkan bottom sheet opsi foto
+  Future<void> _showImageOptions() async {
+    final vm       = context.read<UmumViewModel>();
+    final scaffold = ScaffoldMessenger.of(context);
 
-  await showModalBottomSheet(
-    context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    ),
-    builder: (ctx) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 4, width: 40, margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: Colors.grey[300], borderRadius: BorderRadius.circular(2),
+    await showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 4,
+                width: 40,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            const Text('Pilih Opsi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const SizedBox(height: 8),
-
-            // Hapus Foto
-            if (_profileImage != null || vm.profilePic.isNotEmpty)
-              ListTile(
-                leading: const Icon(Icons.delete, color: AppColors.primary),
-                title: const Text('Hapus Foto'),
-                onTap: () async {
-                  Navigator.pop(ctx);
-                  setState(() => _profileImage = null);
-                  await vm.deleteProfileImage();
-                  scaffold.showSnackBar(const SnackBar(content: Text("Foto profil dihapus")));
-                },
+              const Text(
+                'Pilih Opsi',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
+              const SizedBox(height: 8),
 
-            // Kamera
-            ListTile(
-              leading: const Icon(Icons.camera_alt, color: AppColors.primary),
-              title: const Text('Ambil dari Kamera'),
-              onTap: () async {
-                Navigator.pop(ctx);
-                final picked = await _picker.pickImage(source: ImageSource.camera);
-                if (picked == null) return;
-                final cropped = await _cropImage(File(picked.path));
-                if (cropped == null) return;
-                setState(() => _profileImage = cropped);
-                await vm.updateProfileImage(cropped);
-                scaffold.showSnackBar(const SnackBar(content: Text("Foto profil diperbarui")));
-              },
-            ),
+// Hapus Foto (jika lokal ada atau server ada)
+if (_profileImage != null || vm.profilePic.isNotEmpty)
+  ListTile(
+    leading: const Icon(Icons.delete, color: AppColors.primary),
+    title: const Text('Hapus Foto'),
+    onTap: () async {
+      Navigator.pop(ctx);
 
-            // Galeri
-            ListTile(
-              leading: const Icon(Icons.photo_library, color: AppColors.primary),
-              title: const Text('Pilih dari Galeri'),
-              onTap: () async {
-                Navigator.pop(ctx);
-                final picked = await _picker.pickImage(source: ImageSource.gallery);
-                if (picked == null) return;
-                final cropped = await _cropImage(File(picked.path));
-                if (cropped == null) return;
-                setState(() => _profileImage = cropped);
-                await vm.updateProfileImage(cropped);
-                scaffold.showSnackBar(const SnackBar(content: Text("Foto profil diperbarui")));
-              },
-            ),
+      // 1) Panggil API untuk hapus di server
+      await vm.deleteProfileImage();
 
-            const SizedBox(height: 8),
-          ],
+      // 2) Segera refresh data di ViewModel (agar vm.profilePic jadi "")
+      await vm.loadUserData();
+
+      // 3) Hapus juga file lokal agar _buildProfileHeader tahu tidak ada gambar
+      setState(() => _profileImage = null);
+
+      // 4) Beri umpan balik ke user
+      scaffold.showSnackBar(
+        const SnackBar(
+          content: Text("Foto profil dihapus"),
+          duration: Duration(seconds: 2),
         ),
       );
     },
-  );
-}
+  ),
 
-/// Build header profil dengan avatar yang dapat diedit & di‑preview.
-Widget _buildProfileHeader(UmumViewModel vm) {
-  // Apakah ada gambar untuk dipreview?
-  final bool hasImage = _profileImage != null || vm.profilePic.isNotEmpty;
 
-  // Tentukan ImageProvider kalau ada
-  ImageProvider? imageProvider;
-  if (_profileImage != null) {
-    imageProvider = FileImage(_profileImage!);
-  } else if (vm.profilePic.isNotEmpty) {
-    imageProvider = CachedNetworkImageProvider(vm.profilePic);
+              // Ambil dari Kamera
+              ListTile(
+                leading: const Icon(Icons.camera_alt, color: AppColors.primary),
+                title: const Text('Ambil dari Kamera'),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final picked =
+                      await _picker.pickImage(source: ImageSource.camera);
+                  if (picked == null) return;
+                  final cropped = await _cropImage(File(picked.path));
+                  if (cropped == null) return;
+                  await vm.updateProfileImage(cropped);
+                  setState(() => _profileImage = cropped);
+                  scaffold.showSnackBar(
+                    const SnackBar(
+                      content: Text("Foto profil diperbarui"),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+
+              // Pilih dari Galeri
+              ListTile(
+                leading:
+                    const Icon(Icons.photo_library, color: AppColors.primary),
+                title: const Text('Pilih dari Galeri'),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final picked =
+                      await _picker.pickImage(source: ImageSource.gallery);
+                  if (picked == null) return;
+                  final cropped = await _cropImage(File(picked.path));
+                  if (cropped == null) return;
+                  await vm.updateProfileImage(cropped);
+                  setState(() => _profileImage = cropped);
+                  scaffold.showSnackBar(
+                    const SnackBar(
+                      content: Text("Foto profil diperbarui"),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
   }
 
-  // Hero + CircleAvatar
-  final avatar = Hero(
-    tag: 'profile-image',
-    child: Material(
-      elevation: 4,
-      shape: const CircleBorder(),
-      child: CircleAvatar(
-        radius: 60,
-        backgroundColor: imageProvider == null ? _getAvatarColor() : Colors.transparent,
-        backgroundImage: imageProvider,
-        child: imageProvider == null
-            ? Text(
-                vm.namaLengkap.isNotEmpty ? vm.namaLengkap[0].toUpperCase() : '?',
-                style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
-              )
-            : null,
-      ),
-    ),
-  );
+  /// Header profil dengan avatar yang menggunakan profileImageProvider
+  Widget _buildProfileHeader(UmumViewModel vm) {
+    // Cek apakah user sudah memilih file lokal:
+    final bool hasLocal = _profileImage != null;
+    // Cek apakah ada foto dari server (base64 atau URL):
+    final bool hasNetwork = vm.profilePic.isNotEmpty;
 
-  // Jika ada gambar, bungkus avatar dengan InkWell untuk preview; jika tidak, kembalikan avatar polos
-  final previewWidget = hasImage
-      ? InkWell(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) {
-              return Scaffold(
-                backgroundColor: Colors.black,
-                appBar: AppBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  iconTheme: const IconThemeData(color: Colors.white),
-                ),
-                body: Center(
-                  child: Hero(
-                    tag: 'profile-image',
-                    child: _profileImage != null
-                        ? Image.file(_profileImage!)
-                        : CachedNetworkImage(imageUrl: vm.profilePic),
+    // Jika ada lokal, gunakan FileImage; jika hanya server, pakai vm.profileImageProvider; jika tidak ada sama sekali, imageProvider == null
+    ImageProvider? imageProvider;
+    if (hasLocal) {
+      imageProvider = FileImage(_profileImage!);
+    } else if (hasNetwork) {
+      imageProvider = vm.profileImageProvider;
+    } else {
+      imageProvider = null;
+    }
+
+    // Jika imageProvider != null, boleh preview; kalau tidak, preview di-disable
+    final avatar = Hero(
+      tag: 'profile-image',
+      child: Material(
+        elevation: 4,
+        shape: const CircleBorder(),
+        child: CircleAvatar(
+          radius: 60,
+          backgroundColor: (imageProvider != null)
+              ? Colors.transparent
+              : _getAvatarColor(vm.namaLengkap),
+          backgroundImage: imageProvider,
+          child: imageProvider == null
+              ? Text(
+                  vm.namaLengkap.isNotEmpty
+                      ? vm.namaLengkap.trim()[0].toUpperCase()
+                      : '?',
+                  style: const TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
+                )
+              : null,
+        ),
+      ),
+    );
+
+    // Jika ada foto, bungkus dengan GestureDetector untuk preview; kalau tidak, hanya tampilkan avatar biasa
+    return Column(
+      children: [
+        Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            if (imageProvider != null)
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ProfileImagePreviewScreen(
+                        imageProvider: imageProvider!,
+                        heroTag:       'profile-image',
+                      ),
+                    ),
+                  );
+                },
+                child: avatar,
+              )
+            else
+              avatar,
+
+            // Tombol edit kamera (tetap ditampilkan)
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: InkWell(
+                onTap: _showImageOptions,
+                borderRadius: BorderRadius.circular(20),
+                child: const CircleAvatar(
+                  radius: 20,
+                  backgroundColor: AppColors.primary,
+                  child: Icon(Icons.camera_alt,
+                      color: Colors.white, size: 20),
                 ),
-              );
-            }));
-          },
-          child: avatar,
-        )
-      : avatar;
-
-  return Column(
-    children: [
-      Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          // Preview hanya kalau hasImage == true
-          previewWidget,
-
-          // Tombol edit selalu aktif
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: InkWell(
-              onTap: _showImageOptions,
-              borderRadius: BorderRadius.circular(20),
-              child: const CircleAvatar(
-                radius: 20,
-                backgroundColor: AppColors.primary,
-                child: Icon(Icons.camera_alt, color: Colors.white, size: 20),
               ),
             ),
-          ),
-        ],
-      ),
-    ],
-  );
-}
+          ],
+        ),
+      ],
+    );
+  }
 
-  // Fungsi untuk mengedit username dengan mengambil nilai asli dari UmumViewModel.
+  /// Edit Username: ambil current value, buka EditFieldScreen, panggil updateUserData
   Future<void> _editUsername() async {
     final umumVM = Provider.of<UmumViewModel>(context, listen: false);
-    final String currentUsername = umumVM.username; // ambil nilai asli
+    final String currentUsername = umumVM.username;
     final String? result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditFieldScreen( // tanpa 'const' agar nilai dinamis diteruskan
+        builder: (context) => EditFieldScreen(
           title: "Ubah Username",
           initialValue: currentUsername,
-          description: "Username hanya boleh mengandung huruf, angka, dan underscore.",
+          description:
+              "Username hanya boleh mengandung huruf, angka, dan underscore.",
           fieldLabel: "Username",
         ),
       ),
@@ -332,20 +382,22 @@ Widget _buildProfileHeader(UmumViewModel vm) {
       setState(() {
         _usernameController.text = result;
       });
-      await Provider.of<UmumViewModel>(context, listen: false)
-          .updateUserData(username: result);
+      await umumVM.updateUserData(username: result);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Perubahan tersimpan'), duration: Duration(seconds: 2)),
+          const SnackBar(
+            content: Text('Perubahan username tersimpan'),
+            duration: Duration(seconds: 2),
+          ),
         );
       }
     }
   }
 
-  // Fungsi untuk mengedit nama lengkap dengan mengambil nilai asli dari UmumViewModel.
+  /// Edit Nama Lengkap: mirip _editUsername
   Future<void> _editNamaLengkap() async {
     final umumVM = Provider.of<UmumViewModel>(context, listen: false);
-    final String currentNamaLengkap = umumVM.namaLengkap; // ambil nilai asli
+    final String currentNamaLengkap = umumVM.namaLengkap;
     final String? result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -361,11 +413,13 @@ Widget _buildProfileHeader(UmumViewModel vm) {
       setState(() {
         _namaLengkapController.text = result;
       });
-      await Provider.of<UmumViewModel>(context, listen: false)
-          .updateUserData(namaLengkap: result);
+      await umumVM.updateUserData(namaLengkap: result);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Perubahan tersimpan'), duration: Duration(seconds: 2)),
+          const SnackBar(
+            content: Text('Perubahan nama lengkap tersimpan'),
+            duration: Duration(seconds: 2),
+          ),
         );
       }
     }
@@ -377,11 +431,12 @@ Widget _buildProfileHeader(UmumViewModel vm) {
       create: (ctx) => UmumViewModel(apiClient: ctx.read<ApiClient>()),
       child: Consumer<UmumViewModel>(
         builder: (context, vm, _) {
-          // Update controllers if empty using data from the ViewModel.
+          // Set initial text di controller hanya sekali
           if (vm.username.isNotEmpty && _usernameController.text.isEmpty) {
             _usernameController.text = vm.username;
           }
-          if (vm.namaLengkap.isNotEmpty && _namaLengkapController.text.isEmpty) {
+          if (vm.namaLengkap.isNotEmpty &&
+              _namaLengkapController.text.isEmpty) {
             _namaLengkapController.text = vm.namaLengkap;
           }
           return Scaffold(
@@ -395,59 +450,83 @@ Widget _buildProfileHeader(UmumViewModel vm) {
                   const SizedBox(height: 16),
                   _buildProfileHeader(vm),
                   const SizedBox(height: 24),
-                  // Card untuk edit nama lengkap.
+
+                  // Card untuk edit nama lengkap
                   Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8, horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     elevation: 4,
                     child: ListTile(
                       onTap: _editNamaLengkap,
-                      leading: const Icon(Icons.account_circle, color: AppColors.primary),
-                      title: const Text("Nama Lengkap", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                      leading: const Icon(Icons.account_circle,
+                          color: AppColors.primary),
+                      title: const Text("Nama Lengkap",
+                          style: TextStyle(fontSize: 14, color: Colors.grey)),
                       subtitle: Text(
                         _namaLengkapController.text,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
                       ),
-                      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                      trailing: const Icon(Icons.chevron_right,
+                          color: Colors.grey),
                     ),
                   ),
-                  // Card untuk edit username.
+
+                  // Card untuk edit username
                   Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8, horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     elevation: 4,
                     child: ListTile(
                       onTap: _editUsername,
-                      leading: const Icon(Icons.person, color: AppColors.primary),
-                      title: const Text("Username", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                      leading:
+                          const Icon(Icons.person, color: AppColors.primary),
+                      title: const Text("Username",
+                          style: TextStyle(fontSize: 14, color: Colors.grey)),
                       subtitle: Text(
                         _usernameController.text,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
                       ),
-                      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                      trailing: const Icon(Icons.chevron_right,
+                          color: Colors.grey),
                     ),
                   ),
-                  // Card untuk field yang tidak bisa diedit (Role).
+
+                  // Card untuk field yang tidak bisa diedit (Role)
                   Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8, horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     elevation: 4,
                     child: ListTile(
                       onTap: () {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Role tidak bisa diubah"), duration: Duration(seconds: 2)),
+                            const SnackBar(
+                              content: Text("Role tidak bisa diubah"),
+                              duration: Duration(seconds: 2),
+                            ),
                           );
                         }
                       },
-                      leading: const Icon(Icons.verified_user_outlined, color: Colors.grey),
-                      title: const Text("Role", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                      leading: const Icon(Icons.verified_user_outlined,
+                          color: Colors.grey),
+                      title: const Text("Role",
+                          style: TextStyle(fontSize: 14, color: Colors.grey)),
                       subtitle: Text(
                         vm.role,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 16),
                 ],
               ),
@@ -459,11 +538,17 @@ Widget _buildProfileHeader(UmumViewModel vm) {
   }
 }
 
-/// Widget untuk preview foto profil secara fullscreen.
+/// Halaman preview foto profil fullscreen.
 class ProfileImagePreviewScreen extends StatelessWidget {
-  final File imageFile;
-  const ProfileImagePreviewScreen({Key? key, required this.imageFile}) : super(key: key);
-  
+  final ImageProvider imageProvider;
+  final String heroTag;
+
+  const ProfileImagePreviewScreen({
+    Key? key,
+    required this.imageProvider,
+    required this.heroTag,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -475,14 +560,20 @@ class ProfileImagePreviewScreen extends StatelessWidget {
       ),
       body: Center(
         child: Hero(
-          tag: 'profile-image',
-          child: Image.file(imageFile),
+          tag: heroTag,
+          child: Image(
+            image: imageProvider,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );
   }
 }
 
+/// Layar untuk mengedit satu field (username atau nama lengkap).
 class EditFieldScreen extends StatefulWidget {
   final String title;
   final String initialValue;
@@ -508,7 +599,6 @@ class _EditFieldScreenState extends State<EditFieldScreen>
   late TextEditingController _controller;
   final _formKey = GlobalKey<FormState>();
 
-  // Animasi fade
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -527,15 +617,13 @@ class _EditFieldScreenState extends State<EditFieldScreen>
     );
     _animationController.forward();
 
-    // Setelah frame pertama, attach listener:
+    // Jalankan validasi awal jika fieldLabel == "Username"
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final umumVM = Provider.of<UmumViewModel>(context, listen: false);
+      final umumVM = context.read<UmumViewModel>();
       if (widget.fieldLabel == "Username") {
-        // Mulai cek sekali untuk initialValue
         umumVM.onUsernameChanged(_controller.text);
       }
       _controller.addListener(() {
-        // setiap text berubah, update state (untuk suffixIcon)
         setState(() {});
         if (widget.fieldLabel == "Username") {
           umumVM.onUsernameChanged(_controller.text);
@@ -579,12 +667,9 @@ class _EditFieldScreenState extends State<EditFieldScreen>
 
   @override
   Widget build(BuildContext context) {
-    final umumVM = Provider.of<UmumViewModel>(context);
-    // Cek form valid
+    final umumVM = context.watch<UmumViewModel>();
     final isFormValid = _formKey.currentState?.validate() ?? false;
-    // Tombol Simpan aktif jika:
-    // - form valid
-    // - (bila username) sedang tidak mengecek & tersedia
+
     final canSave = isFormValid &&
         (widget.fieldLabel != "Username" ||
             (!umumVM.isCheckingUsername && umumVM.isUsernameAvailable));
@@ -596,8 +681,8 @@ class _EditFieldScreenState extends State<EditFieldScreen>
         elevation: 0.5,
         leading: TextButton(
           onPressed: _cancel,
-          child:
-              const Text("Batal", style: TextStyle(color: AppColors.text, fontSize: 13)),
+          child: const Text("Batal",
+              style: TextStyle(color: AppColors.text, fontSize: 13)),
         ),
         title: Text(
           widget.title,
@@ -625,8 +710,8 @@ class _EditFieldScreenState extends State<EditFieldScreen>
             child: ListView(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 12),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                   decoration: BoxDecoration(
                     color: AppColors.background,
                     borderRadius: BorderRadius.circular(12),
@@ -665,8 +750,6 @@ class _EditFieldScreenState extends State<EditFieldScreen>
                       hintText: widget.fieldLabel,
                       hintStyle: const TextStyle(color: Colors.grey),
                       border: InputBorder.none,
-
-                      // SUFFIX ICON:
                       suffixIcon: widget.fieldLabel == "Username"
                           ? _controller.text.isEmpty
                               ? null
@@ -694,12 +777,10 @@ class _EditFieldScreenState extends State<EditFieldScreen>
                       if (value == null || value.isEmpty) {
                         return "Tidak boleh kosong";
                       }
-                      // tambahkan validasi custom jika ada
                       if (widget.validator != null) {
                         final v = widget.validator!(value);
                         if (v != null) return v;
                       }
-                      // khusus username: cek ketersediaan
                       if (widget.fieldLabel == "Username") {
                         if (umumVM.isCheckingUsername) {
                           return "Sedang memeriksa...";

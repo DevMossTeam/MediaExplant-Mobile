@@ -9,7 +9,7 @@ class ProfileModel extends Profile {
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
       fullName: json['nama_lengkap'] as String? ?? 'User',
-      profilePic: json['profile_pic'] as String? ?? 'https://via.placeholder.com/150',
+      profilePic: json['profile_pic'] as String? ?? '',
     );
   }
 }
