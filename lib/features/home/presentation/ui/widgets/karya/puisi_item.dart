@@ -24,7 +24,7 @@ class _PuisiItemState extends State<PuisiItem> {
 
     return Container(
       width: 105,
-      height: 150,
+      // height: 150,
       margin: const EdgeInsets.only(right: 10),
       child: Stack(
         children: [

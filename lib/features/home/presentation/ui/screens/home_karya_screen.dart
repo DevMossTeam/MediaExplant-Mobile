@@ -78,11 +78,11 @@ class _HomeKaryaScreenState extends State<HomeKaryaScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final puisiList = Provider.of<PuisiViewmodel>(context).allPuisi;
-    final syairList = Provider.of<SyairViewmodel>(context).allSyair;
+    final puisiList = Provider.of<PuisiViewmodel>(context).allKarya;
+    final syairList = Provider.of<SyairViewmodel>(context).allKarya;
     final desainGrafisList =
-        Provider.of<DesainGrafisViewmodel>(context).allDesainGrafis;
-    final fotografiList = Provider.of<FotografiViewmodel>(context).allFotografi;
+        Provider.of<DesainGrafisViewmodel>(context).allKarya;
+    final fotografiList = Provider.of<FotografiViewmodel>(context).allKarya;
 
     // Jika ada data yang sedang dimuat, tampilkan loading indicator
     if (_isLoading.values.contains(true)) {

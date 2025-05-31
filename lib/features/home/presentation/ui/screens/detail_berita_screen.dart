@@ -62,7 +62,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
 
       final beritaTopikLainnyaViewmodel =
           Provider.of<BeritaTopikLainnyaViewmodel>(context, listen: false);
-      beritaTopikLainnyaViewmodel.fetchBeritaTopikLainnya(
+      beritaTopikLainnyaViewmodel.refresh(
           userLogin, widget.kategori, widget.idBerita);
 
       _isInit = false; // Pastikan hanya dipanggil sekali per instance

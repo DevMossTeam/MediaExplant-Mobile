@@ -17,6 +17,7 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/b
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/desain_grafis_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/fotografi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/karya_detail_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/karya_terkait_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_detail_viewmodel.dart';
@@ -123,16 +124,19 @@ Future<void> main() async {
         // provider karya
         ChangeNotifierProvider(create: (_) => KaryaDetailViewmodel()),
         ChangeNotifierProvider(
-          create: (_) => PuisiViewmodel(KaryaRepository()),
+          create: (_) => PuisiViewmodel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => SyairViewmodel(KaryaRepository()),
+          create: (_) => SyairViewmodel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => FotografiViewmodel(KaryaRepository()),
+          create: (_) => FotografiViewmodel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => DesainGrafisViewmodel(KaryaRepository()),
+          create: (_) => DesainGrafisViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => KaryaTerkaitViewmodel(),
         ),
 
         // Provider untuk Bookmark

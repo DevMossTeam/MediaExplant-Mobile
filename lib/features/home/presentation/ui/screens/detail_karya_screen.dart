@@ -4,7 +4,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:mediaexplant/features/home/models/karya/detail_karya.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/karya_detail_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/karya_terkait_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_detail_berita_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/puisi_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
@@ -49,6 +52,13 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
 
       karyaDetailVM.refresh(userLogin, widget.idKarya);
 
+      final karyaTerkaitVM =
+          Provider.of<KaryaTerkaitViewmodel>(context, listen: false);
+      karyaTerkaitVM.refresh(
+        userLogin,
+        widget.idKarya,
+      );
+
       _isInit = false;
     }
   }
@@ -58,6 +68,9 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
     final reaksiProvider = Provider.of<ReaksiProvider>(context, listen: false);
+
+    final karyaTerkaitList =
+        Provider.of<KaryaTerkaitViewmodel>(context).allKarya;
 
     // Ambil data Detailkarya dari karyaDetailViewmodel
     final karyaDetailVM = Provider.of<KaryaDetailViewmodel>(context);
@@ -227,7 +240,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                           Text(
+                          Text(
                             'Rilis: ${karya.release}',
                             style: const TextStyle(color: Colors.grey),
                             maxLines: 1,
@@ -414,147 +427,38 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                 ),
               ]),
             ),
-
-            // const SliverToBoxAdapter(
-            //   child: Padding(
-            //     padding: EdgeInsets.only(left: 15, top: 15, bottom: 10),
-            //     child: Row(
-            //       children: [
-            //         Text(
-            //           "Berita Terkait",
-            //           style: TextStyle(
-            //             fontSize: 16,
-            //             fontWeight: FontWeight.bold,
-            //             color: Colors.black,
-            //           ),
-            //         ),
-            //         SizedBox(
-            //           width: 10,
-            //         ),
-            //         Text(
-            //           "Mungkin anda sukai",
-            //           style: TextStyle(
-            //             fontSize: 12,
-            //             color: Colors.grey,
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
-            // // // BERITA terkait
-            // // SliverPadding(
-            // //   padding: const EdgeInsets.symmetric(horizontal: 5),
-            // //   sliver: SliverList(
-            // //     delegate: SliverChildBuilderDelegate(
-            // //       (context, index) {
-            // //         return ChangeNotifierProvider.value(
-            // //           value: beritaTerkaitList[index],
-            // //           child: BeritaPopulerItem(),
-            // //         );
-            // //       },
-            // //       childCount: beritaTerkaitList.length,
-            // //     ),
-            // //   ),
-            // // ),
-            // // SliverToBoxAdapter(
-            // //   child: Row(
-            // //     mainAxisAlignment: MainAxisAlignment.end,
-            // //     children: [
-            // //       TextButton(
-            // //         onPressed: () {
-            // //           // aksi saat tombol ditekan
-            // //         },
-            // //         child: const Text(
-            // //           "Selengkapnya >>",
-            // //           style: TextStyle(
-            // //             color: AppColors.primary,
-            // //             fontSize: 14,
-            // //           ),
-            // //         ),
-            // //       ),
-            // //     ],
-            // //   ),
-            // // ),
-
-            // // // berita terbaru
-            // // SliverPadding(
-            // //   padding: const EdgeInsets.only(top: 20),
-            // //   sliver: SliverList(
-            // //     delegate: SliverChildListDelegate([
-            // //       Container(
-            // //         color: Colors.grey.withAlpha(50),
-            // //         child: Padding(
-            // //           padding:
-            // //               const EdgeInsets.only(left: 10, top: 20, bottom: 20),
-            // //           child: Column(
-            // //             crossAxisAlignment: CrossAxisAlignment.start,
-            // //             children: [
-            // //               const Row(
-            // //                 children: [
-            // //                   Text(
-            // //                     "Terbaru",
-            // //                     style: TextStyle(
-            // //                       fontSize: 16,
-            // //                       fontWeight: FontWeight.bold,
-            // //                       color: Colors.black,
-            // //                     ),
-            // //                   ),
-            // //                   SizedBox(
-            // //                     width: 10,
-            // //                   ),
-            // //                   Text(
-            // //                     "Teratas untuk anda",
-            // //                     style: TextStyle(
-            // //                       fontSize: 12,
-            // //                       color: Colors.grey,
-            // //                     ),
-            // //                   ),
-            // //                 ],
-            // //               ),
-            // //               const SizedBox(height: 10),
-            // //               // BERITA TERBARU
-            // //               // SizedBox(
-            // //               //   height: 180,
-            // //               //   child: ListView.builder(
-            // //               //     scrollDirection: Axis.horizontal,
-            // //               //     itemCount: 10,
-            // //               //     itemBuilder: (context, index) {
-            // //               //       return ChangeNotifierProvider.value(
-            // //               //         value: beritaTerbaruList[index],
-            // //               //         child: BeritaTerbaruItem(),
-            // //               //       );
-            // //               //     },
-            // //               //   ),
-            // //               // ),
-            // //               Row(
-            // //                 mainAxisAlignment: MainAxisAlignment.end,
-            // //                 children: [
-            // //                   TextButton(
-            // //                     onPressed: () {
-            // //                       // aksi saat tombol ditekan
-            // //                     },
-            // //                     child: const Text(
-            // //                       "Selengkapnya >>",
-            // //                       style: TextStyle(
-            // //                         color: AppColors.primary,
-            // //                         fontSize: 14,
-            // //                       ),
-            // //                     ),
-            // //                   ),
-            // //                 ],
-            // //               ),
-            // //               const SizedBox(
-            // //                 height: 50,
-            // //               ),
-            // //             ],
-            // //           ),
-            // //         ),
-            // //       ),
-            // //       // const Divider(color: Colors.grey, thickness: 0.5),
-            // //     ]),
-            // //   ),
-            // // ),
+            SliverToBoxAdapter(
+              child: Padding(
+                  padding: const EdgeInsets.only(left: 15, top: 15),
+                  child: titleHeader("Karya Terkait", "mungkin anda suka")),
+            ),
+            // karya terkait
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15,right: 5),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 5,
+                      childAspectRatio: 0.5,
+                    ),
+                    itemCount: karyaTerkaitList.length,
+                    itemBuilder: (context, index) {
+                      return ChangeNotifierProvider.value(
+                        value: karyaTerkaitList[index],
+                        child: const PuisiItem(),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
 

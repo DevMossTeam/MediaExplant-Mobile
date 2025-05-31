@@ -71,7 +71,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
         setState(() => _isLoading['berita'] = false);
       }
     }
-    if (puisiVM.allPuisi.isEmpty) {
+    if (puisiVM.allKarya.isEmpty) {
       setState(() => _isLoading['puisi'] = true);
       try {
         await puisiVM.fetchPuisi(userLogin);
@@ -81,7 +81,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
         setState(() => _isLoading['puisi'] = false);
       }
     }
-    if (syairVM.allSyair.isEmpty) {
+    if (syairVM.allKarya.isEmpty) {
       setState(() => _isLoading['syair'] = true);
       try {
         await syairVM.fetchSyair(userLogin);
@@ -91,7 +91,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
         setState(() => _isLoading['syair'] = false);
       }
     }
-    if (desainGrafisVM.allDesainGrafis.isEmpty) {
+    if (desainGrafisVM.allKarya.isEmpty) {
       setState(() => _isLoading['desain_grafis'] = true);
       try {
         await desainGrafisVM.fetchDesainGrafis(userLogin);
@@ -101,7 +101,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
         setState(() => _isLoading['desain_grafis'] = false);
       }
     }
-    if (fotografiVM.allFotografi.isEmpty) {
+    if (fotografiVM.allKarya.isEmpty) {
       setState(() => _isLoading['fotografi'] = true);
       try {
         await fotografiVM.fetchFotografi(userLogin);
@@ -139,11 +139,11 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     final beritaList = Provider.of<BeritaTerbaruViewmodel>(context).allBerita;
     final majalahList = Provider.of<ProdukViewModel>(context).allMajalah;
     final buletinList = Provider.of<ProdukViewModel>(context).allBuletin;
-    final puisiList = Provider.of<PuisiViewmodel>(context).allPuisi;
-    final syairList = Provider.of<SyairViewmodel>(context).allSyair;
+    final puisiList = Provider.of<PuisiViewmodel>(context).allKarya;
+    final syairList = Provider.of<SyairViewmodel>(context).allKarya;
     final desainGrafisList =
-        Provider.of<DesainGrafisViewmodel>(context).allDesainGrafis;
-    final fotografiList = Provider.of<FotografiViewmodel>(context).allFotografi;
+        Provider.of<DesainGrafisViewmodel>(context).allKarya;
+    final fotografiList = Provider.of<FotografiViewmodel>(context).allKarya;
 
     return RefreshIndicator(
       onRefresh: _fetchKontenSecaraBerurutan,
@@ -259,7 +259,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                     scrollDirection: Axis.horizontal,
                     itemCount: puisiList.length.clamp(0, 10),
                     itemBuilder: (context, index) {
-                      return ChangeNotifierProvider.value(
+                      return ChangeNotifierProvider.value(  
                         value: puisiList[index],
                         child: PuisiItem(),
                       );

@@ -1,28 +1,47 @@
 import 'package:flutter/foundation.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
+
 import 'package:mediaexplant/features/home/presentation/logic/repository/karya/karya_repository.dart';
 
-
 class PuisiViewmodel with ChangeNotifier {
-  final KaryaRepository _repository;
-  List<Karya> _allPuisi = [];
-  bool _isLoaded = false;
+  final KaryaRepository _repository = KaryaRepository();
+  final int _limit = 10;
+  int _page = 1;
+  bool hasMore = true;
+  List<Karya> _karya = [];
+  bool isLoading = false;
 
-  PuisiViewmodel(this._repository);
-
-  List<Karya> get allPuisi => _allPuisi;
-  bool get isLoaded => _isLoaded;
+  List<Karya> get allKarya => _karya;
 
   Future<void> fetchPuisi(String? userId) async {
-    if (_isLoaded) return;
-    _allPuisi = await _repository.fetchKarya("puisi/terbaru", userId);
-    _isLoaded = true;
-    notifyListeners();
+    if (isLoading) return;
+    isLoading = true;
+    try {
+      final response =
+          await _repository.fetchKarya("puisi/terbaru", _page, _limit, userId);
+
+      if (response.length < _limit) {
+        hasMore = false;
+      }
+
+      _karya.addAll(response);
+      _page++;
+
+      notifyListeners();
+    } catch (e) {
+      if (kDebugMode) print("Error fetchKaryaTerbaru: $e");
+    } finally {
+      isLoading = false;
+    }
   }
 
-  void resetCache() {
-    _isLoaded = false;
-    _allPuisi = [];
+  Future<void> refresh(String? userId) async {
+    _page = 1;
+    hasMore = true;
+    isLoading = false;
+    _karya = [];
+
+    await fetchPuisi(userId);
     notifyListeners();
   }
 }
