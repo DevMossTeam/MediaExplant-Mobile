@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mediaexplant/core/constants/app_colors.dart'; // Sesuaikan path jika diperlukan
+import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/features/settings/logic/pusat_bantuan_viewmodel.dart'; // Import ViewModel
 
 void main() {
   runApp(const MyApp());
@@ -40,20 +41,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// Model data FAQ untuk menyimpan pertanyaan, jawaban, dan kategori.
-class FAQItem {
-  final String question;
-  final String answer;
-  final String category;
-
-  FAQItem({
-    required this.question,
-    required this.answer,
-    required this.category,
-  });
-}
-
 /// Layar Hubungi Kami dengan form kontak yang lengkap dan fungsional.
+/// (Tidak diubah—tetap sama seperti sebelumnya.)
 class HubungiKamiScreen extends StatefulWidget {
   const HubungiKamiScreen({super.key});
 
@@ -155,7 +144,8 @@ class _HubungiKamiScreenState extends State<HubungiKamiScreen> {
                   if (value == null || value.trim().isEmpty) {
                     return 'Email tidak boleh kosong';
                   }
-                  if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w]{2,4}$').hasMatch(value)) {
+                  if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w]{2,4}$')
+                      .hasMatch(value)) {
                     return 'Masukkan email yang valid';
                   }
                   return null;
@@ -188,12 +178,13 @@ class _HubungiKamiScreenState extends State<HubungiKamiScreen> {
               ElevatedButton(
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white, // Mengubah warna font tombol menjadi putih.
+                  foregroundColor: Colors.white, // Warna font tombol putih.
                 ),
                 child: const Text(
                   'Kirim Pesan',
@@ -208,7 +199,9 @@ class _HubungiKamiScreenState extends State<HubungiKamiScreen> {
   }
 }
 
-/// Layar Pusat Bantuan (FAQ) dengan fitur pencarian, filter kategori, refresh, dan navigasi.
+/// Layar Pusat Bantuan (FAQ) yang sekarang menggunakan ViewModel.
+/// Ditambahkan infinite scroll untuk memuat 5 item per batch,
+/// dan indikator loading saat memuat lebih banyak item.
 class PusatBantuanScreen extends StatefulWidget {
   const PusatBantuanScreen({super.key});
 
@@ -217,59 +210,47 @@ class PusatBantuanScreen extends StatefulWidget {
 }
 
 class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
+  // 1) Instance ViewModel
+  late PusatBantuanViewModel viewModel;
+
+  // 2) Controller untuk TextField pencarian
   late TextEditingController _searchController;
+
+  // 3) ScrollController untuk mendeteksi scroll
   late ScrollController _scrollController;
-  String _selectedCategory = 'Semua';
 
-  /// Daftar lengkap FAQ.
-  final List<FAQItem> _allFAQs = [
-    FAQItem(
-      question: 'Bagaimana cara mendaftar akun?',
-      answer:
-          'Untuk mendaftar akun, klik tombol "Daftar" di halaman login dan isi formulir pendaftaran dengan data yang valid.',
-      category: 'Akun',
-    ),
-    // Tambahkan FAQ lain sesuai kebutuhan.
-  ];
+  // 4) Jumlah item yang saat ini ditampilkan (untuk pagination)
+  int _itemsToDisplay = 5;
 
-  List<FAQItem> _filteredFAQs = [];
-  final List<String> _categories = ['Semua', 'Akun', 'Teknis', 'Umum', 'Backup'];
+  // 5) State loading saat memuat lebih banyak item
+  bool _isLoadingMore = false;
 
   @override
   void initState() {
     super.initState();
+    // Inisialisasi ViewModel
+    viewModel = PusatBantuanViewModel();
+    viewModel.addListener(() {
+      // Reset jumlah item saat data/hasil filter berubah
+      setState(() {
+        _itemsToDisplay = 5;
+      });
+    });
+
     _searchController = TextEditingController();
+    _searchController.addListener(() {
+      viewModel.setSearchQuery(_searchController.text);
+    });
+
     _scrollController = ScrollController();
-    _filteredFAQs = List.from(_allFAQs);
-    _searchController.addListener(_filterFAQs);
   }
 
   @override
   void dispose() {
+    viewModel.removeListener(() {});
     _searchController.dispose();
     _scrollController.dispose();
     super.dispose();
-  }
-
-  /// Filter FAQ berdasarkan pencarian dan kategori.
-  void _filterFAQs() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredFAQs = _allFAQs.where((faq) {
-        final matchesQuery = faq.question.toLowerCase().contains(query) ||
-            faq.answer.toLowerCase().contains(query);
-        final matchesCategory = _selectedCategory == 'Semua'
-            ? true
-            : faq.category == _selectedCategory;
-        return matchesQuery && matchesCategory;
-      }).toList();
-    });
-  }
-
-  /// Simulasi refresh data FAQ.
-  Future<void> _refreshFAQs() async {
-    await Future.delayed(const Duration(seconds: 2));
-    _filterFAQs();
   }
 
   /// Header dengan judul dan deskripsi.
@@ -312,6 +293,7 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
                   icon: const Icon(Icons.clear),
                   onPressed: () {
                     _searchController.clear();
+                    // Mengosongkan pencarian juga akan memicu listener dan ViewModel.setSearchQuery('')
                   },
                 )
               : null,
@@ -327,52 +309,52 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
     );
   }
 
-Widget _buildCategoryDropdown() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8),
-    child: DropdownButtonHideUnderline( // Sembunyikan garis bawah dropdown
-      child: DropdownButtonFormField<String>(
-        value: _selectedCategory,
-        decoration: InputDecoration(
-          labelText: 'Kategori',
-          filled: true,
-          fillColor: Colors.grey.shade100,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+  /// Dropdown kategori, memanggil viewModel.setSelectedCategory saat berubah.
+  Widget _buildCategoryDropdown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButtonFormField<String>(
+          value: viewModel.selectedCategory,
+          decoration: InputDecoration(
+            labelText: 'Kategori',
+            filled: true,
+            fillColor: Colors.grey.shade100,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.primary),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.primary),
+            ),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.primary),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.primary),
-          ),
+          items: viewModel.categories.map((cat) {
+            return DropdownMenuItem<String>(
+              value: cat,
+              child: Text(cat),
+            );
+          }).toList(),
+          onChanged: (newValue) {
+            if (newValue != null) {
+              viewModel.setSelectedCategory(newValue);
+            }
+          },
         ),
-        items: _categories.map((cat) {
-          return DropdownMenuItem<String>(
-            value: cat,
-            child: Text(cat),
-          );
-        }).toList(),
-        onChanged: (newValue) {
-          if (newValue != null) {
-            setState(() {
-              _selectedCategory = newValue;
-              _filterFAQs();
-            });
-          }
-        },
       ),
-    ),
-  );
-}
+    );
+  }
 
-
-  /// Daftar FAQ dalam bentuk kartu dengan ExpansionTile.
+  /// Daftar FAQ dalam bentuk kartu dengan ExpansionTile, hanya menampilkan batch sesuai _itemsToDisplay.
   Widget _buildFAQList() {
-    if (_filteredFAQs.isEmpty) {
+    final allFaqs = viewModel.filteredFAQs;
+
+    if (allFaqs.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(16),
         child: Center(
@@ -383,13 +365,20 @@ Widget _buildCategoryDropdown() {
         ),
       );
     }
+
+    // Tentukan berapa banyak item yang akan ditampilkan saat ini
+    final displayCount = _itemsToDisplay < allFaqs.length
+        ? _itemsToDisplay
+        : allFaqs.length;
+    final displayedFaqs = allFaqs.take(displayCount).toList();
+
     return ListView.separated(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: _filteredFAQs.length,
+      itemCount: displayedFaqs.length,
       separatorBuilder: (context, index) => const Divider(),
       itemBuilder: (context, index) {
-        final faq = _filteredFAQs[index];
+        final faq = displayedFaqs[index];
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 4),
           shape: RoundedRectangleBorder(
@@ -399,14 +388,17 @@ Widget _buildCategoryDropdown() {
           child: ExpansionTile(
             title: Text(
               faq.question,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.w500),
             ),
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
                   faq.answer,
-                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  style:
+                      const TextStyle(fontSize: 14, color: Colors.black87),
                 ),
               ),
             ],
@@ -416,6 +408,35 @@ Widget _buildCategoryDropdown() {
     );
   }
 
+  /// Fungsi untuk menambah jumlah item saat mencapai bagian bawah secara asynchronous.
+  void _maybeLoadMore() {
+    final totalFaqs = viewModel.filteredFAQs.length;
+    if (!_isLoadingMore && _itemsToDisplay < totalFaqs) {
+      setState(() {
+        _isLoadingMore = true; // Mulai loading
+      });
+
+      // Simulasi delay untuk memuat lebih banyak data (bisa diganti fetch API).
+      Future.delayed(const Duration(seconds: 1), () {
+        setState(() {
+          _itemsToDisplay = (_itemsToDisplay + 5) < totalFaqs
+              ? (_itemsToDisplay + 5)
+              : totalFaqs;
+          _isLoadingMore = false; // Selesai loading
+        });
+      });
+    }
+  }
+
+  /// Listener scroll mengawasi apakah sudah mencapai ujung bawah.
+  bool _onScrollNotification(ScrollNotification notification) {
+    if (notification.metrics.pixels >=
+        notification.metrics.maxScrollExtent - 100) {
+      _maybeLoadMore();
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -423,52 +444,49 @@ Widget _buildCategoryDropdown() {
         title: const Text('Pusat Bantuan'),
       ),
       body: RefreshIndicator(
-        onRefresh: _refreshFAQs,
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 16),
-              _buildSearchBar(),
-              const SizedBox(height: 8),
-              _buildCategoryDropdown(),
-              const SizedBox(height: 24),
-              const Text(
-                'Pertanyaan yang Sering Diajukan',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.text,
+        onRefresh: () async {
+          await viewModel.refreshFAQs();
+          // Setelah refresh, reset jumlah item
+          setState(() {
+            _itemsToDisplay = 5;
+          });
+        },
+        child: NotificationListener<ScrollNotification>(
+          onNotification: _onScrollNotification,
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 16),
+                _buildSearchBar(),
+                const SizedBox(height: 8),
+                _buildCategoryDropdown(),
+                const SizedBox(height: 24),
+                const Text(
+                  'Pertanyaan yang Sering Diajukan',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.text,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              _buildFAQList(),
-              const SizedBox(height: 24),
-Center(
-  child: ElevatedButton.icon(
-    onPressed: () {
-      Navigator.pushNamed(context, '/hubungi');
-    },
-    // Hapus "const" dan tetapkan warna ikon secara eksplisit
-    icon: const Icon(Icons.contact_support, color: Colors.white),
-    label: const Text('Hubungi Tim Dukungan'),
-    style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      backgroundColor: AppColors.primary,
-      foregroundColor: Colors.white, // Mengatur warna teks dan ikon menjadi putih
-    ),
-  ),
-),
-
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 16),
+                _buildFAQList(),
+                const SizedBox(height: 16),
+                // Tampilkan indikator loading di bawah jika sedang memuat lebih banyak item
+                if (_isLoadingMore)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -480,8 +498,8 @@ Center(
             curve: Curves.easeInOut,
           );
         },
-      backgroundColor: AppColors.primary,
-      foregroundColor: Colors.white, // Mengatur warna teks dan ikon menjadi putih
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
         child: const Icon(Icons.arrow_upward),
       ),
     );
