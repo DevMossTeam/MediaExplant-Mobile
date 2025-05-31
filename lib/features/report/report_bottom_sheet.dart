@@ -69,31 +69,30 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.9,
-      maxChildSize: 0.9,
-      builder: (_, controller) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Handle Sheet
-              Center(
-                child: Container(
-                  width: 50,
-                  height: 4,
-                  margin: const EdgeInsets.only(top: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[400],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+      initialChildSize: 0.8,
+      builder: (_, controller) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0),
+        child: Column(
+          children: [
+            // Handle Sheet
+            Center(
+              child: Container(
+                width: 50,
+                height: 4,
+                margin: const EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              const SizedBox(height: 10),
+            ),
+            const SizedBox(height: 10),
 
-              // Judul
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
+            // Judul
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Align(
+                alignment: Alignment.centerLeft,
                 child: Text(
                   isDetailShown ? "Detail Pesan" : "Laporkan Konten",
                   style: const TextStyle(
@@ -102,109 +101,110 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
                   ),
                 ),
               ),
+            ),
 
-              const SizedBox(height: 10),
+            const SizedBox(height: 10),
+            const Divider(thickness: 1),
 
-              const Divider(thickness: 1),
-
-              // Konten kategori & alasan
-              if (!isDetailShown) ...[
-                ...reportOptions.entries.map((entry) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      RadioListTile<String>(
-                        title: Text(entry.key),
-                        value: entry.key,
-                        groupValue: selectedCategory,
-                        fillColor: WidgetStateProperty.resolveWith<Color>(
-                          (Set<WidgetState> states) {
-                            if (states.contains(WidgetState.selected)) {
-                              return AppColors.primary;
-                            }
-                            return Colors.grey;
-                          },
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedCategory = value;
-                            pilihPesan = null;
-                          });
-                        },
-                      ),
-                      if (selectedCategory == entry.key)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: DropdownButtonFormField<String>(
-                            value: pilihPesan,
-                            dropdownColor: AppColors.background,
-                            decoration: InputDecoration(
-                              labelText: "Pilih alasan",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+            // Konten utama
+            Expanded(
+              child: isDetailShown
+                  ? ReportDetailContent(
+                      itemId: widget.itemId,
+                      pesanType: widget.pesanType,
+                      pesan: pilihPesan!,
+                      onBack: () {
+                        setState(() {
+                          isDetailShown = false;
+                        });
+                      },
+                    )
+                  : ListView(
+                      controller: controller,
+                      padding: const EdgeInsets.only(bottom: 20),
+                      children: reportOptions.entries.map((entry) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RadioListTile<String>(
+                              title: Text(entry.key),
+                              value: entry.key,
+                              groupValue: selectedCategory,
+                              fillColor: WidgetStateProperty.resolveWith<Color>(
+                                (Set<WidgetState> states) {
+                                  if (states.contains(WidgetState.selected)) {
+                                    return AppColors.primary;
+                                  }
+                                  return Colors.grey;
+                                },
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    const BorderSide(color: AppColors.primary),
-                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedCategory = value;
+                                  pilihPesan = null;
+                                });
+                              },
                             ),
-                            items: entry.value
-                                .map((e) =>
-                                    DropdownMenuItem(value: e, child: Text(e)))
-                                .toList(),
-                            onChanged: (val) {
-                              setState(() {
-                                pilihPesan = val;
-                              });
-                            },
-                          ),
-                        ),
-                    ],
-                  );
-                }),
-                const SizedBox(height: 20),
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all<Color>(
-                            pilihPesan != null
-                                ? AppColors.primary
-                                : Colors.grey,
-                          ),
-                        ),
-                        onPressed: pilihPesan != null ? goToDetailPage : null,
-                        child: const Text(
-                          "Berikutnya",
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
+                            if (selectedCategory == entry.key)
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 30),
+                                child: DropdownButtonFormField<String>(
+                                  value: pilihPesan,
+                                  dropdownColor: AppColors.background,
+                                  decoration: InputDecoration(
+                                    labelText: "Pilih alasan",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: const BorderSide(
+                                          color: AppColors.primary),
+                                    ),
+                                  ),
+                                  items: entry.value
+                                      .map((e) => DropdownMenuItem(
+                                          value: e, child: Text(e)))
+                                      .toList(),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      pilihPesan = val;
+                                    });
+                                  },
+                                ),
+                              ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+            ),
+
+            // Tombol "Berikutnya"
+            if (!isDetailShown)
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all<Color>(
+                        pilihPesan != null ? AppColors.primary : Colors.grey,
+                      ),
+                    ),
+                    onPressed: pilihPesan != null ? goToDetailPage : null,
+                    child: const Text(
+                      "Berikutnya",
+                      style: TextStyle(
+                        color: Colors.white,
                       ),
                     ),
                   ),
                 ),
-              ],
-
-              // Tampilan Form Detail
-              if (isDetailShown)
-                ReportDetailContent(
-                  itemId: widget.itemId,
-                  pesanType: widget.pesanType,
-                  pesan: pilihPesan!,
-                  onBack: () {
-                    setState(() {
-                      isDetailShown = false;
-                    });
-                  },
-                ),
-            ],
-          ),
-        ],
+              ),
+          ],
+        ),
       ),
     );
   }

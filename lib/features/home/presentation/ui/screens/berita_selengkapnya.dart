@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 import 'package:mediaexplant/features/home/models/berita/berita.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_dari_kami_repository.dart';
-import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_rekomendasi_lain_repository.dart';
+import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_hot_repository.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_terbaru_repository.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/beritaRepo/berita_terkait_repository.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
@@ -169,8 +169,8 @@ class BeritaSelengkapnyaViewModel with ChangeNotifier {
               .fetchBeritaTerbaru(_page, _limit, userLogin);
           break;
         case KategoriBerita.rekomendasiLain:
-          result = await BeritaRekomendasiLainRepository()
-              .fetchBeritaRekomendasiLain(_page, _limit, userLogin);
+          result = await BeritaHotRepository()
+              .fetchBeritaHot(_page, _limit, userLogin);
           break;
         case KategoriBerita.rekomendasi:
           result = await BeritaDariKamiRepository()
