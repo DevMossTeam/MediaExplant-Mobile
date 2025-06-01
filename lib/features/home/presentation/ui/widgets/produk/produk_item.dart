@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/core/utils/time_ago_util.dart';
 import 'package:mediaexplant/features/home/models/produk/produk.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_produk_screen.dart';
 
@@ -66,7 +67,7 @@ class _ProdukItemState extends State<ProdukItem> {
                     color: AppColors.primary),
               ),
               Text(
-                produk.release_date,
+                timeAgoFormat(DateTime.parse(produk.release_date)),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 12, color: Colors.grey),

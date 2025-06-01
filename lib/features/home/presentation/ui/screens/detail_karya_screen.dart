@@ -5,6 +5,7 @@ import 'package:html/parser.dart' as html_parser;
 import 'package:mediaexplant/features/home/models/karya/detail_karya.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/karya_detail_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/karya_terkait_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/karya_selengkapnya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_detail_berita_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/puisi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
@@ -435,7 +436,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
             // karya terkait
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.only(left: 15,right: 5),
+                padding: const EdgeInsets.only(left: 15, right: 5),
                 child: SizedBox(
                   width: double.infinity,
                   child: GridView.builder(
@@ -458,6 +459,50 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                   ),
                 ),
               ),
+            ),
+            SliverToBoxAdapter(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      final karyaId = karya.idKarya;
+                      final kategoriKarya = karya.kategori;
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) {
+                          final viewModel = KaryaSelengkapnyaViewModel();
+                          return ChangeNotifierProvider<
+                              KaryaSelengkapnyaViewModel>(
+                            create: (_) {
+                              // Pastikan parameter lengkap dikirim di awal
+                              viewModel.setKategori(KategoriKarya.terkait,
+                                  KaryaId: karyaId,
+                                  KategoriKarya: kategoriKarya);
+                              return viewModel;
+                            },
+                            child: KaryaSelengkapnya(
+                              kategori: KategoriKarya.terkait,
+                              KaryaIdTerkait: karyaId,
+                              kategoriTerkait: kategoriKarya,
+                            ),
+                          );
+                        }),
+                      );
+                    },
+                    child: const Text(
+                      "Selengkapnya >>",
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 70),
             ),
           ],
         ),

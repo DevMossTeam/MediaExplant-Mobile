@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/core/utils/time_ago_util.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_karya_screen.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +55,7 @@ class _DesainGrafisItemState extends State<DesainGrafisItem> {
                     color: AppColors.primary),
               ),
               Text(
-                karya.release,
+                timeAgoFormat(DateTime.parse(karya.release)),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 12, color: Colors.grey),

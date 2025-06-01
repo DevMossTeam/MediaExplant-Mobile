@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
+import 'package:mediaexplant/core/utils/time_ago_util.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/detail_karya_screen.dart';
 
@@ -59,7 +60,7 @@ class FotografiItem extends StatelessWidget {
                       Text(
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        karya.release,
+                        timeAgoFormat(DateTime.parse(karya.release)),
                         style:
                             const TextStyle(fontSize: 12, color: Colors.grey),
                       ),

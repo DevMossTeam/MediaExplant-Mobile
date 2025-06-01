@@ -92,7 +92,7 @@ class _BeritaSelengkapnyaState extends State<BeritaSelengkapnya> {
                 if (index < vm.berita.length) {
                   return ChangeNotifierProvider.value(
                     value: vm.berita[index],
-                    child: const BeritaPopulerItem(),
+                    child: BeritaPopulerItem(),
                   );
                 } else {
                   return const Padding(
