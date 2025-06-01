@@ -20,10 +20,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    // Hapus pemanggilan loadPreferences()—karena sekarang inisialisasi sudah di constructor ViewModel
+    // Tidak perlu memanggil loadPreferences() karena sudah di constructor ViewModel
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifVm = context.read<SettingNotifikasiViewModel>();
-      // Tidak perlu memanggil lagi loadPreferences()
     });
   }
 
@@ -80,9 +79,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 _NotificationToggleItem(
                   isEnabled: notifVm.pushNotifications,
-                  isLoading: !notifVm.isInitialized,
-                  onChanged: (value) =>
-                      notifVm.updatePushNotifications(value),
+                  isLoading: !notifVm.isInitialized || notifVm.isProcessing,
+                  // Kirim context agar ViewModel bisa memunculkan Snackbar
+                  onChanged: (value) => notifVm.updatePushNotifications(context, value),
                 ),
 
                 const SizedBox(height: 24),
@@ -152,6 +151,8 @@ class SectionHeader extends StatelessWidget {
   }
 }
 
+/// Perubahan: menerima `isLoading` yang merupakan gabungan
+/// dari !isInitialized atau isProcessing
 class _NotificationToggleItem extends StatelessWidget {
   final bool isEnabled;
   final bool isLoading;

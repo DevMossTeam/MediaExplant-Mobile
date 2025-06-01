@@ -18,28 +18,40 @@ class SettingNotifikasiViewModel extends ChangeNotifier {
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
 
-  /// Menyimpan token FCM yang aktif
+  /// NEW: menandai apakah sedang proses ON/OFF FCM
+  bool _isProcessing = false;
+  bool get isProcessing => _isProcessing;
+
   String? _deviceToken;
   String? get deviceToken => _deviceToken;
 
-  /// StreamSubscription untuk onTokenRefresh agar bisa dibatalkan
   StreamSubscription<String>? _tokenRefreshSubscription;
 
   SettingNotifikasiViewModel() {
     _initPreferencesAndFCM();
   }
 
-  /// 1) Baca SharedPreferences → kemudian inisialisasi atau disable FCM
   Future<void> _initPreferencesAndFCM() async {
     final prefs = await SharedPreferences.getInstance();
     _pushNotifications = prefs.getBool('pushNotifications') ?? true;
     debugPrint('[Notifikasi] loadPreferences: $_pushNotifications');
 
+    // Cek status izin notifikasi (tanpa prompt)
+    PermissionStatus status = await Permission.notification.status;
+    debugPrint('[Notifikasi] current Permission status: $status');
+
     if (_pushNotifications) {
-      // Bila sebelumnya sudah ON, langsung enable FCM
-      await _enableFCM_internal();
+      if (status != PermissionStatus.granted) {
+        // Pref ON tetapi izin belum granted → paksa OFF
+        debugPrint(
+            '[Notifikasi] Pref=ON tapi permission belum granted. Memaksa OFF.');
+        _pushNotifications = false;
+        await prefs.setBool('pushNotifications', false);
+        await _disableFCM_internal();
+      } else {
+        await _enableFCM_internal();
+      }
     } else {
-      // Jika sebelumnya OFF, pastikan FCM benar‐benar dinonaktifkan
       await _disableFCM_internal();
     }
 
@@ -47,51 +59,91 @@ class SettingNotifikasiViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 2) Saat user toggle ON/OFF di UI
-  Future<void> updatePushNotifications(bool value) async {
+  /// Perubahan: menerima `BuildContext` untuk menampilkan Snackbar
+  Future<void> updatePushNotifications(BuildContext context, bool value) async {
     debugPrint('[Notifikasi] updatePushNotifications: $value');
 
-    if (value) {
-      // a) Request permission sekali saja di sini
-      final status = await _fcm.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
-      debugPrint('[Notifikasi] Permission: ${status.authorizationStatus}');
+    // Tunjukkan loading spinner di UI
+    _isProcessing = true;
+    notifyListeners();
 
-      if (status.authorizationStatus == AuthorizationStatus.authorized) {
-        // b) Aktifkan FCM
+    final prefs = await SharedPreferences.getInstance();
+
+    try {
+      if (value) {
+        // 1) Cek status izin saat ini (tanpa prompt)
+        PermissionStatus status = await Permission.notification.status;
+        debugPrint('[Notifikasi] cek Permission saat toggle: $status');
+
+        // 2) Selalu request permission kembali
+        PermissionStatus newStatus = await Permission.notification.request();
+        debugPrint('[Notifikasi] hasil requestPermission(): $newStatus');
+
+        if (newStatus == PermissionStatus.permanentlyDenied) {
+          // Jika sudah permanentlyDenied:
+          // Tampilkan Snackbar dulu, beri delay 3 detik, lalu buka Settings aplikasi
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Anda diminta untuk mengaktifkan notifikasi di pengaturan aplikasi. '
+                'Mengalihkan dalam 3 detik',
+              ),
+              duration: Duration(seconds: 3),
+            ),
+          );
+
+          // Delay 3 detik agar pengguna sempat membaca Snackbar
+          await Future.delayed(Duration(seconds: 3));
+
+          // Buka halaman Settings aplikasi
+          await openAppSettings();
+
+          // Rollback ke OFF
+          _pushNotifications = false;
+          await prefs.setBool('pushNotifications', false);
+          notifyListeners();
+          return;
+        }
+
+        if (newStatus != PermissionStatus.granted) {
+          debugPrint('[Notifikasi] User menolak izin. Toggle tetap OFF.');
+          // Rollback ke OFF
+          _pushNotifications = false;
+          await prefs.setBool('pushNotifications', false);
+          notifyListeners();
+          return;
+        }
+
+        // 3) Jika izin granted, lanjut enable FCM
         await _enableFCM_internal();
       } else {
-        debugPrint('[Notifikasi] User menolak permission notifikasi');
-        // Jangan simpan pref jika permission ditolak
-        return;
+        // User mematikan toggle → disable FCM
+        await _disableFCM_internal();
       }
-    } else {
-      // c) Matikan FCM
-      await _disableFCM_internal();
+
+      // 4) Simpan state baru ke SharedPreferences
+      _pushNotifications = value;
+      await prefs.setBool('pushNotifications', value);
+      debugPrint('[Notifikasi] SharedPreferences updated: $_pushNotifications');
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('[Notifikasi] ❌ Error di updatePushNotifications: $e');
+      // Bila perlu, tampilkan Snackbar/Toast error di sini
+    } finally {
+      // Hentikan loading spinner
+      _isProcessing = false;
+      notifyListeners();
     }
-
-    // d) Simpan flag baru ke SharedPreferences
-    _pushNotifications = value;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('pushNotifications', value);
-    debugPrint('[Notifikasi] SharedPreferences updated: $_pushNotifications');
-
-    notifyListeners();
   }
 
-  /// PRIVATE: Langkah‐langkah untuk mengaktifkan FCM
   Future<void> _enableFCM_internal() async {
     try {
       debugPrint('[Notifikasi] >> Enabling FCM...');
 
-      // 1) Aktifkan autoInit (agar FirebaseMessaging dapat generate token baru)
       await _fcm.setAutoInitEnabled(true);
       debugPrint('[Notifikasi] setAutoInitEnabled(true) done.');
 
-      // 2) Ambil token FCM baru
       final token = await _fcm.getToken();
       if (token != null) {
         await _updateDeviceToken(token);
@@ -99,7 +151,6 @@ class SettingNotifikasiViewModel extends ChangeNotifier {
         debugPrint('[Notifikasi] getToken() returned null.');
       }
 
-      // 3) Dengar token refresh (cancelling listener yang lama jika ada)
       await _tokenRefreshSubscription?.cancel();
       _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh.listen(
         (newToken) async {
@@ -108,22 +159,18 @@ class SettingNotifikasiViewModel extends ChangeNotifier {
         },
       );
 
-      // 4) Subscribe ke topic global (opsional; sesuaikan dengan kebutuhan backend)
       await _fcm.subscribeToTopic('all');
       debugPrint('[Notifikasi] subscribeToTopic("all") sukses.');
-
     } catch (e) {
       debugPrint('[Notifikasi] ❌ Error di _enableFCM_internal(): $e');
     }
   }
 
-  /// PRIVATE: Kirim token FCM ke backend dan simpan lokal
   Future<void> _updateDeviceToken(String token) async {
     _deviceToken = token;
     debugPrint('[Notifikasi] 🎫 Got FCM Device Token: $token');
     notifyListeners();
 
-    // Kirim token ke backend Laravel di endpoint “device-token”
     final payload = {
       'device_token': token,
       'device_type': Platform.isAndroid ? 'android' : 'ios',
@@ -136,31 +183,24 @@ class SettingNotifikasiViewModel extends ChangeNotifier {
     }
   }
 
-  /// PRIVATE: Langkah‐langkah untuk menonaktifkan FCM
   Future<void> _disableFCM_internal() async {
     try {
       debugPrint('[Notifikasi] >> Disabling FCM...');
 
-      // 1) Matikan autoInit agar FCM tidak membuat token baru otomatis
       await _fcm.setAutoInitEnabled(false);
       debugPrint('[Notifikasi] setAutoInitEnabled(false) done.');
 
-      // 2) Unsubscribe dari topik (jika sebelumnya subscribe)
       await _fcm.unsubscribeFromTopic('all');
       debugPrint('[Notifikasi] unsubscribeFromTopic("all") done.');
 
-      // 3) Delete token di device
       await _fcm.deleteToken();
       debugPrint('[Notifikasi] deleteToken() done.');
 
-      // 4) Batalkan listener onTokenRefresh jika ada
       await _tokenRefreshSubscription?.cancel();
       _tokenRefreshSubscription = null;
 
-      // 5) Clear token lokal
       _deviceToken = null;
       notifyListeners();
-
     } catch (e) {
       debugPrint('[Notifikasi] ❌ Error di _disableFCM_internal(): $e');
     }
@@ -168,9 +208,7 @@ class SettingNotifikasiViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    // Batalkan subscription onTokenRefresh agar tidak memanggil callback setelah dispose
     _tokenRefreshSubscription?.cancel();
-    _tokenRefreshSubscription = null;
     super.dispose();
   }
 }
