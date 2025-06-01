@@ -28,24 +28,33 @@ class SignUpViewModel extends ChangeNotifier {
   AuthResponse? _authResponse;
   AuthResponse? get authResponse => _authResponse;
 
+  /// Properti baru: menandai apakah user sudah dianggap “logged in”
+  bool _isLoggedIn = false;
+  bool get isLoggedIn => _isLoggedIn;
+
   Future<Map<String, dynamic>> registerStep1({
     required String namaLengkap,
     required String namaPengguna,
     required String email,
   }) async {
     _setLoading(true);
+    _setError(null);
+
     try {
       final response = await registerStep1UseCase(
         namaLengkap: namaLengkap,
         namaPengguna: namaPengguna,
         email: email,
       );
+
       if (response['success'] != true) {
-        _setError(response['message']);
+        // Pesan dari API diasumsikan sudah dalam Bahasa Indonesia
+        _setError(_cleanError(response['message']));
       }
+
       return response;
     } catch (e) {
-      _setError(e.toString());
+      _setError(_cleanError(e.toString()));
       return {'success': false, 'message': _errorMessage};
     } finally {
       _setLoading(false);
@@ -57,17 +66,21 @@ class SignUpViewModel extends ChangeNotifier {
     required String otp,
   }) async {
     _setLoading(true);
+    _setError(null);
+
     try {
       final response = await verifyOtpUseCase(email: email, otp: otp);
+
       if (response['success'] == true) {
         _otpVerified = true;
         notifyListeners();
       } else {
-        _setError(response['message']);
+        _setError(_cleanError(response['message']));
       }
+
       return response;
     } catch (e) {
-      _setError(e.toString());
+      _setError(_cleanError(e.toString()));
       return {'success': false, 'message': _errorMessage};
     } finally {
       _setLoading(false);
@@ -104,9 +117,14 @@ class SignUpViewModel extends ChangeNotifier {
         namaLengkap: authRes.user.namaLengkap,
       );
 
+      // === BAGIAN BARU: Tandai user sebagai “logged in” ===
+      _isLoggedIn = true;
+      notifyListeners();
+      // ===================================================
+
       return _authResponse;
     } catch (e) {
-      _setError(e.toString());
+      _setError(_cleanError(e.toString()));
       return null;
     } finally {
       _setLoading(false);
@@ -121,5 +139,13 @@ class SignUpViewModel extends ChangeNotifier {
   void _setError(String? message) {
     _errorMessage = message;
     notifyListeners();
+  }
+
+  /// Fungsi bantu untuk membersihkan prefix "ApiException..." di depan pesan asli.
+  String _cleanError(String raw) {
+    return raw.replaceAll(
+      RegExp(r'^ApiException.*?:\s*', caseSensitive: false),
+      '',
+    );
   }
 }

@@ -11,7 +11,7 @@ import '../otp/forgot_password_verify_email.dart';
 import '../../../../settings/logic/keamanan_viewmodel.dart';
 
 /// Halaman Sign In dengan background gradient gelap dan card login terang.
-/// Jika tombol back ditekan, akan langsung menuju halaman profile.
+/// Jika tombol back ditekan, akan langsung menuju halaman home.
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
 
@@ -34,62 +34,67 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-Future<void> _signIn() async {
-  if (_formKey.currentState!.validate()) {
-    final signInViewModel = context.read<SignInViewModel>();
+  Future<void> _signIn() async {
+    if (_formKey.currentState!.validate()) {
+      final signInViewModel = context.read<SignInViewModel>();
 
-    // Tampilkan SnackBar "Signing in..."
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Signing in..."),
-        duration: Duration(seconds: 1),
-      ),
-    );
-
-    await signInViewModel.signIn(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
-
-    // Hide SnackBar
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    await loadUserLogin();
-
-    // Debug: Ambil dan tampilkan data AuthStorage
-    final authData = await AuthStorage.getUserData();
-    debugPrint("AuthStorage Data after signIn: $authData");
-
-    
-
-    if (signInViewModel.errorMessage != null) {
-      // Tampilkan pesan error jika terjadi kesalahan
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(signInViewModel.errorMessage!),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    } else if (signInViewModel.authResponse != null) {
-      // 1. Refresh profile data
-      await context.read<ProfileViewModel>().refreshUserData();
-
-      // 2. **Refresh SettingsViewModel** agar SettingsScreen tahu sudah login
-      await context.read<SettingsViewModel>().refreshLoginState();
-
-      // 3. Tampilkan snackbar sukses
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Login berhasil!"),
-          duration: Duration(seconds: 1),
+      // Tampilkan dialog loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+          ),
         ),
       );
 
-      // 4. Navigasi ke home
-      Navigator.pushReplacementNamed(context, '/home');
+      await signInViewModel.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // Tutup dialog loading
+      if (Navigator.canPop(context)) Navigator.pop(context);
+
+      await loadUserLogin();
+
+      // Debug: Ambil dan tampilkan data AuthStorage
+      final authData = await AuthStorage.getUserData();
+      debugPrint("AuthStorage Data after signIn: $authData");
+
+      if (signInViewModel.errorMessage != null) {
+        // Dapatkan pesan error tanpa prefix "Api Exception:"
+        String raw = signInViewModel.errorMessage!;
+        String pesan = raw.replaceAll(RegExp(r'Api Exception:\s*', caseSensitive: false), '');
+
+        // Tampilkan pesan kesalahan dalam bahasa Indonesia
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(pesan),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } else if (signInViewModel.authResponse != null) {
+        // 1. Refresh profile data
+        await context.read<ProfileViewModel>().refreshUserData();
+
+        // 2. Refresh SettingsViewModel agar SettingsScreen tahu sudah login
+        await context.read<SettingsViewModel>().refreshLoginState();
+
+        // 3. Tampilkan snackbar sukses
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Login berhasil!"),
+            duration: Duration(seconds: 1),
+          ),
+        );
+
+        // 4. Navigasi ke home
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     }
   }
-}
-
 
   /// Navigasi ke halaman Sign Up.
   void _goToSignUp() {
@@ -255,7 +260,7 @@ class _LoginCard extends StatelessWidget {
                 style: const TextStyle(color: Colors.black87),
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.person, color: AppColors.primary),
-                  labelText: "Username or Email",
+                  labelText: "Username atau Email",
                   labelStyle: const TextStyle(color: Colors.black54),
                   enabledBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.black38),
@@ -270,7 +275,7 @@ class _LoginCard extends StatelessWidget {
                   ),
                 ),
                 validator: (value) => (value == null || value.trim().isEmpty)
-                    ? "Please enter your username or email"
+                    ? "Silakan masukkan username atau email"
                     : null,
               ),
               const SizedBox(height: 20),
@@ -281,7 +286,7 @@ class _LoginCard extends StatelessWidget {
                 style: const TextStyle(color: Colors.black87),
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.lock, color: AppColors.primary),
-                  labelText: "Password",
+                  labelText: "Kata Sandi",
                   labelStyle: const TextStyle(color: Colors.black54),
                   enabledBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.black38),
@@ -304,10 +309,10 @@ class _LoginCard extends StatelessWidget {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return "Please enter your password";
+                    return "Silakan masukkan kata sandi";
                   }
                   if (value.length < 6) {
-                    return "Password must be at least 6 characters";
+                    return "Kata sandi harus minimal 6 karakter";
                   }
                   return null;
                 },
@@ -323,7 +328,7 @@ class _LoginCard extends StatelessWidget {
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                     child: Text(
-                      "Forgot Password?",
+                      "Lupa Kata Sandi?",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -349,7 +354,7 @@ class _LoginCard extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    "Sign In",
+                    "Masuk",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -374,7 +379,7 @@ class _LoginCard extends StatelessWidget {
                   GestureDetector(
                     onTap: onSignUp,
                     child: const Text(
-                      "Sign Up",
+                      "Daftar",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -410,7 +415,7 @@ class _FooterWidget extends StatelessWidget {
         ),
         SizedBox(height: 5),
         Text(
-          "Privacy Policy | Terms of Service",
+          "Kebijakan Privasi | Syarat Layanan",
           style: TextStyle(
             color: Colors.white70,
             fontSize: 12,
@@ -452,44 +457,49 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
     super.dispose();
   }
 
-/// ForgotPasswordSheet
-Future<void> _sendOtp() async {
-  if (!_forgotFormKey.currentState!.validate()) return;
-  setState(() => _loading = true);
+  /// ForgotPasswordSheet: Kirim OTP untuk reset password
+  Future<void> _sendOtp() async {
+    if (!_forgotFormKey.currentState!.validate()) return;
+    setState(() => _loading = true);
 
-  final vm = context.read<KeamananViewModel>();
-  final email = _forgotEmailController.text.trim();
-  final ok = await vm.sendResetPasswordOtp(email);
+    final vm = context.read<KeamananViewModel>();
+    final email = _forgotEmailController.text.trim();
+    final ok = await vm.sendResetPasswordOtp(email);
 
-  if (mounted) setState(() => _loading = false);
+    if (mounted) setState(() => _loading = false);
 
-  if (ok) {
-    // tutup bottom sheet
-    Navigator.pop(context);
-    // langsung push ke layar verifikasi, TAPI bungkus dengan provider
-Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) => ChangeNotifierProvider.value(
-      value: vm,
-      child: const ForgotPasswordVerifyEmailScreen(),
-    ),
-  ),
-);
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(vm.errorMessage ?? "Gagal mengirim OTP")),
-    );
+    if (ok) {
+      // tutup bottom sheet
+      Navigator.pop(context);
+      // langsung push ke layar verifikasi OTP
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChangeNotifierProvider.value(
+            value: vm,
+            child: const ForgotPasswordVerifyEmailScreen(),
+          ),
+        ),
+      );
+    } else {
+      // Dapatkan pesan error tanpa prefix "Api Exception:"
+      String raw = vm.errorMessage ?? "Gagal mengirim OTP";
+      String pesan = raw.replaceAll(RegExp(r'Api Exception:\s*', caseSensitive: false), '');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(pesan)),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
-        top: 16, left: 16, right: 16,
+        top: 16,
+        left: 16,
+        right: 16,
       ),
       child: Form(
         key: _forgotFormKey,
@@ -497,7 +507,7 @@ Navigator.push(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              "Reset Password",
+              "Reset Kata Sandi",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -512,7 +522,7 @@ Navigator.push(
               style: const TextStyle(color: Colors.black87),
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.email, color: AppColors.primary),
-                labelText: "Enter your email",
+                labelText: "Masukkan email Anda",
                 labelStyle: const TextStyle(color: Colors.black54),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.black38),
@@ -524,8 +534,12 @@ Navigator.push(
                 ),
               ),
               validator: (value) {
-                if (value == null || value.trim().isEmpty) return "Email is required";
-                if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) return "Enter a valid email";
+                if (value == null || value.trim().isEmpty) {
+                  return "Email wajib diisi";
+                }
+                if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                  return "Masukkan email yang valid";
+                }
                 return null;
               },
             ),
@@ -544,7 +558,7 @@ Navigator.push(
                 child: _loading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text(
-                        "Send OTP",
+                        "Kirim OTP",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

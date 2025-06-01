@@ -25,8 +25,7 @@ class SignInViewModel extends ChangeNotifier {
       final result = await signInUseCase(email: email, password: password);
       _authResponse = result;
 
-      // Asumsikan bahwa kelas User memiliki properti berikut:
-      // uid, namaPengguna, email, profilePic, role, namaLengkap.
+      // Simpan data user ke local storage
       await AuthStorage.saveUserData(
         token: result.token,
         uid: result.user.uid,
@@ -37,7 +36,13 @@ class SignInViewModel extends ChangeNotifier {
         namaLengkap: result.user.namaLengkap,
       );
     } catch (e) {
-      _errorMessage = e.toString();
+      // Ambil pesan mentah dan hilangkan prefiks seperti "ApiException(401): "
+      String raw = e.toString();
+      String pesanBersih = raw.replaceAll(
+        RegExp(r'^ApiException.*?:\s*', caseSensitive: false),
+        '',
+      );
+      _errorMessage = pesanBersih;
     } finally {
       _isLoading = false;
       notifyListeners();

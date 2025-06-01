@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:mediaexplant/features/auth/presentation/logic/sign_up_viewmodel.dart';
@@ -32,10 +33,14 @@ class _SignUpVerifyEmailScreenState extends State<SignUpVerifyEmailScreen> {
 
       if (response['success'] == true) {
         // Navigasi ke halaman Sign Up Input setelah OTP berhasil diverifikasi.
-        Navigator.pushNamed(context, '/sign_up_input_screen', arguments: widget.email);
+        Navigator.pushNamed(
+          context,
+          '/sign_up_input_screen',
+          arguments: widget.email,
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response['message'] ?? "Invalid OTP, please try again.")),
+          SnackBar(content: Text(response['message'] ?? "OTP tidak valid, silakan coba lagi.")),
         );
       }
     }
@@ -49,7 +54,7 @@ class _SignUpVerifyEmailScreenState extends State<SignUpVerifyEmailScreen> {
       _lastBackPressTime = now;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Press back again to go to Sign In"),
+          content: Text("Tekan kembali lagi untuk ke Halaman Masuk"),
           duration: Duration(seconds: 2),
         ),
       );
@@ -114,7 +119,7 @@ class _SignUpVerifyEmailScreenState extends State<SignUpVerifyEmailScreen> {
                           child: Column(
                             children: [
                               Text(
-                                "Enter OTP",
+                                "Masukkan OTP",
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                       color: Colors.black87,
                                       fontWeight: FontWeight.bold,
@@ -127,7 +132,10 @@ class _SignUpVerifyEmailScreenState extends State<SignUpVerifyEmailScreen> {
                                 keyboardType: TextInputType.number,
                                 style: const TextStyle(color: Colors.black87),
                                 decoration: InputDecoration(
-                                  prefixIcon: const Icon(Icons.confirmation_number, color: AppColors.primary),
+                                  prefixIcon: const Icon(
+                                    Icons.confirmation_number,
+                                    color: AppColors.primary,
+                                  ),
                                   labelText: "OTP",
                                   labelStyle: const TextStyle(color: Colors.black54),
                                   enabledBorder: OutlineInputBorder(
@@ -144,10 +152,10 @@ class _SignUpVerifyEmailScreenState extends State<SignUpVerifyEmailScreen> {
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return "OTP is required";
+                                    return "OTP wajib diisi";
                                   }
                                   if (value.trim().length != 6) {
-                                    return "OTP must be 6 digits";
+                                    return "OTP harus 6 digit";
                                   }
                                   return null;
                                 },
@@ -169,7 +177,7 @@ class _SignUpVerifyEmailScreenState extends State<SignUpVerifyEmailScreen> {
                                           color: Colors.white,
                                         )
                                       : const Text(
-                                          "Verify OTP",
+                                          "Verifikasi OTP",
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
@@ -211,8 +219,8 @@ class _VerifyHeader extends StatelessWidget {
             child: CircleAvatar(
               radius: 50,
               backgroundColor: Colors.white,
-              child: Image.asset(
-                'assets/logo.png',
+              child: Lottie.asset(
+                'assets/animations/Animation_1742101335442.json',
                 width: 80,
                 height: 80,
                 fit: BoxFit.contain,
@@ -221,7 +229,7 @@ class _VerifyHeader extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           const Text(
-            "Verify Email",
+            "Verifikasi Email",
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -230,11 +238,12 @@ class _VerifyHeader extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            "Enter the OTP sent to your email",
+            "Masukkan OTP yang dikirim ke email Anda",
             style: TextStyle(
               fontSize: 16,
               color: Colors.white70,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -258,7 +267,7 @@ class _FooterWidget extends StatelessWidget {
         ),
         SizedBox(height: 5),
         Text(
-          "Privacy Policy | Terms of Service",
+          "Kebijakan Privasi | Syarat Layanan",
           style: TextStyle(
             color: Colors.white70,
             fontSize: 12,

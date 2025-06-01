@@ -23,6 +23,9 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
   bool _obscureConfirmPassword = true;
   DateTime? _lastBackPressTime;
 
+  /// Kita simpan errorMessage terakhir supaya hanya muncul sekali saja.
+  String? _lastErrorShown;
+
   @override
   void dispose() {
     _passwordController.dispose();
@@ -32,7 +35,8 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
 
   Future<bool> _onWillPop() async {
     final now = DateTime.now();
-    if (_lastBackPressTime == null || now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+    if (_lastBackPressTime == null ||
+        now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
       _lastBackPressTime = now;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -50,43 +54,63 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
     if (_formKey.currentState!.validate()) {
       final signUpVM = Provider.of<SignUpViewModel>(context, listen: false);
 
-      // Panggil proses registrasi (registerStep3)
+      // Panggil proses registerStep3
       await signUpVM.registerStep3(
         email: widget.email,
         password: _passwordController.text.trim(),
         passwordConfirmation: _confirmPasswordController.text.trim(),
       );
-
-      if (signUpVM.errorMessage != null) {
-        // Jika terjadi error, tampilkan pesan error
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error: ${signUpVM.errorMessage}"),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      } else {
-        // Jika sign up berhasil, refresh data profil agar status login berubah
-        await Provider.of<ProfileViewModel>(context, listen: false).refreshUserData();
-        await loadUserLogin();
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Sign Up Successful!"),
-            duration: Duration(seconds: 2),
-          ),
-        );
-        
-        Navigator.pushReplacementNamed(context, '/home');
-      }
+      // Jangan navigasi di sini; navigasi akan dipicu di build() ketika isLoggedIn == true.
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    // Ambil state loading dari SignUpViewModel
-    final isLoading = context.watch<SignUpViewModel>().isLoading;
+
+    // Dapatkan instansi SignUpViewModel untuk membaca isLoading, errorMessage, isLoggedIn
+    final signUpVM = context.watch<SignUpViewModel>();
+    final isLoading = signUpVM.isLoading;
+    final errorMessage = signUpVM.errorMessage;
+    final isLoggedIn = signUpVM.isLoggedIn;
+
+    /// Jika ada errorMessage baru, tampilkan snackbar satu kali saja.
+    if (errorMessage != null && errorMessage != _lastErrorShown) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error: $errorMessage"),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      });
+      _lastErrorShown = errorMessage;
+    }
+
+    /// Jika status isLoggedIn berubah jadi true, panggil refreshUserData + loadUserLogin,
+    /// kemudian navigasi ke /home.
+    if (isLoggedIn) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        // Pastikan hanya dipanggil sekali
+        if (!mounted) return;
+
+        // Refresh data profil
+        await Provider.of<ProfileViewModel>(context, listen: false).refreshUserData();
+        // Load data login ke cache/utility userID
+        await loadUserLogin();
+
+        // Tampilkan snackbar sukses
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Sign Up Successful!"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Navigasi ke home (replace supaya tidak bisa back lagi ke sign up)
+        Navigator.pushReplacementNamed(context, '/home');
+      });
+    }
 
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -200,7 +224,9 @@ class _SignUpInputScreenState extends State<SignUpInputScreen> {
                                   ),
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                                      _obscureConfirmPassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
                                       color: AppColors.primary,
                                     ),
                                     onPressed: () {
