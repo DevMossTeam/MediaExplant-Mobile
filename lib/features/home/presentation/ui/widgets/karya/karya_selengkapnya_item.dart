@@ -61,26 +61,29 @@ class KaryaSelengkapnyaItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Kategori
-                    Text(
-                      karya.kategoriFormatted,
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    Row(
+                      children: [
+                        // Kategori
+                        Text(
+                          karya.kategoriFormatted,
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        // Tanggal rilis
+                        Text(
+                          timeAgoFormat(DateTime.parse(karya.release)),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                      ],
                     ),
-                    const SizedBox(height: 4),
-
-                    // Tanggal rilis
-                    Text(
-                      timeAgoFormat(DateTime.parse(karya.release)),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
 
                     // Judul karya
                     Text(

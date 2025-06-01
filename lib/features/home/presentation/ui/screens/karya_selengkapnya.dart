@@ -5,7 +5,7 @@ import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/karya/karya_repository.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/karya/karya_terkait_repository.dart';
-import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/harya_selengkapnya_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/karya_selengkapnya_item.dart';
 import 'package:provider/provider.dart';
 
 enum KategoriKarya { puisi, syair, desainGrafis, terkait, fotografi }
@@ -64,15 +64,21 @@ class _KaryaSelengkapnyaState extends State<KaryaSelengkapnya> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text("Semua Karya"),
+        title: const Text("Semua Karya "),
         backgroundColor: AppColors.background,
       ),
       body: Consumer<KaryaSelengkapnyaViewModel>(
         builder: (context, vm, _) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: ListView.builder(
+            child: GridView.builder(
               controller: _scrollController,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 5,
+                childAspectRatio: 0.55,
+              ),
               itemCount: vm.hasMore ? vm.karya.length + 1 : vm.karya.length,
               itemBuilder: (context, index) {
                 if (index < vm.karya.length) {
@@ -81,10 +87,7 @@ class _KaryaSelengkapnyaState extends State<KaryaSelengkapnya> {
                     child: KaryaSelengkapnyaItem(),
                   );
                 } else {
-                  return const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
               },
             ),
@@ -96,7 +99,7 @@ class _KaryaSelengkapnyaState extends State<KaryaSelengkapnya> {
 }
 
 class KaryaSelengkapnyaViewModel with ChangeNotifier {
-  final int _limit = 10;
+  final int _limit = 5;
   int _page = 1;
   bool hasMore = true;
   bool isLoading = false;

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:mediaexplant/features/home/models/produk/detail_produk.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_detail_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_terkait_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/produk/produk_item.dart';
+import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -45,6 +48,13 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
 
       produkDetailVM.refresh(userLogin, widget.idProduk);
 
+      final produkTerkaitVM =
+          Provider.of<ProdukTerkaitViewmodel>(context, listen: false);
+      produkTerkaitVM.refresh(
+        userLogin,
+        widget.idProduk,
+      );
+
       _isInit = false;
     }
   }
@@ -54,6 +64,9 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
     final bookmarkProvider =
         Provider.of<BookmarkProvider>(context, listen: false);
     final reaksiProvider = Provider.of<ReaksiProvider>(context, listen: false);
+
+    final produkTerkaitList =
+        Provider.of<ProdukTerkaitViewmodel>(context).allProduk;
 
     // Ambil data DetailProduk dari ProdukDetailViewmodel
     final produkDetailVM = Provider.of<ProdukDetailViewmodel>(context);
@@ -374,6 +387,32 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 20,),
+
+                  titleHeader("Produk Terkait", "mungkin anda suka"),
+                  const SizedBox(height: 10,),
+                  // produk terkait
+                  SizedBox(
+                    width: double.infinity,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 5,
+                        childAspectRatio: 0.5,
+                      ),
+                      itemCount: produkTerkaitList.length,
+                      itemBuilder: (context, index) {
+                        return ChangeNotifierProvider.value(
+                          value: produkTerkaitList[index],
+                          child: ProdukItem(),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(

@@ -1,40 +1,10 @@
-// import 'package:flutter/foundation.dart';
-// import 'package:mediaexplant/features/home/models/karya/karya.dart';
-// import 'package:mediaexplant/features/home/presentation/logic/repository/karya/karya_repository.dart';
-
-// class FotografiViewmodel with ChangeNotifier {
-//   final KaryaRepository _repository;
-//   List<Karya> _allFotografi = [];
-//   bool _isLoaded = false;
-
-//   FotografiViewmodel(this._repository);
-
-//   List<Karya> get allFotografi => _allFotografi;
-//   bool get isLoaded => _isLoaded;
-
-//   Future<void> fetchFotografi(String? userId) async {
-//     if (_isLoaded) return;
-//     _allFotografi = await _repository.fetchKarya("fotografi/terbaru", userId);
-//     _isLoaded = true;
-//     notifyListeners();
-//   }
-
-//   void resetCache() {
-//     _isLoaded = false;
-//     _allFotografi = [];
-//     notifyListeners();
-//   }
-// }
-
-
 import 'package:flutter/foundation.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
-
 import 'package:mediaexplant/features/home/presentation/logic/repository/karya/karya_repository.dart';
 
 class FotografiViewmodel with ChangeNotifier {
   final KaryaRepository _repository = KaryaRepository();
-  final int _limit = 10;
+  final int _limit = 5;
   int _page = 1;
   bool hasMore = true;
   List<Karya> _karya = [];
@@ -46,8 +16,8 @@ class FotografiViewmodel with ChangeNotifier {
     if (isLoading) return;
     isLoading = true;
     try {
-      final response =
-          await _repository.fetchKarya("fotografi/terbaru", _page, _limit, userId);
+      final response = await _repository.fetchKarya(
+          "fotografi/terbaru", _page, _limit, userId);
 
       if (response.length < _limit) {
         hasMore = false;

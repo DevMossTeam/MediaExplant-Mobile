@@ -6,7 +6,10 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/de
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/fotografi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/buletin_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/majalah_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/karya_selengkapnya.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/produk_selengkapnya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_rekomendasi_untuk_anda_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_teratas_untuk_anda.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_berita.item.dart';
@@ -59,7 +62,8 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     final desainGrafisVM =
         Provider.of<DesainGrafisViewmodel>(context, listen: false);
     final fotografiVM = Provider.of<FotografiViewmodel>(context, listen: false);
-    final produkVM = Provider.of<ProdukViewModel>(context, listen: false);
+    final majalahVM = Provider.of<MajalahViewmodel>(context, listen: false);
+    final buletinVM = Provider.of<BuletinViewmodel>(context, listen: false);
 
     if (beritaVM.allBerita.isEmpty) {
       setState(() => _isLoading['berita'] = true);
@@ -74,7 +78,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     if (puisiVM.allKarya.isEmpty) {
       setState(() => _isLoading['puisi'] = true);
       try {
-        await puisiVM.fetchPuisi(userLogin);
+        await puisiVM.refresh(userLogin);
       } catch (e) {
         debugPrint("Gagal fetch puisi: $e");
       } finally {
@@ -84,7 +88,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     if (syairVM.allKarya.isEmpty) {
       setState(() => _isLoading['syair'] = true);
       try {
-        await syairVM.fetchSyair(userLogin);
+        await syairVM.refresh(userLogin);
       } catch (e) {
         debugPrint("Gagal fetch syair: $e");
       } finally {
@@ -94,7 +98,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     if (desainGrafisVM.allKarya.isEmpty) {
       setState(() => _isLoading['desain_grafis'] = true);
       try {
-        await desainGrafisVM.fetchDesainGrafis(userLogin);
+        await desainGrafisVM.refresh(userLogin);
       } catch (e) {
         debugPrint("Gagal fetch desain grafis: $e");
       } finally {
@@ -104,27 +108,27 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     if (fotografiVM.allKarya.isEmpty) {
       setState(() => _isLoading['fotografi'] = true);
       try {
-        await fotografiVM.fetchFotografi(userLogin);
+        await fotografiVM.refresh(userLogin);
       } catch (e) {
         debugPrint("Gagal fetch fotografi: $e");
       } finally {
         setState(() => _isLoading['fotografi'] = false);
       }
     }
-    if (produkVM.allMajalah.isEmpty) {
+    if (majalahVM.allMajalah.isEmpty) {
       setState(() => _isLoading['majalah'] = true);
       try {
-        await produkVM.fetchMajalah(userLogin);
+        await majalahVM.refresh(userLogin);
       } catch (e) {
         debugPrint("Gagal fetch majalah: $e");
       } finally {
         setState(() => _isLoading['majalah'] = false);
       }
     }
-    if (produkVM.allBuletin.isEmpty) {
+    if (buletinVM.allBuletin.isEmpty) {
       setState(() => _isLoading['buletin'] = true);
       try {
-        await produkVM.fetchBuletin(userLogin);
+        await buletinVM.refresh(userLogin);
       } catch (e) {
         debugPrint("Gagal fetch buletin: $e");
       } finally {
@@ -137,8 +141,8 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
   Widget build(BuildContext context) {
     super.build(context);
     final beritaList = Provider.of<BeritaTerbaruViewmodel>(context).allBerita;
-    final majalahList = Provider.of<ProdukViewModel>(context).allMajalah;
-    final buletinList = Provider.of<ProdukViewModel>(context).allBuletin;
+    final majalahList = Provider.of<MajalahViewmodel>(context).allMajalah;
+    final buletinList = Provider.of<BuletinViewmodel>(context).allBuletin;
     final puisiList = Provider.of<PuisiViewmodel>(context).allKarya;
     final syairList = Provider.of<SyairViewmodel>(context).allKarya;
     final desainGrafisList =
@@ -259,13 +263,44 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                     scrollDirection: Axis.horizontal,
                     itemCount: puisiList.length.clamp(0, 10),
                     itemBuilder: (context, index) {
-                      return ChangeNotifierProvider.value(  
+                      return ChangeNotifierProvider.value(
                         value: puisiList[index],
                         child: PuisiItem(),
                       );
                     },
                   ),
                 ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () async {
+                      final viewModel = KaryaSelengkapnyaViewModel();
+                      if (!mounted) return;
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider.value(
+                          value: viewModel,
+                          child: const KaryaSelengkapnya(
+                            kategori: KategoriKarya.puisi,
+                          ),
+                        ),
+                      ));
+                      Future.microtask(() async {
+                        await viewModel.setKategori(KategoriKarya.puisi);
+                      });
+                    },
+                    child: const Text(
+                      "Selengkapnya >>",
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 14,
+                      ),
+                    ),
+                  )
+                ],
               ),
             ),
             const SliverToBoxAdapter(
@@ -302,6 +337,37 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                 ),
               ),
             ),
+            SliverToBoxAdapter(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () async {
+                      final viewModel = KaryaSelengkapnyaViewModel();
+                      if (!mounted) return;
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider.value(
+                          value: viewModel,
+                          child: const KaryaSelengkapnya(
+                            kategori: KategoriKarya.syair,
+                          ),
+                        ),
+                      ));
+                      Future.microtask(() async {
+                        await viewModel.setKategori(KategoriKarya.syair);
+                      });
+                    },
+                    child: const Text(
+                      "Selengkapnya >>",
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 14,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
             const SliverToBoxAdapter(
               child: SizedBox(height: 30),
             ),
@@ -322,7 +388,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
               child: Padding(
                 padding: const EdgeInsets.only(left: 15),
                 child: SizedBox(
-                  height: 240,
+                  height: 210,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: desainGrafisList.length.clamp(0, 10),
@@ -336,7 +402,43 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                 ),
               ),
             ),
+            SliverToBoxAdapter(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () async {
+                      final viewModel = KaryaSelengkapnyaViewModel();
+                      if (!mounted) return;
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider.value(
+                          value: viewModel,
+                          child: const KaryaSelengkapnya(
+                            kategori: KategoriKarya.desainGrafis,
+                          ),
+                        ),
+                      ));
+                      Future.microtask(() async {
+                        await viewModel.setKategori(KategoriKarya.desainGrafis);
+                      });
+                    },
+                    child: const Text(
+                      "Selengkapnya >>",
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 14,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ],
+          const SliverToBoxAdapter(
+            child: SizedBox(
+              height: 20,
+            ),
+          ),
 
           // Fotografi
           if (_isLoading['fotografi']!)
@@ -353,7 +455,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                     titleHeader("Fotografi", "Terbaru untuk anda"),
                     const SizedBox(height: 20),
                     SizedBox(
-                      height: 200,
+                      height: 190,
                       child: GridView.builder(
                           itemCount: fotografiList.length.clamp(0, 10),
                           shrinkWrap: true,
@@ -375,9 +477,22 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                          onPressed: () {
-                            // aksi saat tombol ditekan
-                            print("Tombol ditekan");
+                          onPressed: () async {
+                            final viewModel = KaryaSelengkapnyaViewModel();
+                            if (!mounted) return;
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  ChangeNotifierProvider.value(
+                                value: viewModel,
+                                child: const KaryaSelengkapnya(
+                                  kategori: KategoriKarya.fotografi,
+                                ),
+                              ),
+                            ));
+                            Future.microtask(() async {
+                              await viewModel
+                                  .setKategori(KategoriKarya.fotografi);
+                            });
                           },
                           child: const Text(
                             "Selengkapnya >>",
@@ -386,7 +501,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                               fontSize: 14,
                             ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ],
@@ -425,6 +540,37 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                   ),
                 ),
               ),
+              SliverToBoxAdapter(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        final viewModel = ProdukSelengkapnyaViewModel();
+                        if (!mounted) return;
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider.value(
+                            value: viewModel,
+                            child: const ProdukSelengkapnya(
+                              kategori: KategoriProduk.majalah,
+                            ),
+                          ),
+                        ));
+                        Future.microtask(() async {
+                          await viewModel.setKategori(KategoriProduk.majalah);
+                        });
+                      },
+                      child: const Text(
+                        "Selengkapnya >>",
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
               const SliverToBoxAdapter(
                 child: SizedBox(height: 30),
               ),
@@ -457,6 +603,37 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                       },
                     ),
                   ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        final viewModel = ProdukSelengkapnyaViewModel();
+                        if (!mounted) return;
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider.value(
+                            value: viewModel,
+                            child: const ProdukSelengkapnya(
+                              kategori: KategoriProduk.buletin,
+                            ),
+                          ),
+                        ));
+                        Future.microtask(() async {
+                          await viewModel.setKategori(KategoriProduk.buletin);
+                        });
+                      },
+                      child: const Text(
+                        "Selengkapnya >>",
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ),
               const SliverToBoxAdapter(

@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mediaexplant/core/utils/time_ago_util.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
+import 'package:mediaexplant/features/bookmark/bookmark_screen.dart/berita_bookmark.dart';
+import 'package:mediaexplant/features/bookmark/bookmark_screen.dart/bookmark_screen.dart';
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
+import 'package:mediaexplant/features/bookmark/viewmodel/berita_bookamark_viewmodel.dart';
+import 'package:mediaexplant/features/bookmark/viewmodel/karya_bookmark_viewmodel.dart';
 import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/karya/karya_repository.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/produkRepo/produk_repository.dart';
@@ -20,7 +24,10 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/ka
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/karya_terkait_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/buletin_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/majalah_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_detail_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_terkait_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_view_model.dart';
 import 'package:mediaexplant/features/report/report_repository.dart';
 import 'package:mediaexplant/features/report/report_viewmodel.dart';
@@ -122,11 +129,20 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => BeritaTopikLainnyaViewmodel(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => BeritaBookamarkViewmodel(),
+        ),
 
         // Provider produk
         ChangeNotifierProvider(create: (_) => ProdukDetailViewmodel()),
         ChangeNotifierProvider(
-          create: (_) => ProdukViewModel(ProdukRepository()),
+          create: (_) => MajalahViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BuletinViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ProdukTerkaitViewmodel(),
         ),
 
         // provider karya
@@ -145,6 +161,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => KaryaTerkaitViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => KaryaBookmarkViewmodel(),
         ),
 
         // Provider untuk Bookmark
@@ -203,7 +222,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   final List<Widget> _pages = const [
     HomeScreen(),
     SearchScreen(),
-    ProfileScreen(),
+    ProfileScreen()
   ];
 
   @override

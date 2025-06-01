@@ -2,48 +2,73 @@ import 'package:flutter/foundation.dart';
 import 'package:mediaexplant/features/home/models/produk/produk.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/produkRepo/produk_repository.dart';
 
-class ProdukViewModel with ChangeNotifier {
-  final ProdukRepository _produkRepository;
+class ProdukViewmodel with ChangeNotifier {
+  final ProdukRepository _repository = ProdukRepository();
+  final int _limit = 10;
+  int _pageMajalah = 1;
+  int _pageBuletin = 1;
+  bool _hasMoreMajalah = true;
+  bool _hasMoreBuletin = true;
 
-  ProdukViewModel(this._produkRepository);
+  List<Produk> _majalahList = [];
+  List<Produk> _buletinList = [];
+  bool isLoadingMajalah = false;
+  bool isLoadingBuletin = false;
 
-  List<Produk> _allMajalah = [];
-  List<Produk> _allBuletin = [];
-  bool _isMajalahLoaded = false;
-  bool _isBuletinLoaded = false;
-
-  List<Produk> get allMajalah => _allMajalah;
-  List<Produk> get allBuletin => _allBuletin;
-  bool get isMajalahLoaded => _isMajalahLoaded;
-  bool get isBuletinLoaded => _isBuletinLoaded;
+  List<Produk> get majalahList => _majalahList;
+  List<Produk> get buletinList => _buletinList;
+  bool get hasMoreMajalah => _hasMoreMajalah;
+  bool get hasMoreBuletin => _hasMoreBuletin;
 
   Future<void> fetchMajalah(String? userId) async {
-    if (_isMajalahLoaded) return;
+    if (isLoadingMajalah || !_hasMoreMajalah) return;
+
+    isLoadingMajalah = true;
     try {
-      _allMajalah = await _produkRepository.fetchMajalah(userId);
-      _isMajalahLoaded = true;
+      final result = await _repository.fetchMajalah(_pageMajalah, _limit, userId);
+
+      if (result.length < _limit) _hasMoreMajalah = false;
+      _majalahList.addAll(result);
+      _pageMajalah++;
+
       notifyListeners();
     } catch (e) {
-      rethrow;
+      if (kDebugMode) print("Error fetchMajalah: $e");
+    } finally {
+      isLoadingMajalah = false;
     }
   }
 
   Future<void> fetchBuletin(String? userId) async {
-    if (_isBuletinLoaded) return;
+    if (isLoadingBuletin || !_hasMoreBuletin) return;
+
+    isLoadingBuletin = true;
     try {
-      _allBuletin = await _produkRepository.fetchBuletin(userId);
-      _isBuletinLoaded = true;
+      final result = await _repository.fetchBuletin(_pageBuletin, _limit, userId);
+
+      if (result.length < _limit) _hasMoreBuletin = false;
+      _buletinList.addAll(result);
+      _pageBuletin++;
+
       notifyListeners();
     } catch (e) {
-      rethrow;
+      if (kDebugMode) print("Error fetchBuletin: $e");
+    } finally {
+      isLoadingBuletin = false;
     }
   }
 
-  void resetCache() {
-    _allMajalah = [];
-    _allBuletin = [];
-    _isMajalahLoaded = false;
-    _isBuletinLoaded = false;
-    notifyListeners();
+  Future<void> refreshMajalah(String? userId) async {
+    _pageMajalah = 1;
+    _hasMoreMajalah = true;
+    _majalahList.clear();
+    await fetchMajalah(userId);
+  }
+
+  Future<void> refreshBuletin(String? userId) async {
+    _pageBuletin = 1;
+    _hasMoreBuletin = true;
+    _buletinList.clear();
+    await fetchBuletin(userId);
   }
 }

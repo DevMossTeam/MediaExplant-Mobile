@@ -422,7 +422,6 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 50),
                     const Divider(color: Colors.grey, thickness: 0.5),
                   ],
                 ),
@@ -453,7 +452,7 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                     itemBuilder: (context, index) {
                       return ChangeNotifierProvider.value(
                         value: karyaTerkaitList[index],
-                        child: const PuisiItem(),
+                        child: PuisiItem(),
                       );
                     },
                   ),

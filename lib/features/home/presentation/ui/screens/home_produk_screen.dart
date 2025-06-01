@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_view_model.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/buletin_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/majalah_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/produk_selengkapnya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/produk/produk_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
 import 'package:provider/provider.dart';
@@ -27,15 +30,16 @@ class _HomeProdukScreenState extends State<HomeProdukScreen>
     super.didChangeDependencies();
 
     if (_isInit) {
-      final produkVM = Provider.of<ProdukViewModel>(context, listen: false);
+      final majalahVM = Provider.of<MajalahViewmodel>(context, listen: false);
+      final buletinVM = Provider.of<BuletinViewmodel>(context, listen: false);
 
       setState(() {
         _isLoading['produk'] = true;
       });
 
       Future.wait([
-        produkVM.fetchMajalah(userLogin),
-        produkVM.fetchBuletin(userLogin),
+        majalahVM.fetchMajalah(userLogin),
+        buletinVM.fetchBuletin(userLogin),
       ]).then((_) {
         setState(() {
           _isLoading['produk'] = false;
@@ -54,8 +58,11 @@ class _HomeProdukScreenState extends State<HomeProdukScreen>
   Widget build(BuildContext context) {
     super.build(context);
 
-    final majalahList = Provider.of<ProdukViewModel>(context).allMajalah;
-    final buletinList = Provider.of<ProdukViewModel>(context).allBuletin;
+    final majalahVM = Provider.of<MajalahViewmodel>(context);
+    final buletinVM = Provider.of<BuletinViewmodel>(context);
+
+    final majalahList = majalahVM.allMajalah;
+    final buletinList = buletinVM.allBuletin;
 
     // Jika ada data yang sedang dimuat, tampilkan loading indicator
     if (_isLoading.values.contains(true)) {
@@ -90,6 +97,35 @@ class _HomeProdukScreenState extends State<HomeProdukScreen>
                         );
                       }),
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        final viewModel = ProdukSelengkapnyaViewModel();
+                        if (!mounted) return;
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider.value(
+                            value: viewModel,
+                            child: const ProdukSelengkapnya(
+                              kategori: KategoriProduk.majalah,
+                            ),
+                          ),
+                        ));
+                        Future.microtask(() async {
+                          await viewModel.setKategori(KategoriProduk.majalah);
+                        });
+                      },
+                      child: const Text(
+                        "Selengkapnya >>",
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
                 const SizedBox(
                   height: 10,
                 ),
@@ -109,6 +145,35 @@ class _HomeProdukScreenState extends State<HomeProdukScreen>
                           child: ProdukItem(),
                         );
                       }),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        final viewModel = ProdukSelengkapnyaViewModel();
+                        if (!mounted) return;
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider.value(
+                            value: viewModel,
+                            child: const ProdukSelengkapnya(
+                              kategori: KategoriProduk.buletin,
+                            ),
+                          ),
+                        ));
+                        Future.microtask(() async {
+                          await viewModel.setKategori(KategoriProduk.buletin);
+                        });
+                      },
+                      child: const Text(
+                        "Selengkapnya >>",
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ],
             ),

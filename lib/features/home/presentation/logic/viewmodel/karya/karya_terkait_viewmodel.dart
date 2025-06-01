@@ -1,32 +1,3 @@
-// import 'package:flutter/foundation.dart';
-// import 'package:mediaexplant/features/home/models/karya/karya.dart';
-// import 'package:mediaexplant/features/home/presentation/logic/repository/karya/karya_terkait_repository.dart';
-
-// class KaryaTerkaitViewmodel with ChangeNotifier {
-//   final KaryaTerkaitRepository _repository = KaryaTerkaitRepository();
-
-//   List<Karya> _karyas = [];
-//   List<Karya> get allKarya => _karyas;
-
-//   Future<void> fetchKaryaTerkait(String? userId, String karyaId) async {
-//     try {
-//       final response = await _repository.fetchKaryaTerkait(userId, karyaId);
-//       _karyas = response;
-//       notifyListeners();
-//     } catch (e) {
-//       if (kDebugMode) {
-//         print("Error fetchKaryaTerkait: $e");
-//       }
-//     }
-//   }
-
-//   Future<void> refresh(String? userId, String karyaId) async {
-//     _karyas = [];
-//     notifyListeners();
-
-//     await fetchKaryaTerkait(userId, karyaId);
-//   }
-// }
 
 import 'package:flutter/foundation.dart';
 import 'package:mediaexplant/features/home/models/karya/karya.dart';
@@ -34,7 +5,7 @@ import 'package:mediaexplant/features/home/presentation/logic/repository/karya/k
 
 class KaryaTerkaitViewmodel with ChangeNotifier {
   final KaryaTerkaitRepository _repository = KaryaTerkaitRepository();
-  final int _limit = 9;
+  final int _limit = 6;
   int _page = 1;
   bool hasMore = true;
   List<Karya> _karya = [];

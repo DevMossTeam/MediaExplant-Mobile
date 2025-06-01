@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/desain_grafis_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/fotografi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/karya_selengkapnya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/desain_grafis_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/fotografi_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/puisi_item.dart';
@@ -35,10 +37,8 @@ class _HomeKaryaScreenState extends State<HomeKaryaScreen>
     super.didChangeDependencies();
 
     if (_isInit) {
-      final puisiVM =
-          Provider.of<PuisiViewmodel>(context, listen: false);
-      final syairVM =
-          Provider.of<SyairViewmodel>(context, listen: false);
+      final puisiVM = Provider.of<PuisiViewmodel>(context, listen: false);
+      final syairVM = Provider.of<SyairViewmodel>(context, listen: false);
       final desainGrafisVM =
           Provider.of<DesainGrafisViewmodel>(context, listen: false);
       final fotografiVM =
@@ -117,6 +117,35 @@ class _HomeKaryaScreenState extends State<HomeKaryaScreen>
                         );
                       }),
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        final viewModel = KaryaSelengkapnyaViewModel();
+                        if (!mounted) return;
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider.value(
+                            value: viewModel,
+                            child: const KaryaSelengkapnya(
+                              kategori: KategoriKarya.puisi,
+                            ),
+                          ),
+                        ));
+                        Future.microtask(() async {
+                          await viewModel.setKategori(KategoriKarya.puisi);
+                        });
+                      },
+                      child: const Text(
+                        "Selengkapnya >>",
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
                 const SizedBox(
                   height: 10,
                 ),
@@ -137,6 +166,35 @@ class _HomeKaryaScreenState extends State<HomeKaryaScreen>
                         );
                       }),
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        final viewModel = KaryaSelengkapnyaViewModel();
+                        if (!mounted) return;
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider.value(
+                            value: viewModel,
+                            child: const KaryaSelengkapnya(
+                              kategori: KategoriKarya.syair,
+                            ),
+                          ),
+                        ));
+                        Future.microtask(() async {
+                          await viewModel.setKategori(KategoriKarya.syair);
+                        });
+                      },
+                      child: const Text(
+                        "Selengkapnya >>",
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
                 const SizedBox(
                   height: 10,
                 ),
@@ -156,6 +214,36 @@ class _HomeKaryaScreenState extends State<HomeKaryaScreen>
                           child: DesainGrafisItem(),
                         );
                       }),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        final viewModel = KaryaSelengkapnyaViewModel();
+                        if (!mounted) return;
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider.value(
+                            value: viewModel,
+                            child: const KaryaSelengkapnya(
+                              kategori: KategoriKarya.desainGrafis,
+                            ),
+                          ),
+                        ));
+                        Future.microtask(() async {
+                          await viewModel
+                              .setKategori(KategoriKarya.desainGrafis);
+                        });
+                      },
+                      child: const Text(
+                        "Selengkapnya >>",
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ],
             ),
@@ -192,6 +280,36 @@ class _HomeKaryaScreenState extends State<HomeKaryaScreen>
                             child: FotografiItem(),
                           );
                         }),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          final viewModel = KaryaSelengkapnyaViewModel();
+                          if (!mounted) return;
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider.value(
+                              value: viewModel,
+                              child: const KaryaSelengkapnya(
+                                kategori: KategoriKarya.fotografi,
+                              ),
+                            ),
+                          ));
+                          Future.microtask(() async {
+                            await viewModel
+                                .setKategori(KategoriKarya.fotografi);
+                          });
+                        },
+                        child: const Text(
+                          "Selengkapnya >>",
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 ],
               ),

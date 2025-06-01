@@ -13,7 +13,6 @@ import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_terkini_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/shimmer_berita.item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
-
 import 'package:provider/provider.dart';
 
 class HomeBeritaScreen extends StatefulWidget {
@@ -58,37 +57,65 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
         Provider.of<BeritaPopulerViewmodel>(context, listen: false);
     final beritaRekomendasiVM =
         Provider.of<BeritaDariKamiViewmodel>(context, listen: false);
-    final beritaHotVM =
-        Provider.of<BeritaHotViewmodel>(context, listen: false);
+    final beritaHotVM = Provider.of<BeritaHotViewmodel>(context, listen: false);
 
-    if (beritaTeratasVM.allBerita.isEmpty) {
-      setState(() => _isLoading['teratas'] = true);
-      await beritaTeratasVM.fetchBeritaTeratas(userLogin);
-      setState(() => _isLoading['teratas'] = false);
-    }
+    try {
+      if (beritaTeratasVM.allBerita.isEmpty) {
+        setState(() => _isLoading['teratas'] = true);
+        try {
+          await beritaTeratasVM.refresh(userLogin);
+        } catch (e) {
+          debugPrint('Error fetchBeritaTeratas: $e');
+        } finally {
+          setState(() => _isLoading['teratas'] = false);
+        }
+      }
 
-    if (beritaTerbaruVM.allBerita.isEmpty) {
-      setState(() => _isLoading['terbaru'] = true);
-      await beritaTerbaruVM.fetchBeritaTerbaru(userLogin);
-      setState(() => _isLoading['terbaru'] = false);
-    }
+      if (beritaPopulerVM.allBerita.isEmpty) {
+        setState(() => _isLoading['populer'] = true);
+        try {
+          await beritaPopulerVM.refresh(userLogin);
+        } catch (e) {
+          debugPrint('Error fetchBeritaPopuler: $e');
+        } finally {
+          setState(() => _isLoading['populer'] = false);
+        }
+      }
 
-    if (beritaPopulerVM.allBerita.isEmpty) {
-      setState(() => _isLoading['populer'] = true);
-      await beritaPopulerVM.fetchBeritaPopuler(userLogin);
-      setState(() => _isLoading['populer'] = false);
-    }
+      if (beritaTerbaruVM.allBerita.isEmpty) {
+        setState(() => _isLoading['terbaru'] = true);
+        try {
+          await beritaTerbaruVM.refresh(userLogin);
+        } catch (e) {
+          debugPrint('Error fetchBeritaTerbaru: $e');
+        } finally {
+          setState(() => _isLoading['terbaru'] = false);
+        }
+      }
 
-    if (beritaRekomendasiVM.allBerita.isEmpty) {
-      setState(() => _isLoading['rekomendasi'] = true);
-      await beritaRekomendasiVM.fetchBeritaDariKami(userLogin);
-      setState(() => _isLoading['rekomendasi'] = false);
-    }
+      if (beritaRekomendasiVM.allBerita.isEmpty) {
+        setState(() => _isLoading['rekomendasi'] = true);
+        try {
+          await beritaRekomendasiVM.refresh(userLogin);
+        } catch (e) {
+          debugPrint('Error fetchBeritaDariKami: $e');
+        } finally {
+          setState(() => _isLoading['rekomendasi'] = false);
+        }
+      }
 
-    if (beritaHotVM.allBerita.isEmpty) {
-      setState(() => _isLoading['rekomendasiLain'] = true);
-      await beritaHotVM.fetchBeritaHot(userLogin);
-      setState(() => _isLoading['rekomendasiLain'] = false);
+      if (beritaHotVM.allBerita.isEmpty) {
+        setState(() => _isLoading['rekomendasiLain'] = true);
+        try {
+          await beritaHotVM.refresh(userLogin);
+        } catch (e) {
+          debugPrint('Error fetchBeritaHot: $e');
+        } finally {
+          setState(() => _isLoading['rekomendasiLain'] = false);
+        }
+      }
+    } catch (e) {
+      debugPrint('Unexpected error: $e');
     }
   }
 
@@ -113,7 +140,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
           SliverToBoxAdapter(child: SizedBox(height: 10)),
 
           // Berita teratas
-          if (_isLoading['teratas']! || _isLoading['terbaru']!)
+          if (_isLoading['teratas']! || _isLoading['populer']!)
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) => ShimmerBeritaItem(),

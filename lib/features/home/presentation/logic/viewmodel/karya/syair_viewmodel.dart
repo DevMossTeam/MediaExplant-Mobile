@@ -34,7 +34,7 @@ import 'package:mediaexplant/features/home/presentation/logic/repository/karya/k
 
 class SyairViewmodel with ChangeNotifier {
   final KaryaRepository _repository = KaryaRepository();
-  final int _limit = 10;
+  final int _limit = 5;
   int _page = 1;
   bool hasMore = true;
   List<Karya> _karya = [];

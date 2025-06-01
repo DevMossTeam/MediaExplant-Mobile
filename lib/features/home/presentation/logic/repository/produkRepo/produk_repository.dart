@@ -5,8 +5,8 @@ import 'package:mediaexplant/features/home/models/produk/produk.dart';
 
 
 class ProdukRepository {
-  Future<List<Produk>> fetchMajalah(String? userId) async {
-    final url = Uri.parse("${ApiClient.baseUrl}/produk-majalah?user_id=$userId");
+  Future<List<Produk>> fetchMajalah(int page, int limit,String? userId) async {
+    final url = Uri.parse("${ApiClient.baseUrl}/produk-majalah?page=$page&limit=$limit&user_id=$userId");
 
     final response = await http.get(url);
     if (response.statusCode == 200) {
@@ -17,8 +17,8 @@ class ProdukRepository {
     }
   }
 
-  Future<List<Produk>> fetchBuletin(String? userId) async {
-    final url = Uri.parse("${ApiClient.baseUrl}/produk-buletin?user_id=$userId");
+  Future<List<Produk>> fetchBuletin(int page, int limit,String? userId) async {
+    final url = Uri.parse("${ApiClient.baseUrl}/produk-buletin?page=$page&limit=$limit&user_id=$userId");
 
     final response = await http.get(url);
     if (response.statusCode == 200) {
