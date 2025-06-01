@@ -16,7 +16,6 @@ import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/comments/presentation/ui/screens/komentar_screen.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_detail_viewmodel.dart';
-import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terkait_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/ui/screens/berita_selengkapnya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/berita/berita_populer_item.dart';
@@ -273,7 +272,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
                             height: 10,
                           ),
                           Text(
-                            'Oleh: ${berita.penulis}  |  ${berita.tanggalDibuat}',
+                            'Diupload oleh: ${berita.penulis}  |  ${berita.tanggalDibuat}',
                             style: const TextStyle(color: Colors.grey),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
