@@ -20,305 +20,148 @@ class FAQItem {
 class PusatBantuanViewModel extends ChangeNotifier {
   // Daftar lengkap FAQ (hard-coded, bisa diganti dengan fetch dari server).
   final List<FAQItem> _allFAQs = [
-FAQItem(
+    // Kategori: Akun
+    FAQItem(
       question: "Bagaimana cara mendaftar akun?",
       answer:
-          "Untuk mendaftar akun, klik tombol \"Daftar\" di halaman login dan isi formulir pendaftaran dengan data yang valid.",
+          "Untuk mendaftar akun, tekan tombol “Daftar” pada halaman login. Isi nama lengkap, alamat email, dan password, lalu verifikasi melalui tautan yang dikirim ke email Anda.",
       category: "Akun",
     ),
     FAQItem(
-      question: "Bagaimana cara mereset password?",
+      question: "Saya lupa password, bagaimana cara meresetnya?",
       answer:
-          "Untuk mereset password, klik \"Lupa Password?\" di halaman login dan ikuti instruksi yang dikirim ke email Anda.",
+          "Pada halaman login, klik “Lupa Password”. Masukkan email terdaftar, kemudian ikuti petunjuk yang dikirim via email untuk membuat password baru.",
       category: "Akun",
     ),
     FAQItem(
-      question: "Mengapa aplikasi tidak bisa memuat data?",
+      question: "Bisakah saya mengganti username setelah mendaftar?",
       answer:
-          "Pastikan koneksi internet Anda stabil dan coba tarik layar ke bawah untuk refresh.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Bagaimana cara backup data secara berkala?",
-      answer:
-          "Data akan terbackup otomatis setiap malam. Anda juga bisa klik Setting → Backup Sekarang.",
-      category: "Backup",
-    ),
-    FAQItem(
-      question: "Apakah ada batasan ukuran file yang bisa diunggah?",
-      answer:
-          "Batas maksimal ukuran file adalah 10 MB per file. Untuk ukuran lebih besar, silakan hubungi tim dukungan.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Di mana saya bisa melihat riwayat transaksi?",
-      answer:
-          "Riwayat transaksi dapat dilihat di menu Profil → Riwayat Transaksi.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Bagaimana cara mengubah profil saya?",
-      answer:
-          "Anda dapat mengubah informasi profil di menu Profil → Edit Profil.",
+          "Untuk saat ini, fitur mengganti username belum tersedia. Anda bisa menghubungi tim dukungan (support@contohapp.com) jika benar-benar perlu bantuan.",
       category: "Akun",
     ),
+
+    // Kategori: Berita
     FAQItem(
-      question: "Bagaimana cara menghapus akun saya?",
+      question: "Bagaimana cara mencari dan membaca berita terbaru?",
       answer:
-          "Untuk menghapus akun, buka Pengaturan → Akun → Hapus Akun dan ikuti instruksi.",
-      category: "Akun",
+          "Setelah login, pada halaman beranda Anda akan melihat daftar berita terbaru. Gunakan kolom pencarian di atas untuk memfilter berdasarkan kata kunci, kategori, atau tanggal publikasi.",
+      category: "Berita",
     ),
     FAQItem(
-      question: "Apakah aplikasi tersedia di iOS?",
+      question: "Apakah saya bisa menyimpan berita untuk dibaca nanti?",
       answer:
-          "Ya, Anda dapat mengunduh aplikasi di App Store untuk perangkat iOS.",
-      category: "Umum",
+          "Ya, cukup tekan ikon bookmark (★) pada setiap judul berita. Berita yang di-bookmark akan tersimpan di menu “Favorit” untuk dibaca kapan-pun.",
+      category: "Berita",
     ),
     FAQItem(
-      question: "Bagaimana cara mengaktifkan notifikasi push?",
+      question: "Bagaimana cara mengaktifkan notifikasi berita?",
       answer:
-          "Anda dapat mengaktifkan notifikasi di Pengaturan → Notifikasi → Aktifkan Push Notifications.",
+          "Masuk ke Settings → Notifikasi → Aktifkan “Notifikasi Berita Baru”. Anda akan mendapatkan push notification ketika ada berita terbaru yang terbit.",
+      category: "Berita",
+    ),
+
+    // Kategori: Karya (syair, pantun, puisi, desain grafis, fotografi)
+    FAQItem(
+      question: "Bagaimana cara mengirim karya syair, pantun, atau puisi?",
+      answer:
+          "Di menu “Karya”, pilih submenu “Kirim Karya” → “Teks”. Isi judul, kategori (misal: Syair/Pantun/Puisi), lalu lampirkan file .txt atau langsung tulis di kolom yang disediakan. Setelah itu, tekan “Kirim”.",
+      category: "Karya",
+    ),
+    FAQItem(
+      question: "Apa saja format file yang diterima untuk karya desain grafis?",
+      answer:
+          "Untuk karya desain grafis, kami mendukung format JPEG, PNG, dan SVG dengan ukuran maksimal 5 MB per file. Pastikan resolusi minimal 1080×1080 piksel.",
+      category: "Karya",
+    ),
+    FAQItem(
+      question: "Bagaimana saya dapat mengunggah koleksi fotografi?",
+      answer:
+          "Pilih menu “Karya” → “Karya Foto”. Tekan tombol “Unggah Foto” dan pilih beberapa gambar dari galeri. Setelah diunggah, tambahkan judul, deskripsi singkat, serta tag lokasi jika perlu.",
+      category: "Karya",
+    ),
+    FAQItem(
+      question: "Apakah karya saya bisa dikomentari oleh pengguna lain?",
+      answer:
+          "Ya. Setelah karya Anda diterbitkan, pengguna lain dapat memberi komentar dan like. Anda juga bisa membalas komentar langsung dari halaman karya Anda.",
+      category: "Karya",
+    ),
+    FAQItem(
+      question: "Bagaimana cara mengedit atau menghapus karya yang sudah dikirim?",
+      answer:
+          "Masuk ke halaman profil Anda → pilih “Karya Saya”. Di masing-masing item akan ada ikon edit (✏️) dan hapus (🗑️). Ketuk sesuai kebutuhan, lalu simpan perubahan.",
+      category: "Karya",
+    ),
+
+    // Kategori: Produk (buletin, majalah)
+    FAQItem(
+      question: "Apa itu Buletin dan Majalah di aplikasi ini?",
+      answer:
+          "Buletin adalah koleksi artikel pendek yang terbit secara berkala (misal: mingguan). Majalah adalah terbitan khusus dengan artikel mendalam, foto-foto eksklusif, dan desain khusus.",
+      category: "Produk",
+    ),
+    FAQItem(
+      question: "Bagaimana cara mengakses Buletin terbaru?",
+      answer:
+          "Pergi ke menu “Produk” → pilih “Buletin”. Scroll ke bawah untuk daftar edisi. Tekan edisi yang diinginkan, lalu tap “Buka” untuk membaca.",
+      category: "Produk",
+    ),
+    FAQItem(
+      question: "Apakah saya perlu berlangganan untuk membaca Majalah?",
+      answer:
+          "Tidak. Semua edisi Majalah tersedia secara gratis di aplikasi ini. Cukup kunjungi menu “Produk” → “Majalah” → pilih edisi yang ingin dibaca.",
+      category: "Produk",
+    ),
+    FAQItem(
+      question: "Bisakah saya mengunduh Buletin atau Majalah untuk dibaca offline?",
+      answer:
+          "Ya. Setelah memilih edisi Buletin/Majalah, tekan ikon unduh (⬇️). File akan tersimpan di folder “Download” aplikasi untuk dibaca tanpa koneksi internet.",
+      category: "Produk",
+    ),
+
+    // Kategori: Teknis
+    FAQItem(
+      question: "Aplikasi sering force close, apa yang harus saya lakukan?",
+      answer:
+          "Coba perbarui aplikasi ke versi terbaru di Play Store/App Store. Jika masih bermasalah, clear cache melalui Settings → Aplikasi → [Nama Aplikasi] → Penyimpanan → Hapus Cache, lalu restart perangkat.",
       category: "Teknis",
     ),
     FAQItem(
-      question: "Mengapa saya tidak menerima email verifikasi?",
+      question: "Kenapa gambar di artikel tidak muncul?",
       answer:
-          "Pastikan email yang Anda masukkan benar dan periksa folder spam.",
-      category: "Akun",
-    ),
-    FAQItem(
-      question: "Bagaimana cara mengganti password?",
-      answer:
-          "Buka Pengaturan → Keamanan → Ganti Password dan ikuti instruksi.",
-      category: "Akun",
-    ),
-    FAQItem(
-      question: "Bagaimana cara melaporkan bug?",
-      answer:
-          "Gunakan menu Hubungi Kami → Kirim Laporan Bug dengan detail permasalahan.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Mengapa upload file berhenti di tengah?",
-      answer:
-          "Cek koneksi internet dan pastikan ukuran file tidak melebihi batas.",
+          "Pastikan koneksi internet Anda stabil. Jika masih kosong, coba refresh halaman dengan menarik layar ke bawah (pull-to-refresh). Jika tidak berhasil, bisa jadi server sedang bermasalah—silakan coba lagi beberapa saat.",
       category: "Teknis",
     ),
     FAQItem(
-      question: "Bagaimana cara melihat tutorial penggunaan?",
+      question: "Bagaimana cara mengubah bahasa tampilan aplikasi?",
       answer:
-          "Buka menu Bantuan → Tutorial untuk melihat panduan lengkap.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Apa itu mode offline?",
-      answer:
-          "Mode offline memungkinkan Anda mengakses data yang sudah diunduh tanpa koneksi internet.",
+          "Masuk ke Settings → Bahasa & Wilayah → pilih bahasa yang diinginkan. Aplikasi akan otomatis restart dan tampil dalam bahasa pilihan.",
       category: "Teknis",
     ),
+
+    // Kategori: Umum
     FAQItem(
-      question: "Bagaimana cara sinkronisasi data?",
+      question: "Apakah aplikasi ini berbayar?",
       answer:
-          "Data akan disinkronisasi otomatis saat Anda terhubung ke internet.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Apakah ada aplikasi desktop?",
-      answer:
-          "Saat ini kami belum menyediakan aplikasi desktop resmi.",
+          "Tidak. Seluruh konten berita, karya, buletin, dan majalah dapat diakses secara gratis tanpa biaya langganan maupun pembelian in-app.",
       category: "Umum",
     ),
     FAQItem(
-      question: "Bagaimana cara mengatur bahasa aplikasi?",
+      question: "Bagaimana cara menghubungi tim redaksi atau dukungan?",
       answer:
-          "Buka Pengaturan → Bahasa dan pilih bahasa yang diinginkan.",
+          "Kirim email ke devmoss@gmail.com atau kunjungi menu “Bantuan & Kontak” → “Hubungi Kami” di aplikasi. Anda bisa memilih kategori: Pertanyaan Teknis, Saran Konten, atau Kolaborasi.",
       category: "Umum",
     ),
     FAQItem(
-      question: "Mengapa aplikasi sering keluar tiba-tiba?",
+      question: "Apakah saya bisa berkontribusi menjadi penulis lepas?",
       answer:
-          "Coba update aplikasi ke versi terbaru atau bersihkan cache di Pengaturan → Aplikasi.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Bagaimana cara menghubungkan ke akun Google?",
-      answer:
-          "Gunakan opsi Login dengan Google di halaman login utama.",
-      category: "Akun",
-    ),
-    FAQItem(
-      question: "Bagaimana cara mengganti foto profil?",
-      answer:
-          "Di Profil, klik ikon kamera pada foto profil untuk memilih gambar baru.",
-      category: "Akun",
-    ),
-    FAQItem(
-      question: "Apakah aplikasi mendukung dark mode?",
-      answer:
-          "Ya, buka Pengaturan → Tampilan → Dark Mode untuk mengaktifkan.",
+          "Tentu. Buka halaman “Bantuan & Kontak” → pilih “Daftar Penulis Lepas”. Isi formulir singkat, lampirkan portofolio, dan tim redaksi akan menghubungi Anda jika memenuhi syarat.",
       category: "Umum",
     ),
     FAQItem(
-      question: "Bagaimana cara melihat notifikasi lama?",
+      question: "Bagaimana kebijakan privasi dan syarat ketentuan aplikasi ini?",
       answer:
-          "Notifikasi lama dapat dilihat di menu Notifikasi → Riwayat Notifikasi.",
+          "Anda bisa membaca secara lengkap di Settings → Tentang → Kebijakan Privasi & Syarat Ketentuan. Dokumen ini menjelaskan hak dan kewajiban pengguna serta penanganan data pribadi.",
       category: "Umum",
-    ),
-    FAQItem(
-      question: "Apa kegunaan fitur backup manual?",
-      answer:
-          "Backup manual memungkinkan Anda menyimpan data setiap kali ditekan.",
-      category: "Backup",
-    ),
-    FAQItem(
-      question: "Bagaimana cara memulihkan data dari backup?",
-      answer:
-          "Buka Pengaturan → Backup & Restore → Pulihkan Data.",
-      category: "Backup",
-    ),
-    FAQItem(
-      question: "Apakah data terenkripsi di server?",
-      answer:
-          "Ya, semua data disimpan dengan enkripsi AES-256 di server kami.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Bagaimana cara mengubah metode pembayaran?",
-      answer:
-          "Buka Pengaturan → Pembayaran → Kelola Metode Pembayaran.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Apakah tersedia mode premium?",
-      answer:
-          "Ya, Anda dapat berlangganan premium melalui menu Profil → Berlangganan.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Bagaimana cara membatalkan langganan?",
-      answer:
-          "Buka Profil → Berlangganan → Batalkan Langganan.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Apakah ada batas jumlah backup?",
-      answer:
-          "Unlimited, Anda dapat backup kapan saja tanpa batas.",
-      category: "Backup",
-    ),
-    FAQItem(
-      question: "Bagaimana cara mengatur notifikasi email?",
-      answer:
-          "Buka Pengaturan → Notifikasi → Email Notifications dan atur preferensi.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Mengapa notifikasi tidak muncul?",
-      answer:
-          "Pastikan Anda sudah memberikan izin notifikasi di pengaturan perangkat.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Bagaimana cara export data ke CSV?",
-      answer:
-          "Buka menu Profil → Ekspor Data, pilih format CSV.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Apakah aplikasi mendukung multi-akun?",
-      answer:
-          "Saat ini fitur multi-akun belum tersedia.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Bagaimana cara mengatur batas waktu sesi?",
-      answer:
-          "Buka Pengaturan → Keamanan → Timeout Sesi dan atur durasi.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Bagaimana cara menambahkan kontak?",
-      answer:
-          "Buka menu Kontak → Tambah Kontak dan isi data.",
-      category: "Akun",
-    ),
-    FAQItem(
-      question: "Apa yang harus dilakukan jika lupa username?",
-      answer:
-          "Hubungi tim dukungan melalui menu Hubungi Kami.",
-      category: "Akun",
-    ),
-    FAQItem(
-      question: "Bagaimana cara menghapus cache aplikasi?",
-      answer:
-          "Buka Pengaturan → Aplikasi → Hapus Cache.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Bagaimana cara melihat versi aplikasi?",
-      answer:
-          "Buka Pengaturan → Tentang Aplikasi untuk melihat versi saat ini.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Bagaimana cara sharing file dengan pengguna lain?",
-      answer:
-          "Pilih file, lalu klik ikon bagikan dan pilih kontak tujuan.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Apakah koneksi HTTPS aman?",
-      answer:
-          "Ya, semua komunikasi melalui HTTPS terenkripsi.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Bagaimana cara menghubungkan API eksternal?",
-      answer:
-          "Gunakan API Key dari Pengaturan → Integrasi API.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Apa itu limit API harian?",
-      answer:
-          "Anda dapat melakukan maksimal 1000 permintaan per hari.",
-      category: "Teknis",
-    ),
-    FAQItem(
-      question: "Bagaimana cara melihat log aktivitas?",
-      answer:
-          "Buka menu Profil → Log Aktivitas untuk melihat riwayat.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Apa saja metode pembayaran yang didukung?",
-      answer:
-          "Kami mendukung kartu kredit, debit, dan e-wallet.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Bagaimana cara mengatur timezone?",
-      answer:
-          "Buka Pengaturan → Umum → Timezone dan pilih wilayah Anda.",
-      category: "Umum",
-    ),
-    FAQItem(
-      question: "Bagaimana cara mencadangkan chat?",
-      answer:
-          "Buka Chat → Opsi → Backup Chat untuk mencadangkan percakapan.",
-      category: "Backup",
-    ),
-    FAQItem(
-      question: "Bagaimana cara restore chat?",
-      answer:
-          "Buka Chat → Opsi → Restore Chat dan pilih file backup.",
-      category: "Backup",
-    ),
-    FAQItem(
-      question: "Mengapa verifikasi dua faktor tidak berfungsi?",
-      answer:
-          "Periksa apakah nomor telepon terdaftar dan jaringan stabil.",
-      category: "Akun",
     ),
   ];
 
@@ -326,7 +169,15 @@ FAQItem(
   List<FAQItem> _filteredFAQs = [];
 
   // Daftar kategori yang ditampilkan di dropdown.
-  final List<String> categories = ['Semua', 'Akun', 'Teknis', 'Umum', 'Backup'];
+  final List<String> categories = [
+    'Semua',
+    'Akun',
+    'Berita',
+    'Karya',
+    'Produk',
+    'Teknis',
+    'Umum',
+  ];
 
   // State untuk pencarian (search query) dan kategori yang dipilih.
   String _searchQuery = '';
