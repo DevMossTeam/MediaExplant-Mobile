@@ -75,159 +75,110 @@ class ProfileScreen extends StatelessWidget {
                 headerSliverBuilder: (context, innerScrolled) => [
                   /// SliverAppBar dengan LayoutBuilder untuk hide/show konten sesuai scroll
                   SliverAppBar(
-                    pinned: true,
-                    backgroundColor: AppColors.background,
-                    expandedHeight: _expandedHeight,
-                    automaticallyImplyLeading: false,
-                    elevation: 0,
+  pinned: true,
+  backgroundColor: AppColors.background,
+  expandedHeight: _expandedHeight,
+  automaticallyImplyLeading: false,
+  elevation: 0,
 
-                    flexibleSpace: LayoutBuilder(
-                      builder: (context, constraints) {
-                        // tinggi current appbar setiap kali scroll
-                        final top = constraints.biggest.height;
+  flexibleSpace: LayoutBuilder(
+    builder: (context, constraints) {
+      final top = constraints.biggest.height;
+      final statusBarHeight = MediaQuery.of(context).padding.top;
 
-                        // showAvatar hanya true jika nyaris fully expanded (200px).
-                        final bool showAvatar = top > (_expandedHeight - 1);
+      // Jika tinggi saat ini sudah menyentuh toolbar + status bar, berarti collapsed
+      final bool isCollapsed =
+          top <= (kToolbarHeight + statusBarHeight + 8);
 
-                        // isCollapsed true jika sudah mendekati toolbar height (56px + tolerance)
-                        final bool isCollapsed =
-                            top <= (kToolbarHeight + 8);
+      // Kalau masih sangat mendekati expandedHeight, tampilkan avatar + nama
+      final bool showAvatar = top > (_expandedHeight - 1);
 
-                        return Container(
-                          color:
-                              showAvatar ? Colors.white : AppColors.background,
-                          child: Stack(
-                            children: [
-                              // ======
-                              // 1) Saat fully expanded (top > 199): tampilkan avatar + nama
-                              // ======
-                              if (showAvatar)
-                                Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 16),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Hero(
-                                          tag: 'avatar_${vm.fullName}',
-                                          child: Material(
-                                            elevation: 4,
-                                            shape: const CircleBorder(),
-                                            child: CircleAvatar(
-                                              radius: 60,
-                                              backgroundColor: vm
-                                                          .profileImageProvider !=
-                                                      null
-                                                  ? Colors.white
-                                                  : _avatarBackgroundColor(
-                                                      vm.fullName),
-                                              backgroundImage:
-                                                  vm.profileImageProvider,
-                                              child: vm.profileImageProvider ==
-                                                      null
-                                                  ? Text(
-                                                      vm.fullName.isNotEmpty
-                                                          ? vm.fullName
-                                                              .trim()[0]
-                                                              .toUpperCase()
-                                                          : '?',
-                                                      style:
-                                                          const TextStyle(
-                                                        fontSize: 36,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black,
-                                                      ),
-                                                    )
-                                                  : null,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          vm.fullName,
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+      return Stack(
+        children: [
+          // Background berubah putih saat expanded, AppColors.background saat collapse/mid
+          Container(
+            color: showAvatar ? Colors.white : AppColors.background,
+          ),
+
+          // 1) Saat fully expanded: avatar + nama
+          if (showAvatar)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Hero(
+                      tag: 'avatar_${vm.fullName}',
+                      child: Material(
+                        elevation: 4,
+                        shape: const CircleBorder(),
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundColor:
+                              vm.profileImageProvider != null
+                                  ? Colors.white
+                                  : _avatarBackgroundColor(vm.fullName),
+                          backgroundImage: vm.profileImageProvider,
+                          child: vm.profileImageProvider == null
+                              ? Text(
+                                  vm.fullName.isNotEmpty
+                                      ? vm.fullName
+                                          .trim()[0]
+                                          .toUpperCase()
+                                      : '?',
+                                  style: const TextStyle(
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
-                                ),
-
-                              // ======
-                              // 2) Saat sudah collapse (top <= 56+8): tampilkan AppBar custom: logo + search
-                              // ======
-                              if (isCollapsed)
-                                Positioned.fill(
-                                  child: Row(
-                                    children: [
-                                      // leading = logo app
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 15, top: 5),
-                                        child: Image.asset(
-                                          'assets/images/app_logo.png',
-                                          height: 32,
-                                        ),
-                                      ),
-
-                                      // Spacer agar title/search di tengah
-                                      const SizedBox(width: 12),
-
-                                      // Title berupa container search/padding
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 5),
-                                          child: Container(
-                                            height: 40,
-                                            padding: const EdgeInsets
-                                                .symmetric(horizontal: 10),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey[200],
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            // Isi search box atau teks
-                                            child: Row(
-                                              children: const [
-                                                Icon(
-                                                  Icons.search,
-                                                  color: Colors.grey,
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text(
-                                                  'Cari konten...',
-                                                  style: TextStyle(
-                                                      color: Colors.grey),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      const SizedBox(width: 15),
-                                    ],
-                                  ),
-                                ),
-
-                              // ======
-                              // 3) Saat top di antara 199 dan 64: tampilkan background kosong putih (tanpa widget)
-                              //    Ini mencegah Column overflow tapi tanpa konten apa pun.
-                              // ======
-                              if (!showAvatar && !isCollapsed)
-                                const SizedBox.expand(),
-                            ],
-                          ),
-                        );
-                      },
+                                )
+                              : null,
+                        ),
+                      ),
                     ),
+                    const SizedBox(height: 8),
+                    Text(
+                      vm.fullName,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // 2) Saat sudah collapse: hanya tampilkan judul "Bookmark"
+          if (isCollapsed)
+            Positioned(
+              top: statusBarHeight,
+              left: 0,
+              right: 0,
+              height: kToolbarHeight,
+              child: Center(
+                child: Text(
+                  'Bookmark',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
+                ),
+              ),
+            ),
+
+          // 3) Saat di antara expanded dan collapsed: kosong (hindari overflow)
+          if (!showAvatar && !isCollapsed) const SizedBox.expand(),
+        ],
+      );
+    },
+  ),
+),
+
 
                   /// SliverPersistentHeader untuk TabBar (latar putih, teks hitam)
                   SliverPersistentHeader(
