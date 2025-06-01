@@ -43,6 +43,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  static const double _expandedHeight = 200;
 
   @override
   void initState() {
@@ -70,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       }
     });
 
-    // Optional: langsung refresh tab pertama saat initState
+    // Langsung refresh tab pertama saat initState
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final beritaBookmarkVM =
           Provider.of<BeritaBookamarkViewmodel>(context, listen: false);
@@ -84,25 +85,14 @@ class _ProfileScreenState extends State<ProfileScreen>
     super.dispose();
   }
 
-  static const double _expandedHeight = 200;
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>()),
       child: Consumer<ProfileViewModel>(
         builder: (context, vm, _) {
-          if (vm.userData.isEmpty) {
-            return Scaffold(
-              backgroundColor: Colors.white,
-              body: const Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          if (!vm.isLoggedIn) {
-            return const _NotLoggedInProfileContent();
-          }
-
+          // Scaffold diletakkan di luar pengecekan isLoggedIn,
+          // sehingga FAB selalu muncul
           return Scaffold(
             backgroundColor: Colors.white,
             floatingActionButton: FloatingActionButton.extended(
@@ -116,164 +106,180 @@ class _ProfileScreenState extends State<ProfileScreen>
               label:
                   const Text('Settings', style: TextStyle(color: Colors.white)),
             ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-            body: NestedScrollView(
-              headerSliverBuilder: (context, innerScrolled) => [
-                SliverAppBar(
-                  pinned: true,
-                  backgroundColor: AppColors.background,
-                  expandedHeight: _expandedHeight,
-                  automaticallyImplyLeading: false,
-                  elevation: 0,
-                  flexibleSpace: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final top = constraints.biggest.height;
-                      final statusBarHeight =
-                          MediaQuery.of(context).padding.top;
-                      final bool isCollapsed =
-                          top <= (kToolbarHeight + statusBarHeight + 8);
-                      final bool showAvatar = top > (_expandedHeight - 1);
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.endFloat,
+            body: Builder(builder: (context) {
+              // Jika data user belum ter-load
+              if (vm.userData.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                      return Stack(
-                        children: [
-                          Container(
+              // Jika belum login
+              if (!vm.isLoggedIn) {
+                return const _NotLoggedInProfileContent();
+              }
+
+              // Jika sudah login, tampilkan konten profile & bookmark
+              return NestedScrollView(
+                headerSliverBuilder: (context, innerScrolled) => [
+                  SliverAppBar(
+                    pinned: true,
+                    backgroundColor: AppColors.background,
+                    expandedHeight: _expandedHeight,
+                    automaticallyImplyLeading: false,
+                    elevation: 0,
+                    flexibleSpace: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final top = constraints.biggest.height;
+                        final statusBarHeight =
+                            MediaQuery.of(context).padding.top;
+                        final bool isCollapsed =
+                            top <= (kToolbarHeight + statusBarHeight + 8);
+                        final bool showAvatar = top > (_expandedHeight - 1);
+
+                        return Stack(
+                          children: [
+                            Container(
                               color: showAvatar
                                   ? Colors.white
-                                  : AppColors.background),
-                          if (showAvatar)
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Hero(
-                                      tag: 'avatar_${vm.fullName}',
-                                      child: Material(
-                                        elevation: 4,
-                                        shape: const CircleBorder(),
-                                        child: CircleAvatar(
-                                          radius: 60,
-                                          backgroundColor:
-                                              vm.profileImageProvider != null
-                                                  ? Colors.white
-                                                  : _avatarBackgroundColor(
-                                                      vm.fullName),
-                                          backgroundImage:
-                                              vm.profileImageProvider,
-                                          child: vm.profileImageProvider == null
-                                              ? Text(
-                                                  vm.fullName.isNotEmpty
-                                                      ? vm.fullName
-                                                          .trim()[0]
-                                                          .toUpperCase()
-                                                      : '?',
-                                                  style: const TextStyle(
-                                                    fontSize: 36,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.white,
-                                                  ),
-                                                )
-                                              : null,
+                                  : AppColors.background,
+                            ),
+                            if (showAvatar)
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Hero(
+                                        tag: 'avatar_${vm.fullName}',
+                                        child: Material(
+                                          elevation: 4,
+                                          shape: const CircleBorder(),
+                                          child: CircleAvatar(
+                                            radius: 60,
+                                            backgroundColor:
+                                                vm.profileImageProvider !=
+                                                        null
+                                                    ? Colors.white
+                                                    : _avatarBackgroundColor(
+                                                        vm.fullName),
+                                            backgroundImage:
+                                                vm.profileImageProvider,
+                                            child: vm.profileImageProvider ==
+                                                    null
+                                                ? Text(
+                                                    vm.fullName.isNotEmpty
+                                                        ? vm.fullName
+                                                            .trim()[0]
+                                                            .toUpperCase()
+                                                        : '?',
+                                                    style: const TextStyle(
+                                                      fontSize: 36,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                  )
+                                                : null,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      vm.fullName,
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        vm.fullName,
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          if (isCollapsed)
-                            Positioned(
-                              top: statusBarHeight,
-                              left: 0,
-                              right: 0,
-                              height: kToolbarHeight,
-                              child: const Center(
-                                child: Text(
-                                  'Bookmark',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                                    ],
                                   ),
                                 ),
                               ),
-                            ),
-                          if (!showAvatar && !isCollapsed)
-                            const SizedBox.expand(),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _TabBarDelegate(
-                    TabBar(
-                      controller: _tabController,
-                      indicatorColor: AppColors.primary,
-                      labelColor: Colors.black,
-                      unselectedLabelColor: Colors.black54,
-                      labelStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      unselectedLabelStyle: const TextStyle(fontSize: 14),
-                      tabs: const [
-                        Tab(text: 'Berita'),
-                        Tab(text: 'Karya'),
-                        Tab(text: 'Produk'),
-                      ],
+                            if (isCollapsed)
+                              Positioned(
+                                top: statusBarHeight,
+                                left: 0,
+                                right: 0,
+                                height: kToolbarHeight,
+                                child: const Center(
+                                  child: Text(
+                                    'Bookmark',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            if (!showAvatar && !isCollapsed)
+                              const SizedBox.expand(),
+                          ],
+                        );
+                      },
                     ),
                   ),
-                ),
-              ],
-              body: TabBarView(
-                controller: _tabController,
-                children: [
-                  RefreshIndicator(
-                    onRefresh: () async {
-                      await vm.refreshUserData();
-                      await Provider.of<BeritaBookamarkViewmodel>(
-                        context,
-                        listen: false,
-                      ).refresh(userLogin);
-                    },
-                    child: BeritaBookmark(),
-                  ),
-                  RefreshIndicator(
-                    onRefresh: () async {
-                      await vm.refreshUserData();
-                      await Provider.of<KaryaBookmarkViewmodel>(
-                        context,
-                        listen: false,
-                      ).refresh(userLogin);
-                    },
-                    child: KaryaBookmark(),
-                  ),
-                  RefreshIndicator(
-                    onRefresh: () async {
-                      await vm.refreshUserData();
-                      await Provider.of<ProdukBookmarkViewmodel>(
-                        context,
-                        listen: false,
-                      ).refresh(userLogin);
-                    },
-                    child: ProdukBookmark(),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _TabBarDelegate(
+                      TabBar(
+                        controller: _tabController,
+                        indicatorColor: AppColors.primary,
+                        labelColor: Colors.black,
+                        unselectedLabelColor: Colors.black54,
+                        labelStyle: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        unselectedLabelStyle:
+                            const TextStyle(fontSize: 14),
+                        tabs: const [
+                          Tab(text: 'Berita'),
+                          Tab(text: 'Karya'),
+                          Tab(text: 'Produk'),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
-              ),
-            ),
+                body: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    RefreshIndicator(
+                      onRefresh: () async {
+                        await vm.refreshUserData();
+                        await Provider.of<BeritaBookamarkViewmodel>(context,
+                                listen: false)
+                            .refresh(userLogin);
+                      },
+                      child: const BeritaBookmark(),
+                    ),
+                    RefreshIndicator(
+                      onRefresh: () async {
+                        await vm.refreshUserData();
+                        await Provider.of<KaryaBookmarkViewmodel>(context,
+                                listen: false)
+                            .refresh(userLogin);
+                      },
+                      child: const KaryaBookmark(),
+                    ),
+                    RefreshIndicator(
+                      onRefresh: () async {
+                        await vm.refreshUserData();
+                        await Provider.of<ProdukBookmarkViewmodel>(context,
+                                listen: false)
+                            .refresh(userLogin);
+                      },
+                      child: const ProdukBookmark(),
+                    ),
+                  ],
+                ),
+              );
+            }),
           );
         },
       ),
@@ -337,7 +343,8 @@ class _NotLoggedInProfileContent extends StatefulWidget {
       __NotLoggedInProfileContentState();
 }
 
-class __NotLoggedInProfileContentState extends State<_NotLoggedInProfileContent>
+class __NotLoggedInProfileContentState
+    extends State<_NotLoggedInProfileContent>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _avatarFadeAnimation;
@@ -510,7 +517,6 @@ class BeritaPage extends StatelessWidget {
     return Container(
       color: Colors.grey.shade100,
       child: ListView.separated(
-        // Pastikan scrollable meski konten sedikit agar RefreshIndicator aktif
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         itemCount: _dummyBerita.length,
