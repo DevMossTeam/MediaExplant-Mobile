@@ -22,7 +22,7 @@ class HubungiScreen extends StatelessWidget {
     }
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => HubungiViewModel(),
@@ -30,19 +30,29 @@ class HubungiScreen extends StatelessWidget {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text(''),
             centerTitle: true,
+            elevation: 4,
+            backgroundColor: AppColors.primary,
+            iconTheme: const IconThemeData(color: Colors.white),
+            title: const Text(
+              'Hubungi',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
             bottom: TabBar(
               indicatorColor: Colors.white,
-              labelColor: AppColors.primary,
-              unselectedLabelColor: AppColors.primary,
+              labelColor: const Color.fromARGB(255, 255, 255, 255),
+              unselectedLabelColor: const Color.fromARGB(255, 255, 255, 255),
               tabs: const [
                 Tab(
-                  icon: Icon(Icons.send_outlined, color: AppColors.primary),
+                  icon: Icon(Icons.send_outlined, color: Color.fromARGB(255, 255, 255, 255)),
                   text: 'Kirim Pesan',
                 ),
                 Tab(
-                  icon: Icon(Icons.info_outline, color: AppColors.primary),
+                  icon: Icon(Icons.info_outline, color: Color.fromARGB(255, 255, 255, 255)),
                   text: 'Info Kontak',
                 ),
               ],

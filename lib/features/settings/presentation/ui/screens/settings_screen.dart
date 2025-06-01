@@ -31,19 +31,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
     vm = context.watch<SettingsViewModel>();
     notifVm = context.watch<SettingNotifikasiViewModel>();
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 4,
-        backgroundColor: AppColors.primary,
-        title: const Text('Settings'),
+return Scaffold(
+  appBar: AppBar(
+    centerTitle: true,
+    elevation: 4,
+    backgroundColor: AppColors.primary,
+    // Ubah warna ikon panah menjadi putih
+    iconTheme: const IconThemeData(color: Colors.white),
+    title: const Text(
+      'Settings',
+      style: TextStyle(
+        // Buat font sedikit lebih tebal dan berwarna putih
+        fontWeight: FontWeight.w600,
+        color: Colors.white,
+        fontSize: 20, // sesuaikan ukuran font jika diperlukan
       ),
-      body: AnimatedBuilder(
-        animation: Listenable.merge([vm, notifVm]),
-        builder: (context, _) {
-          if (vm.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    ),
+  ),
+  body: AnimatedBuilder(
+    animation: Listenable.merge([vm, notifVm]),
+    builder: (context, _) {
+      if (vm.isLoading) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
           return Container(
             decoration: BoxDecoration(

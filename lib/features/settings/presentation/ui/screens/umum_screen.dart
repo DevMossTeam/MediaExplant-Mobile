@@ -440,10 +440,20 @@ if (_profileImage != null || vm.profilePic.isNotEmpty)
             _namaLengkapController.text = vm.namaLengkap;
           }
           return Scaffold(
-            appBar: AppBar(
-              title: const Text("Edit Profil Umum"),
-              centerTitle: true,
-            ),
+  appBar: AppBar(
+    centerTitle: true,
+    elevation: 4,
+    backgroundColor: AppColors.primary,
+    iconTheme: const IconThemeData(color: Colors.white),
+    title: const Text(
+      'Edit Profil Umum',
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        color: Colors.white,
+        fontSize: 20,
+      ),
+    ),
+  ),
             body: SingleChildScrollView(
               child: Column(
                 children: [

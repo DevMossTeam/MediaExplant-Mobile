@@ -33,11 +33,21 @@ class _KeamananScreenState extends State<KeamananScreen> {
             });
           }
 
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Keamanan'),
-              backgroundColor: AppColors.primary,
-            ),
+return Scaffold(
+  appBar: AppBar(
+    centerTitle: true,
+    elevation: 4,
+    backgroundColor: AppColors.primary,
+    iconTheme: const IconThemeData(color: Colors.white),
+    title: const Text(
+      'Keamanan',
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        color: Colors.white,
+        fontSize: 20,
+      ),
+    ),
+  ),
             body: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(

@@ -63,8 +63,20 @@ class TentangScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tentang'),
+        centerTitle: true,
+        elevation: 4,
         backgroundColor: AppColors.primary,
+        // Jadikan ikon panah (back button) berwarna putih
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          'Tentang',
+          style: TextStyle(
+            // Buat font sedikit lebih tebal dan berwarna putih
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+            fontSize: 20, // sesuaikan ukuran jika diinginkan
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

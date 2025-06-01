@@ -42,7 +42,6 @@ class MyApp extends StatelessWidget {
 }
 
 /// Layar Hubungi Kami dengan form kontak yang lengkap dan fungsional.
-/// (Tidak diubah—tetap sama seperti sebelumnya.)
 class HubungiKamiScreen extends StatefulWidget {
   const HubungiKamiScreen({super.key});
 
@@ -90,7 +89,18 @@ class _HubungiKamiScreenState extends State<HubungiKamiScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hubungi Kami'),
+        centerTitle: true,
+        elevation: 4,
+        backgroundColor: AppColors.primary,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          'Hubungi Kami',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -441,7 +451,18 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pusat Bantuan'),
+        centerTitle: true,
+        elevation: 4,
+        backgroundColor: AppColors.primary,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          'Pusat Bantuan',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
