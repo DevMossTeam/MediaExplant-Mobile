@@ -12,8 +12,7 @@ class SlideLeftRoute extends PageRouteBuilder {
   final Widget page;
   SlideLeftRoute({required this.page})
       : super(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              page,
+          pageBuilder: (context, animation, secondaryAnimation) => page,
           transitionsBuilder:
               (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
@@ -28,18 +27,10 @@ class SlideLeftRoute extends PageRouteBuilder {
         );
 }
 
-/// ProfileScreen yang menggunakan ProfileViewModel.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
-  static const dummySavedArticles = [
-    {
-      "title":       "Artikel Tersimpan 1",
-      "thumbnailUrl": "https://via.placeholder.com/300x200",
-      "description": "Deskripsi singkat artikel tersimpan 1."
-    },
-    // … bisa tambah data dummy lainnya
-  ];
+  static const double _expandedHeight = 200;
 
   @override
   Widget build(BuildContext context) {
@@ -47,98 +38,295 @@ class ProfileScreen extends StatelessWidget {
       create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>()),
       child: Consumer<ProfileViewModel>(
         builder: (context, vm, _) {
-          // Tampilkan loading jika data lokal belum terisi
+          // Loading jika data belum siap
           if (vm.userData.isEmpty) {
             return Scaffold(
-              backgroundColor: AppColors.background,
+              backgroundColor: Colors.white,
               body: const Center(child: CircularProgressIndicator()),
             );
           }
 
-          return Scaffold(
-            backgroundColor: AppColors.background,
-            floatingActionButton: FloatingActionButton.extended(
-              backgroundColor: AppColors.primary,
-              elevation: 6,
-              onPressed: () => Navigator.push(
-                context,
-                SlideLeftRoute(page: SettingsScreen()),
+          // Jika belum login, tampilkan konten “belum login”
+          if (!vm.isLoggedIn) {
+            return const _NotLoggedInProfileContent();
+          }
+
+          // Jika sudah login, tampilkan header + TabBar
+          return DefaultTabController(
+            length: 3,
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              floatingActionButton: FloatingActionButton.extended(
+                backgroundColor: AppColors.primary,
+                elevation: 6,
+                onPressed: () => Navigator.push(
+                  context,
+                  SlideLeftRoute(page: SettingsScreen()),
+                ),
+                icon: const Icon(Icons.settings, color: Colors.white),
+                label: const Text(
+                  'Settings',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-              icon: const Icon(Icons.settings, color: Colors.white),
-              label: const Text('Settings',
-                  style: TextStyle(color: Colors.white)),
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.endFloat,
-            body: vm.isLoggedIn
-                ? RefreshIndicator(
-                    onRefresh: vm.refreshUserData,
-                    child: CustomScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        /// Kirim avatarImage apa adanya (boleh null)
-                        ProfileHeader(
-                          avatarImage: vm.profileImageProvider,
-                          name:        vm.fullName,
-                        ),
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Saved Articles',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                ...dummySavedArticles.map((art) => Card(
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 8),
-                                      child: ListTile(
-                                        leading: Image.network(
-                                          art['thumbnailUrl']!,
-                                          width: 60,
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (c, e, st) => const Icon(
-                                            Icons.broken_image,
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.endFloat,
+              body: NestedScrollView(
+                headerSliverBuilder: (context, innerScrolled) => [
+                  /// SliverAppBar dengan LayoutBuilder untuk hide/show konten sesuai scroll
+                  SliverAppBar(
+                    pinned: true,
+                    backgroundColor: AppColors.background,
+                    expandedHeight: _expandedHeight,
+                    automaticallyImplyLeading: false,
+                    elevation: 0,
+
+                    flexibleSpace: LayoutBuilder(
+                      builder: (context, constraints) {
+                        // tinggi current appbar setiap kali scroll
+                        final top = constraints.biggest.height;
+
+                        // showAvatar hanya true jika nyaris fully expanded (200px).
+                        final bool showAvatar = top > (_expandedHeight - 1);
+
+                        // isCollapsed true jika sudah mendekati toolbar height (56px + tolerance)
+                        final bool isCollapsed =
+                            top <= (kToolbarHeight + 8);
+
+                        return Container(
+                          color:
+                              showAvatar ? Colors.white : AppColors.background,
+                          child: Stack(
+                            children: [
+                              // ======
+                              // 1) Saat fully expanded (top > 199): tampilkan avatar + nama
+                              // ======
+                              if (showAvatar)
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Hero(
+                                          tag: 'avatar_${vm.fullName}',
+                                          child: Material(
+                                            elevation: 4,
+                                            shape: const CircleBorder(),
+                                            child: CircleAvatar(
+                                              radius: 60,
+                                              backgroundColor: vm
+                                                          .profileImageProvider !=
+                                                      null
+                                                  ? Colors.white
+                                                  : _avatarBackgroundColor(
+                                                      vm.fullName),
+                                              backgroundImage:
+                                                  vm.profileImageProvider,
+                                              child: vm.profileImageProvider ==
+                                                      null
+                                                  ? Text(
+                                                      vm.fullName.isNotEmpty
+                                                          ? vm.fullName
+                                                              .trim()[0]
+                                                              .toUpperCase()
+                                                          : '?',
+                                                      style:
+                                                          const TextStyle(
+                                                        fontSize: 36,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.black,
+                                                      ),
+                                                    )
+                                                  : null,
+                                            ),
                                           ),
                                         ),
-                                        title: Text(art['title']!),
-                                        subtitle: Text(art['description']!),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          vm.fullName,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
+                              // ======
+                              // 2) Saat sudah collapse (top <= 56+8): tampilkan AppBar custom: logo + search
+                              // ======
+                              if (isCollapsed)
+                                Positioned.fill(
+                                  child: Row(
+                                    children: [
+                                      // leading = logo app
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 15, top: 5),
+                                        child: Image.asset(
+                                          'assets/images/app_logo.png',
+                                          height: 32,
+                                        ),
                                       ),
-                                    )),
-                              ],
-                            ),
+
+                                      // Spacer agar title/search di tengah
+                                      const SizedBox(width: 12),
+
+                                      // Title berupa container search/padding
+                                      Expanded(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 5),
+                                          child: Container(
+                                            height: 40,
+                                            padding: const EdgeInsets
+                                                .symmetric(horizontal: 10),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[200],
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            // Isi search box atau teks
+                                            child: Row(
+                                              children: const [
+                                                Icon(
+                                                  Icons.search,
+                                                  color: Colors.grey,
+                                                ),
+                                                SizedBox(width: 8),
+                                                Text(
+                                                  'Cari konten...',
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(width: 15),
+                                    ],
+                                  ),
+                                ),
+
+                              // ======
+                              // 3) Saat top di antara 199 dan 64: tampilkan background kosong putih (tanpa widget)
+                              //    Ini mencegah Column overflow tapi tanpa konten apa pun.
+                              // ======
+                              if (!showAvatar && !isCollapsed)
+                                const SizedBox.expand(),
+                            ],
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
-                  )
-                : const NotLoggedInProfileContent(),
+                  ),
+
+                  /// SliverPersistentHeader untuk TabBar (latar putih, teks hitam)
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _TabBarDelegate(
+                      TabBar(
+                        indicatorColor: AppColors.primary,
+                        labelColor: Colors.black,
+                        unselectedLabelColor: Colors.black54,
+                        labelStyle: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        unselectedLabelStyle: const TextStyle(
+                          fontSize: 14,
+                        ),
+                        tabs: const [
+                          Tab(text: 'Berita'),
+                          Tab(text: 'Karya'),
+                          Tab(text: 'Produk'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+                body: const TabBarView(
+                  children: [
+                    BeritaPage(),
+                    KaryaPage(),
+                    ProdukPage(),
+                  ],
+                ),
+              ),
+            ),
           );
         },
       ),
     );
   }
+
+  /// Helper menentukan warna latar avatar (fallback inisial)
+  Color _avatarBackgroundColor(String name) {
+    if (name.isEmpty) return Colors.grey.shade400;
+    final firstChar = name.trim()[0].toUpperCase();
+    final code = firstChar.codeUnitAt(0);
+    final colors = [
+      Colors.red,
+      Colors.green,
+      Colors.blue,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+      Colors.indigo,
+      Colors.brown,
+      Colors.cyan,
+      Colors.amber,
+    ];
+    int idx = (code - 65) % colors.length;
+    if (idx < 0) idx = 0;
+    return colors[idx];
+  }
 }
 
-/// Konten untuk user yang belum login.
-class NotLoggedInProfileContent extends StatefulWidget {
-  const NotLoggedInProfileContent({Key? key}) : super(key: key);
+/// Delegate untuk SliverPersistentHeader menampung TabBar
+class _TabBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar _tabBar;
+  _TabBarDelegate(this._tabBar);
+
   @override
-  _NotLoggedInProfileContentState createState() =>
-      _NotLoggedInProfileContentState();
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Colors.white,
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _TabBarDelegate oldDelegate) {
+    return false;
+  }
 }
 
-class _NotLoggedInProfileContentState
-    extends State<NotLoggedInProfileContent>
+/// Jika belum login, tampilkan animasi + teks ajakan
+class _NotLoggedInProfileContent extends StatefulWidget {
+  const _NotLoggedInProfileContent({Key? key}) : super(key: key);
+
+  @override
+  __NotLoggedInProfileContentState createState() =>
+      __NotLoggedInProfileContentState();
+}
+
+class __NotLoggedInProfileContentState
+    extends State<_NotLoggedInProfileContent>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _avatarFadeAnimation;
@@ -152,19 +340,16 @@ class _NotLoggedInProfileContentState
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
-    _avatarFadeAnimation =
-        Tween<double>(begin: 0, end: 1).animate(
+    _avatarFadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
     _headerSlideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.5),
       end: Offset.zero,
     ).animate(
-      CurvedAnimation(
-          parent: _controller, curve: Curves.easeOutBack),
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
-    _contentFadeAnimation =
-        Tween<double>(begin: 0, end: 1).animate(
+    _contentFadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
     _controller.forward();
@@ -180,8 +365,8 @@ class _NotLoggedInProfileContentState
         opacity: _avatarFadeAnimation,
         child: ClipOval(
           child: SizedBox(
-            width: 200,
-            height: 200,
+            width: 160,
+            height: 160,
             child: Lottie.asset(
               'assets/animations/Animation_1742098657264.json',
               fit: BoxFit.cover,
@@ -195,7 +380,7 @@ class _NotLoggedInProfileContentState
         child: const Text(
           'Anda belum login',
           style: TextStyle(
-            fontSize: 26,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
             color: AppColors.primary,
           ),
@@ -205,10 +390,9 @@ class _NotLoggedInProfileContentState
   Widget _buildSubHeaderText() => FadeTransition(
         opacity: _contentFadeAnimation,
         child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
           child: Text(
-            'Silakan login untuk mengakses profil dan artikel tersimpan Anda. '
-            'Nikmati pengalaman membaca yang lebih personal!',
+            'Silakan login untuk mengakses profil pribadi, berita terbaru, karya, dan produk Anda.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
@@ -223,8 +407,10 @@ class _NotLoggedInProfileContentState
           child: ElevatedButton.icon(
             onPressed: () => Navigator.pushNamed(context, '/login'),
             icon: const Icon(Icons.login, color: Colors.white),
-            label: const Text('Login',
-                style: TextStyle(color: Colors.white)),
+            label: const Text(
+              'Login',
+              style: TextStyle(color: Colors.white),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               shape: RoundedRectangleBorder(
@@ -252,7 +438,7 @@ class _NotLoggedInProfileContentState
   Widget _buildBackground() => Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.background, Colors.blue.shade50],
+            colors: [Colors.white, Colors.blue.shade50],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -261,146 +447,112 @@ class _NotLoggedInProfileContentState
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      _buildBackground(),
-      Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              children: [
-                _buildAvatar(),
-                const SizedBox(height: 30),
-                _buildHeaderText(),
-                const SizedBox(height: 15),
-                _buildSubHeaderText(),
-                const SizedBox(height: 40),
-                _buildLoginButton(context),
-                const SizedBox(height: 20),
-                _buildTagline(),
-              ],
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(children: [
+        _buildBackground(),
+        Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                children: [
+                  _buildAvatar(),
+                  const SizedBox(height: 30),
+                  _buildHeaderText(),
+                  const SizedBox(height: 15),
+                  _buildSubHeaderText(),
+                  const SizedBox(height: 40),
+                  _buildLoginButton(context),
+                  const SizedBox(height: 20),
+                  _buildTagline(),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    ]);
+      ]),
+    );
   }
 }
 
-/// Header profil untuk user yang sudah login.
-/// avatarImage boleh null → fallback huruf+warna latar.
-class ProfileHeader extends StatelessWidget {
-  final ImageProvider? avatarImage;
-  final String name;
+/// Halaman “Berita” – contoh list berita
+class BeritaPage extends StatelessWidget {
+  const BeritaPage({Key? key}) : super(key: key);
 
-  const ProfileHeader({
-    Key? key,
-    required this.avatarImage,
-    required this.name,
-  }) : super(key: key);
-
-  // Helper untuk menentukan warna latar berdasarkan huruf pertama
-  Color _avatarBackgroundColor() {
-    if (name.isEmpty) return Colors.grey;
-    final firstChar = name.trim()[0].toUpperCase();
-    final code = firstChar.codeUnitAt(0);
-    final colors = [
-      Colors.red, Colors.green, Colors.blue, Colors.orange, Colors.purple,
-      Colors.teal, Colors.indigo, Colors.brown, Colors.cyan, Colors.amber,
-    ];
-    int idx = (code - 65) % colors.length;
-    if (idx < 0) idx = 0;
-    return colors[idx];
-  }
+  final List<Map<String, String>> _dummyBerita = const [
+    {
+      'judul': 'Berita 1: Flutter 3.10 Rilis',
+      'preview':
+          'Versi terbaru Flutter membawa peningkatan performa dan widget baru.',
+      'gambar': 'https://via.placeholder.com/400x200',
+    },
+    {
+      'judul': 'Berita 2: Provider vs Riverpod',
+      'preview': 'Perbandingan state management Provider dan Riverpod.',
+      'gambar': 'https://via.placeholder.com/400x200',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return SliverAppBar(
-      automaticallyImplyLeading: false,
-      expandedHeight: 300,
-      pinned: false,
-      flexibleSpace: LayoutBuilder(
-        builder: (context, constraints) {
-          final pct = (constraints.maxHeight - kToolbarHeight) /
-              (300 - kToolbarHeight);
-          final isCollapsed = pct < 0.01;
-
-          return FlexibleSpaceBar(
-            centerTitle: true,
-            title: null,
-            background: isCollapsed
-                ? const SizedBox.shrink()
-                : Stack(
-                    fit: StackFit.expand,
+    return Container(
+      color: Colors.grey.shade100,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        itemCount: _dummyBerita.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final b = _dummyBerita[index];
+          return Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            elevation: 3,
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.network(
+                  b['gambar']!,
+                  height: 140,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    height: 140,
+                    color: Colors.grey.shade300,
+                    child:
+                        const Icon(Icons.broken_image, color: Colors.grey),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(0xFF9A0605),
-                              Color(0xFFBF1E1C),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                      Text(
+                        b['judul']!,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
                       ),
-                      Container(color: Colors.black.withOpacity(.2)),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Hero(
-                                tag: 'avatar_$name',
-                                child: Material(
-                                  elevation: 4,
-                                  shape: const CircleBorder(),
-                                  child: CircleAvatar(
-                                    radius: 70,
-                                    backgroundColor: avatarImage != null
-                                        ? Colors.white
-                                        : _avatarBackgroundColor(),
-                                    backgroundImage: avatarImage,
-                                    child: avatarImage == null
-                                        ? Text(
-                                            name.isNotEmpty
-                                                ? name.trim()[0].toUpperCase()
-                                                : '?',
-                                            style: const TextStyle(
-                                              fontSize: 40,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          )
-                                        : null,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                name,
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 3,
-                                      color: Colors.black54,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                      const SizedBox(height: 6),
+                      Text(
+                        b['preview']!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
                         ),
                       ),
                     ],
                   ),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -408,189 +560,164 @@ class ProfileHeader extends StatelessWidget {
   }
 }
 
-/// Widget untuk menampilkan judul section.
-class SectionTitle extends StatelessWidget {
-  final String title;
-  const SectionTitle({Key? key, required this.title}) : super(key: key);
+/// Halaman “Karya” – contoh list karya user
+class KaryaPage extends StatelessWidget {
+  const KaryaPage({Key? key}) : super(key: key);
+
+  // Contoh dummy – nantinya diganti data sebenarnya dari ProfileViewModel
+  List<Map<String, String>> get _dummyKarya => const [
+        {
+          'judul': 'Karya 1: Foto Pemandangan',
+          'deskripsi': 'Foto alam saat matahari terbenam.',
+          'gambar': 'https://via.placeholder.com/400x200',
+        },
+        {
+          'judul': 'Karya 2: Ilustrasi Digital',
+          'deskripsi': 'Ilustrasi karakter untuk proyek game.',
+          'gambar': 'https://via.placeholder.com/400x200',
+        },
+      ];
 
   @override
   Widget build(BuildContext context) {
-    return Text(title,
-        style: Theme.of(context)
-            .textTheme
-            .titleLarge!
-            .copyWith(fontWeight: FontWeight.bold, color: AppColors.primary));
-  }
-}
-
-/// Menampilkan daftar artikel tersimpan.
-class SavedArticlesSection extends StatelessWidget {
-  final List<Map<String, String>> articles;
-  const SavedArticlesSection({Key? key, required this.articles})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: articles.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 16),
-      itemBuilder: (context, i) {
-        final art = articles[i];
-        return SavedArticleCard(
-          title:        art['title'] ?? '',
-          thumbnailUrl: art['thumbnailUrl'] ?? '',
-          description:  art['description'] ?? '',
-        );
-      },
-    );
-  }
-}
-
-/// Card untuk satu artikel tersimpan.
-class SavedArticleCard extends StatelessWidget {
-  final String title;
-  final String thumbnailUrl;
-  final String description;
-
-  const SavedArticleCard({
-    Key? key,
-    required this.title,
-    required this.thumbnailUrl,
-    required this.description,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      elevation: 6,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ArticleDetailScreen(
-              title:        title,
-              thumbnailUrl: thumbnailUrl,
-              description:  description,
+    return Container(
+      color: Colors.grey.shade100,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        itemCount: _dummyKarya.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final k = _dummyKarya[index];
+          return Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            elevation: 3,
+            clipBehavior: Clip.antiAlias,
+            child: ListTile(
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  k['gambar']!,
+                  height: 60,
+                  width: 60,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    height: 60,
+                    width: 60,
+                    color: Colors.grey.shade300,
+                    child: const Icon(Icons.broken_image,
+                        color: Colors.grey, size: 30),
+                  ),
+                ),
+              ),
+              title: Text(
+                k['judul']!,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              subtitle: Text(
+                k['deskripsi']!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 14, color: Colors.black87),
+              ),
+              onTap: () {
+                // Arahkan ke detail karya, misalnya: Navigator.push(...)
+              },
             ),
-          ),
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.grey.withOpacity(.3),
-                  offset: const Offset(0, 4),
-                  blurRadius: 6),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Hero(
-                tag: thumbnailUrl,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                  child: Image.network(
-                    thumbnailUrl,
-                    height: 140,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) {
-                      return Container(
-                        height: 140,
-                        color: Colors.grey.shade300,
-                        child: const Icon(Icons.broken_image,
-                            color: Colors.grey),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary)),
-                    const SizedBox(height: 6),
-                    Text(description,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.text.withOpacity(.7),
-                            height: 1.4)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 }
 
-/// Detail artikel page
-class ArticleDetailScreen extends StatelessWidget {
-  final String title;
-  final String thumbnailUrl;
-  final String description;
+/// Halaman “Produk” – contoh list produk user
+class ProdukPage extends StatelessWidget {
+  const ProdukPage({Key? key}) : super(key: key);
 
-  const ArticleDetailScreen({
-    Key? key,
-    required this.title,
-    required this.thumbnailUrl,
-    required this.description,
-  }) : super(key: key);
+  // Contoh dummy – nantinya diganti data sebenarnya dari ProfileViewModel
+  List<Map<String, String>> get _dummyProduk => const [
+        {
+          'nama': 'Produk A',
+          'harga': 'Rp100.000',
+          'gambar': 'https://via.placeholder.com/400x200',
+        },
+        {
+          'nama': 'Produk B',
+          'harga': 'Rp250.000',
+          'gambar': 'https://via.placeholder.com/400x200',
+        },
+      ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: AppColors.primary,
-      ),
-      body: ListView(
-        children: [
-          Hero(
-            tag: thumbnailUrl,
-            child: Image.network(
-              thumbnailUrl,
-              height: 250,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                height: 250,
-                color: Colors.grey.shade300,
-                child:
-                    const Icon(Icons.broken_image, size: 50, color: Colors.grey),
+    return Container(
+      color: Colors.grey.shade100,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        itemCount: _dummyProduk.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final p = _dummyProduk[index];
+          return Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            elevation: 3,
+            clipBehavior: Clip.antiAlias,
+            child: ListTile(
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  p['gambar']!,
+                  height: 60,
+                  width: 60,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    height: 60,
+                    width: 60,
+                    color: Colors.grey.shade300,
+                    child: const Icon(Icons.broken_image,
+                        color: Colors.grey, size: 30),
+                  ),
+                ),
+              ),
+              title: Text(
+                p['nama']!,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              subtitle: Text(
+                p['harga']!,
+                style: const TextStyle(fontSize: 14, color: Colors.black87),
+              ),
+              trailing: ElevatedButton(
+                onPressed: () {
+                  // Aksi “Beli” atau “Detail produk”
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+                child: const Text(
+                  'Beli',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(description,
-                style:
-                    const TextStyle(fontSize: 16, height: 1.5, color: Colors.black)),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
