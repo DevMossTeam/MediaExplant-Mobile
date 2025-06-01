@@ -295,15 +295,15 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                                 ),
                               ),
                             ),
-                            Center(
-                              child: Text(
-                                "(Oleh ${karya.penulis})",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
+                            // Center(
+                            //   child: Text(
+                            //     "(Oleh ${karya.penulis})",
+                            //     style: const TextStyle(
+                            //       fontSize: 16,
+                            //       color: Colors.black,
+                            //     ),
+                            //   ),
+                            // ),
                           ],
 
                           const SizedBox(

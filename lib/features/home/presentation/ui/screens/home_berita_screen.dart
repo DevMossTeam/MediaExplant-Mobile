@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:mediaexplant/core/constants/app_colors.dart';
 import 'package:mediaexplant/core/utils/userID.dart';
@@ -25,6 +26,7 @@ class HomeBeritaScreen extends StatefulWidget {
 class _HomeBeritaScreenState extends State<HomeBeritaScreen>
     with AutomaticKeepAliveClientMixin {
   var _isInit = true;
+  bool _isOffline = false;
 
   final Map<String, bool> _isLoading = {
     'teratas': false,
@@ -42,10 +44,18 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
     super.didChangeDependencies();
 
     if (_isInit) {
+      _checkConnection();
       _fetchBeritaSecaraBerurutan();
 
       _isInit = false;
     }
+  }
+
+  Future<void> _checkConnection() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    setState(() {
+      _isOffline = connectivityResult == ConnectivityResult.none;
+    });
   }
 
   Future<void> _fetchBeritaSecaraBerurutan() async {
@@ -147,6 +157,17 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                 childCount: 1,
               ),
             )
+          else if (beritaTeratas.isEmpty)
+            SliverToBoxAdapter(
+              child: Center(
+                child: Text(
+                  _isOffline
+                      ? 'Tidak ada koneksi internet.'
+                      : 'Gagal memuat berita teratas.',
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ),
+            )
           else
             SliverList(
               delegate: SliverChildBuilderDelegate(
@@ -163,6 +184,17 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
           if (_isLoading['populer']!)
             const SliverToBoxAdapter(
                 child: Center(child: CircularProgressIndicator()))
+          else if (beritaPopulerList.isEmpty)
+            SliverToBoxAdapter(
+              child: Center(
+                child: Text(
+                  _isOffline
+                      ? 'Tidak ada koneksi internet.'
+                      : 'Gagal memuat berita populer.',
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ),
+            )
           else ...[
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -208,6 +240,17 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
           if (_isLoading['terbaru']!)
             const SliverToBoxAdapter(
                 child: Center(child: CircularProgressIndicator()))
+          else if (beritaTerbaruList.isEmpty)
+            SliverToBoxAdapter(
+              child: Center(
+                child: Text(
+                  _isOffline
+                      ? 'Tidak ada koneksi internet.'
+                      : 'Gagal memuat berita terbaru.',
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ),
+            )
           else
             SliverToBoxAdapter(
               child: Container(
@@ -272,6 +315,17 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
           if (_isLoading['rekomendasi']!)
             const SliverToBoxAdapter(
                 child: Center(child: CircularProgressIndicator()))
+          else if (beritaRekomendasiList.isEmpty)
+            SliverToBoxAdapter(
+              child: Center(
+                child: Text(
+                  _isOffline
+                      ? 'Tidak ada koneksi internet.'
+                      : 'Gagal memuat berita rekomendasi.',
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ),
+            )
           else ...[
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -335,6 +389,17 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
           if (_isLoading['rekomendasiLain']!)
             const SliverToBoxAdapter(
                 child: Center(child: CircularProgressIndicator()))
+          else if (beritaRekomendasiLainList.isEmpty)
+            SliverToBoxAdapter(
+              child: Center(
+                child: Text(
+                  _isOffline
+                      ? 'Tidak ada koneksi internet.'
+                      : 'Gagal memuat berita hot.',
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ),
+            )
           else ...[
             SliverToBoxAdapter(
               child: Container(
