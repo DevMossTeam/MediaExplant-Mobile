@@ -51,31 +51,34 @@ class _ProfileScreenState extends State<ProfileScreen>
 
     _tabController = TabController(length: 3, vsync: this);
 
-    // Panggil refresh data saat tab berubah
+    // Saat tab berpindah, refresh data bookmark sesuai tab
     _tabController.addListener(() async {
-      if (_tabController.indexIsChanging) return; // tunggu tab selesai berganti
+      if (_tabController.indexIsChanging) return;
 
-      final beritaBookmarkVM =
+      final beritaVM =
           Provider.of<BeritaBookamarkViewmodel>(context, listen: false);
-      final karyaBookmarkVM =
+      final karyaVM =
           Provider.of<KaryaBookmarkViewmodel>(context, listen: false);
-      final produkBookmarkVM =
+      final produkVM =
           Provider.of<ProdukBookmarkViewmodel>(context, listen: false);
 
       if (_tabController.index == 0) {
-        await beritaBookmarkVM.refresh(userLogin);
+        await beritaVM.refresh(userLogin);
       } else if (_tabController.index == 1) {
-        await karyaBookmarkVM.refresh(userLogin);
+        await karyaVM.refresh(userLogin);
       } else if (_tabController.index == 2) {
-        await produkBookmarkVM.refresh(userLogin);
+        await produkVM.refresh(userLogin);
       }
     });
 
-    // Langsung refresh tab pertama saat initState
+    // Setelah frame pertama, langsung refresh tab pertama dan data profil
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final beritaBookmarkVM =
+      final vm = Provider.of<ProfileViewModel>(context, listen: false);
+      await vm.refreshUserData();
+
+      final beritaVM =
           Provider.of<BeritaBookamarkViewmodel>(context, listen: false);
-      await beritaBookmarkVM.refresh(userLogin);
+      await beritaVM.refresh(userLogin);
     });
   }
 
@@ -91,8 +94,6 @@ class _ProfileScreenState extends State<ProfileScreen>
       create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>()),
       child: Consumer<ProfileViewModel>(
         builder: (context, vm, _) {
-          // Scaffold diletakkan di luar pengecekan isLoggedIn,
-          // sehingga FAB selalu muncul
           return Scaffold(
             backgroundColor: Colors.white,
             floatingActionButton: FloatingActionButton.extended(
@@ -109,17 +110,17 @@ class _ProfileScreenState extends State<ProfileScreen>
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.endFloat,
             body: Builder(builder: (context) {
-              // Jika data user belum ter-load
-              if (vm.userData.isEmpty) {
+              // 1) Jika masih loading data profil
+              if (vm.isLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              // Jika belum login
+              // 2) Setelah loading, tapi belum login
               if (!vm.isLoggedIn) {
                 return const _NotLoggedInProfileContent();
               }
 
-              // Jika sudah login, tampilkan konten profile & bookmark
+              // 3) Sudah login → tampilkan profil + bookmark
               return NestedScrollView(
                 headerSliverBuilder: (context, innerScrolled) => [
                   SliverAppBar(
@@ -249,15 +250,20 @@ class _ProfileScreenState extends State<ProfileScreen>
                 body: TabBarView(
                   controller: _tabController,
                   children: [
+                    // Tab “Berita”
                     RefreshIndicator(
                       onRefresh: () async {
+                        // sync data profil terlebih dahulu
                         await vm.refreshUserData();
+                        // lalu refresh bookmark
                         await Provider.of<BeritaBookamarkViewmodel>(context,
                                 listen: false)
                             .refresh(userLogin);
                       },
                       child: const BeritaBookmark(),
                     ),
+
+                    // Tab “Karya”
                     RefreshIndicator(
                       onRefresh: () async {
                         await vm.refreshUserData();
@@ -267,6 +273,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                       },
                       child: const KaryaBookmark(),
                     ),
+
+                    // Tab “Produk”
                     RefreshIndicator(
                       onRefresh: () async {
                         await vm.refreshUserData();
@@ -320,8 +328,7 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => _tabBar.preferredSize.height;
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       color: Colors.white,
       child: _tabBar,
@@ -490,255 +497,6 @@ class __NotLoggedInProfileContentState
           ),
         ),
       ]),
-    );
-  }
-}
-
-/// Halaman “Berita” – contoh list berita
-class BeritaPage extends StatelessWidget {
-  const BeritaPage({Key? key}) : super(key: key);
-
-  final List<Map<String, String>> _dummyBerita = const [
-    {
-      'judul': 'Berita 1: Flutter 3.10 Rilis',
-      'preview':
-          'Versi terbaru Flutter membawa peningkatan performa dan widget baru.',
-      'gambar': 'https://via.placeholder.com/400x200',
-    },
-    {
-      'judul': 'Berita 2: Provider vs Riverpod',
-      'preview': 'Perbandingan state management Provider dan Riverpod.',
-      'gambar': 'https://via.placeholder.com/400x200',
-    },
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey.shade100,
-      child: ListView.separated(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        itemCount: _dummyBerita.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final b = _dummyBerita[index];
-          return Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 3,
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.network(
-                  b['gambar']!,
-                  height: 140,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    height: 140,
-                    color: Colors.grey.shade300,
-                    child: const Icon(Icons.broken_image, color: Colors.grey),
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        b['judul']!,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        b['preview']!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-/// Halaman “Karya” – contoh list karya user
-class KaryaPage extends StatelessWidget {
-  const KaryaPage({Key? key}) : super(key: key);
-
-  // Contoh dummy – nantinya diganti data sebenarnya dari ProfileViewModel
-  List<Map<String, String>> get _dummyKarya => const [
-        {
-          'judul': 'Karya 1: Foto Pemandangan',
-          'deskripsi': 'Foto alam saat matahari terbenam.',
-          'gambar': 'https://via.placeholder.com/400x200',
-        },
-        {
-          'judul': 'Karya 2: Ilustrasi Digital',
-          'deskripsi': 'Ilustrasi karakter untuk proyek game.',
-          'gambar': 'https://via.placeholder.com/400x200',
-        },
-      ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey.shade100,
-      child: ListView.separated(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        itemCount: _dummyKarya.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final k = _dummyKarya[index];
-          return Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 3,
-            clipBehavior: Clip.antiAlias,
-            child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  k['gambar']!,
-                  height: 60,
-                  width: 60,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    height: 60,
-                    width: 60,
-                    color: Colors.grey.shade300,
-                    child: const Icon(Icons.broken_image,
-                        color: Colors.grey, size: 30),
-                  ),
-                ),
-              ),
-              title: Text(
-                k['judul']!,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              subtitle: Text(
-                k['deskripsi']!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 14, color: Colors.black87),
-              ),
-              onTap: () {
-                // Arahkan ke detail karya, misalnya: Navigator.push(...)
-              },
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-/// Halaman “Produk” – contoh list produk user
-class ProdukPage extends StatelessWidget {
-  const ProdukPage({Key? key}) : super(key: key);
-
-  // Contoh dummy – nantinya diganti data sebenarnya dari ProfileViewModel
-  List<Map<String, String>> get _dummyProduk => const [
-        {
-          'nama': 'Produk A',
-          'harga': 'Rp100.000',
-          'gambar': 'https://via.placeholder.com/400x200',
-        },
-        {
-          'nama': 'Produk B',
-          'harga': 'Rp250.000',
-          'gambar': 'https://via.placeholder.com/400x200',
-        },
-      ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey.shade100,
-      child: ListView.separated(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        itemCount: _dummyProduk.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final p = _dummyProduk[index];
-          return Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 3,
-            clipBehavior: Clip.antiAlias,
-            child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  p['gambar']!,
-                  height: 60,
-                  width: 60,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    height: 60,
-                    width: 60,
-                    color: Colors.grey.shade300,
-                    child: const Icon(Icons.broken_image,
-                        color: Colors.grey, size: 30),
-                  ),
-                ),
-              ),
-              title: Text(
-                p['nama']!,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              subtitle: Text(
-                p['harga']!,
-                style: const TextStyle(fontSize: 14, color: Colors.black87),
-              ),
-              trailing: ElevatedButton(
-                onPressed: () {
-                  // Aksi “Beli” atau “Detail produk”
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const Text(
-                  'Beli',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 }

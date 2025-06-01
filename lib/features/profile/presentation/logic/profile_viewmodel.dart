@@ -10,8 +10,11 @@ class ProfileViewModel extends ChangeNotifier {
 
   ProfileViewModel({required GetProfile getProfile})
       : _getProfile = getProfile {
-    _loadUserData();
+    _loadUserData(); // langsung load data lokal + remote
   }
+
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
 
   bool _isLoggedIn = false;
   bool get isLoggedIn => _isLoggedIn;
@@ -52,6 +55,9 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadUserData() async {
+    _isLoading = true;
+    notifyListeners();
+
     try {
       // 1) Tampilkan data lokal langsung
       _userData = await AuthStorage.getUserData();
@@ -67,6 +73,9 @@ class ProfileViewModel extends ChangeNotifier {
       debugPrint('Error loading user data: $e\n$st');
       _userData = {};
       _isLoggedIn = false;
+      notifyListeners();
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
@@ -100,14 +109,23 @@ class ProfileViewModel extends ChangeNotifier {
       }
     } catch (e, st) {
       debugPrint('Error fetching remote profile: $e\n$st');
+      // Tidak mengubah isLoggedIn – cukup log saja
     }
   }
 
   /// Untuk pull‐to‐refresh di UI
   Future<void> refreshUserData() async {
+    if (!_isLoggedIn) return;
+
+    _isLoading = true;
+    notifyListeners();
+
     final token = _userData['token'] ?? '';
-    if (_isLoggedIn && token.isNotEmpty) {
+    if (token.isNotEmpty) {
       await _fetchAndSyncRemoteProfile(token);
     }
+
+    _isLoading = false;
+    notifyListeners();
   }
 }
