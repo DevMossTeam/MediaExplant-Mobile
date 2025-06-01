@@ -8,7 +8,7 @@ import 'package:mediaexplant/features/home/presentation/logic/repository/karya/k
 import 'package:mediaexplant/features/home/presentation/ui/widgets/karya/karya_selengkapnya_item.dart';
 import 'package:provider/provider.dart';
 
-enum KategoriKarya { puisi, syair, desainGrafis, terkait, fotografi }
+enum KategoriKarya { puisi, syair, pantun, desainGrafis, terkait, fotografi }
 
 class KaryaSelengkapnya extends StatefulWidget {
   final KategoriKarya kategori;
@@ -154,6 +154,10 @@ class KaryaSelengkapnyaViewModel with ChangeNotifier {
         case KategoriKarya.syair:
           result = await KaryaRepository()
               .fetchKarya("syair/terbaru", _page, _limit, userLogin);
+          break;
+        case KategoriKarya.pantun:
+          result = await KaryaRepository()
+              .fetchKarya("pantun/terbaru", _page, _limit, userLogin);
           break;
         case KategoriKarya.desainGrafis:
           result = await KaryaRepository()

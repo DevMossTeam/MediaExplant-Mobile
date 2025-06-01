@@ -216,7 +216,7 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    titleHeader("Terbaru", "Yang baru saja terbit"),
+                    titleHeader("Terbaru", "Dari yang terbaru"),
                     const SizedBox(height: 20),
                     SizedBox(
                       height: 200,

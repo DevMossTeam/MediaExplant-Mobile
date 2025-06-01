@@ -23,6 +23,7 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/de
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/fotografi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/karya_detail_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/karya_terkait_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/pantun_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/buletin_viewmodel.dart';
@@ -57,6 +58,10 @@ import 'package:timeago/timeago.dart' as timeago;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // ← inisialisasi Firebase
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   await loadUserLogin();
   timeago.setLocaleMessages('id', CustomIdMessages());
 
@@ -156,6 +161,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => SyairViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => PantunViewmodel(),
         ),
         ChangeNotifierProvider(
           create: (_) => FotografiViewmodel(),

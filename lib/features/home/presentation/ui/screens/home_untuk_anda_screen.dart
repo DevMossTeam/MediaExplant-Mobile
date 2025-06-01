@@ -4,6 +4,7 @@ import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/berita/berita_terbaru_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/desain_grafis_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/fotografi_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/pantun_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/puisi_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/karya/syair_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/buletin_viewmodel.dart';
@@ -36,6 +37,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     'buletin': false,
     'puisi': false,
     'syair': false,
+    'pantun': false,
     'desain_grafis': false,
     'fotografi': false,
   };
@@ -59,6 +61,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
         Provider.of<BeritaTerbaruViewmodel>(context, listen: false);
     final puisiVM = Provider.of<PuisiViewmodel>(context, listen: false);
     final syairVM = Provider.of<SyairViewmodel>(context, listen: false);
+    final pantunVM = Provider.of<PantunViewmodel>(context, listen: false);
     final desainGrafisVM =
         Provider.of<DesainGrafisViewmodel>(context, listen: false);
     final fotografiVM = Provider.of<FotografiViewmodel>(context, listen: false);
@@ -93,6 +96,16 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
         debugPrint("Gagal fetch syair: $e");
       } finally {
         setState(() => _isLoading['syair'] = false);
+      }
+    }
+    if (pantunVM.allKarya.isEmpty) {
+      setState(() => _isLoading['pantun'] = true);
+      try {
+        await pantunVM.refresh(userLogin);
+      } catch (e) {
+        debugPrint("Gagal fetch pantun: $e");
+      } finally {
+        setState(() => _isLoading['pantun'] = false);
       }
     }
     if (desainGrafisVM.allKarya.isEmpty) {
@@ -145,6 +158,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     final buletinList = Provider.of<BuletinViewmodel>(context).allBuletin;
     final puisiList = Provider.of<PuisiViewmodel>(context).allKarya;
     final syairList = Provider.of<SyairViewmodel>(context).allKarya;
+    final pantunList = Provider.of<PantunViewmodel>(context).allKarya;
     final desainGrafisList =
         Provider.of<DesainGrafisViewmodel>(context).allKarya;
     final fotografiList = Provider.of<FotografiViewmodel>(context).allKarya;
@@ -361,6 +375,71 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                       ));
                       Future.microtask(() async {
                         await viewModel.setKategori(KategoriKarya.syair);
+                      });
+                    },
+                    child: const Text(
+                      "Selengkapnya >>",
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 14,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 30),
+            ),
+          ],
+
+          // pantun Terbaru
+          if (_isLoading['pantun']!)
+            const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator()))
+          else ...[
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: titleHeader("Pantun", "Dari yang terbaru"),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: SizedBox(
+                  height: 240,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: pantunList.length.clamp(0, 10),
+                    itemBuilder: (context, index) {
+                      return ChangeNotifierProvider.value(
+                        value: pantunList[index],
+                        child: PuisiItem(),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () async {
+                      final viewModel = KaryaSelengkapnyaViewModel();
+                      if (!mounted) return;
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider.value(
+                          value: viewModel,
+                          child: const KaryaSelengkapnya(
+                            kategori: KategoriKarya.pantun,
+                          ),
+                        ),
+                      ));
+                      Future.microtask(() async {
+                        await viewModel.setKategori(KategoriKarya.pantun);
                       });
                     },
                     child: const Text(
