@@ -21,20 +21,57 @@ class KomentarBottomSheet extends StatefulWidget {
 }
 
 class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
+  String? _getUsernameParent(
+      String? parentId, Map<String?, List<Komentar>> map) {
+    if (parentId == null) return null;
+
+    // Cari komentar parent dengan id = parentId
+    for (final entry in map.entries) {
+      final listKomentar = entry.value;
+      for (final komentar in listKomentar) {
+        if (komentar.id == parentId) {
+          return komentar.username;
+        }
+      }
+    }
+    return null;
+  }
+
   final TextEditingController _komentarController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   Komentar? _replyTo;
   Set<String> _openedKomentarIds = Set();
 
+  double _childSize = 0.7;
   @override
   void initState() {
     super.initState();
+
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        setState(() {
+          _childSize = 1.0;
+        });
+      } else {
+        setState(() {
+          _childSize = 0.7;
+        });
+      }
+    });
+
     Future.microtask(() {
       context.read<KomentarViewmodel>().fetchKomentar(
             komentarType: widget.komentarType,
             itemId: widget.itemId,
           );
     });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _komentarController.dispose();
+    super.dispose();
   }
 
   Map<String?, List<Komentar>> _groupKomentar(List<Komentar> list) {
@@ -121,7 +158,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 62),
                       child: Text(
-                        'Balas ${reply.username}',
+                        'Balas ${_getUsernameParent(reply.parentId, map) ?? ''}',
                         style: const TextStyle(
                           fontSize: 10,
                           // fontStyle: FontStyle.italic,
@@ -208,7 +245,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
         final komentarMap = _groupKomentar(komentarVM.komentarList);
 
         return DraggableScrollableSheet(
-          initialChildSize: 0.7,
+          initialChildSize: _childSize,
           minChildSize: 0.4,
           maxChildSize: 1.0,
           expand: false,
@@ -279,6 +316,7 @@ class _KomentarBottomSheetState extends State<KomentarBottomSheet> {
                                 ),
                               )
                             : ListView(
+                                controller: scrollController,
                                 physics: const ClampingScrollPhysics(),
                                 padding: EdgeInsets.zero,
                                 children: _buildKomentarList(komentarMap),

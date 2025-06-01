@@ -170,6 +170,12 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(left: 15),
+                child: titleHeader("Berita", "Dari yang terbaru"),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15),
                 child: SizedBox(
                   height: 180,
                   child: ListView.builder(
@@ -188,56 +194,56 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
             const SliverToBoxAdapter(
               child: SizedBox(height: 20),
             ),
-            SliverToBoxAdapter(
-              child: Container(
-                color: Colors.grey.withAlpha(50),
-                padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    titleHeader("Berita", "Teratas untuk anda"),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      height: 200, // tinggi 1 item grid
-                      child: GridView.builder(
-                          itemCount: beritaList.length.clamp(0, 10),
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  mainAxisSpacing: 10,
-                                  crossAxisSpacing: 10,
-                                  childAspectRatio: 0.27,
-                                  crossAxisCount: 2),
-                          itemBuilder: (contex, index) {
-                            return ChangeNotifierProvider.value(
-                              value: beritaList[index],
-                              child: BeritaTeratasUntukAnda(),
-                            );
-                          }),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            // aksi saat tombol ditekan
-                            print("Tombol ditekan");
-                          },
-                          child: const Text(
-                            "Selengkapnya >>",
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // SliverToBoxAdapter(
+            //   child: Container(
+            //     color: Colors.grey.withAlpha(50),
+            //     padding: const EdgeInsets.only(left: 15, top: 20, bottom: 20),
+            //     child: Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         titleHeader("Berita", "Teratas untuk anda"),
+            //         const SizedBox(height: 20),
+            //         SizedBox(
+            //           height: 200, // tinggi 1 item grid
+            //           child: GridView.builder(
+            //               itemCount: beritaList.length.clamp(0, 10),
+            //               shrinkWrap: true,
+            //               scrollDirection: Axis.horizontal,
+            //               gridDelegate:
+            //                   const SliverGridDelegateWithFixedCrossAxisCount(
+            //                       mainAxisSpacing: 10,
+            //                       crossAxisSpacing: 10,
+            //                       childAspectRatio: 0.27,
+            //                       crossAxisCount: 2),
+            //               itemBuilder: (contex, index) {
+            //                 return ChangeNotifierProvider.value(
+            //                   value: beritaList[index],
+            //                   child: BeritaTeratasUntukAnda(),
+            //                 );
+            //               }),
+            //         ),
+            //         Row(
+            //           mainAxisAlignment: MainAxisAlignment.end,
+            //           children: [
+            //             TextButton(
+            //               onPressed: () {
+            //                 // aksi saat tombol ditekan
+            //                 print("Tombol ditekan");
+            //               },
+            //               child: const Text(
+            //                 "Selengkapnya >>",
+            //                 style: TextStyle(
+            //                   color: AppColors.primary,
+            //                   fontSize: 14,
+            //                 ),
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
             const SliverToBoxAdapter(
               child: SizedBox(height: 30),
             ),
@@ -251,7 +257,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(left: 15),
-                child: titleHeader("Puisi", "Terbaru untuk anda"),
+                child: titleHeader("Puisi", "Dari yang terbaru"),
               ),
             ),
             SliverToBoxAdapter(
@@ -316,7 +322,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(left: 15),
-                child: titleHeader("Syair", "Terbaru untuk anda"),
+                child: titleHeader("Syair", "Dari yang terbaru"),
               ),
             ),
             SliverToBoxAdapter(
@@ -381,7 +387,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(left: 15),
-                child: titleHeader("Desain Grafis", "Terbaru untuk anda"),
+                child: titleHeader("Desain Grafis", "Dari yang terbaru"),
               ),
             ),
             SliverToBoxAdapter(
@@ -452,7 +458,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    titleHeader("Fotografi", "Terbaru untuk anda"),
+                    titleHeader("Fotografi", "Dari yang terbaru"),
                     const SizedBox(height: 20),
                     SizedBox(
                       height: 190,
@@ -519,7 +525,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 15),
-                  child: titleHeader("Majalah", "Terbaru untuk anda"),
+                  child: titleHeader("Majalah", "Dari yang terbaru"),
                 ),
               ),
               SliverToBoxAdapter(
@@ -584,7 +590,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 15),
-                  child: titleHeader("Buletin", "Terbaru untuk anda"),
+                  child: titleHeader("Buletin", "Dari yang terbaru"),
                 ),
               ),
               SliverToBoxAdapter(
