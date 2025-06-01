@@ -124,68 +124,56 @@ class _KomentarItemState extends State<KomentarItem> {
               },
             ),
           )),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, size: 18),
-              onSelected: (value) async {
-                if (value == 'hapus') {
-                  final konfirmasi = await showDialog<bool>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Hapus Komentar'),
-                      content:
-                          const Text('Yakin ingin menghapus komentar ini?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Batal'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Hapus',
-                              style: TextStyle(color: Colors.red)),
-                        ),
-                      ],
-                    ),
-                  );
+          if (comment.userId == userLogin)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, size: 18),
+                onSelected: (value) async {
+                  if (value == 'hapus') {
+                    final konfirmasi = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Hapus Komentar'),
+                        content:
+                            const Text('Yakin ingin menghapus komentar ini?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Batal'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text('Hapus',
+                                style: TextStyle(color: Colors.red)),
+                          ),
+                        ],
+                      ),
+                    );
 
-                  if (konfirmasi == true) {
-                    final sukses = await context
-                        .read<KomentarViewmodel>()
-                        .deleteKomentar(comment.id ?? '');
+                    if (konfirmasi == true) {
+                      final sukses = await context
+                          .read<KomentarViewmodel>()
+                          .deleteKomentar(comment.id ?? '');
 
-                    if (!sukses) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Gagal menghapus komentar')),
-                      );
+                      if (!sukses) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Gagal menghapus komentar')),
+                        );
+                      }
                     }
                   }
-                } else if (value == 'lapor') {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Komentar telah dilaporkan')),
-                  );
-                }
-              },
-              itemBuilder: (context) {
-                final isOwner = comment.userId == userLogin;
-                return [
-                  if (isOwner)
-                    const PopupMenuItem(
-                      value: 'hapus',
-                      child: Text('Hapus Komentar'),
-                    ),
-                  if (!isOwner)
-                    const PopupMenuItem(
-                      value: 'lapor',
-                      child: Text('Laporkan Komentar'),
-                    ),
-                ];
-              },
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem(
+                    value: 'hapus',
+                    child: Text('Hapus Komentar'),
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
