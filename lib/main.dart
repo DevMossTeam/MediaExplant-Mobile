@@ -7,6 +7,7 @@ import 'package:mediaexplant/features/bookmark/bookmark_screen.dart/bookmark_scr
 import 'package:mediaexplant/features/bookmark/provider/bookmark_provider.dart';
 import 'package:mediaexplant/features/bookmark/viewmodel/berita_bookamark_viewmodel.dart';
 import 'package:mediaexplant/features/bookmark/viewmodel/karya_bookmark_viewmodel.dart';
+import 'package:mediaexplant/features/bookmark/viewmodel/produk_bookmark_viewmodel.dart';
 import 'package:mediaexplant/features/comments/presentation/logic/komentar_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/karya/karya_repository.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/produkRepo/produk_repository.dart';
@@ -143,6 +144,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => ProdukTerkaitViewmodel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ProdukBookmarkViewmodel(),
         ),
 
         // provider karya

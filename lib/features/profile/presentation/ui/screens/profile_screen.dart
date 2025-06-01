@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mediaexplant/core/utils/userID.dart';
+import 'package:mediaexplant/features/bookmark/bookmark_screen.dart/berita_bookmark.dart';
+import 'package:mediaexplant/features/bookmark/bookmark_screen.dart/karya_bookmark.dart';
+import 'package:mediaexplant/features/bookmark/bookmark_screen.dart/produk_bookmark.dart';
+import 'package:mediaexplant/features/bookmark/viewmodel/berita_bookamark_viewmodel.dart';
+import 'package:mediaexplant/features/bookmark/viewmodel/karya_bookmark_viewmodel.dart';
+import 'package:mediaexplant/features/bookmark/viewmodel/produk_bookmark_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:lottie/lottie.dart';
 
@@ -13,8 +20,7 @@ class SlideLeftRoute extends PageRouteBuilder {
   SlideLeftRoute({required this.page})
       : super(
           pageBuilder: (context, animation, secondaryAnimation) => page,
-          transitionsBuilder:
-              (context, animation, secondaryAnimation, child) {
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
             const end = Offset.zero;
             final tween = Tween(begin: begin, end: end)
@@ -27,8 +33,56 @@ class SlideLeftRoute extends PageRouteBuilder {
         );
 }
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _tabController = TabController(length: 3, vsync: this);
+
+    // Panggil refresh data saat tab berubah
+    _tabController.addListener(() async {
+      if (_tabController.indexIsChanging) return; // tunggu tab selesai berganti
+
+      final beritaBookmarkVM =
+          Provider.of<BeritaBookamarkViewmodel>(context, listen: false);
+      final karyaBookmarkVM =
+          Provider.of<KaryaBookmarkViewmodel>(context, listen: false);
+      final produkBookmarkVM =
+          Provider.of<ProdukBookmarkViewmodel>(context, listen: false);
+
+      if (_tabController.index == 0) {
+        await beritaBookmarkVM.refresh(userLogin);
+      } else if (_tabController.index == 1) {
+        await karyaBookmarkVM.refresh(userLogin);
+      } else if (_tabController.index == 2) {
+        await produkBookmarkVM.refresh(userLogin);
+      }
+    });
+
+    // Optional: langsung refresh tab pertama saat initState
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final beritaBookmarkVM =
+          Provider.of<BeritaBookamarkViewmodel>(context, listen: false);
+      await beritaBookmarkVM.refresh(userLogin);
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   static const double _expandedHeight = 200;
 
@@ -38,7 +92,6 @@ class ProfileScreen extends StatelessWidget {
       create: (ctx) => ProfileViewModel(getProfile: ctx.read<GetProfile>()),
       child: Consumer<ProfileViewModel>(
         builder: (context, vm, _) {
-          // Loading jika data belum siap
           if (vm.userData.isEmpty) {
             return Scaffold(
               backgroundColor: Colors.white,
@@ -46,187 +99,179 @@ class ProfileScreen extends StatelessWidget {
             );
           }
 
-          // Jika belum login, tampilkan konten “belum login”
           if (!vm.isLoggedIn) {
             return const _NotLoggedInProfileContent();
           }
 
-          // Jika sudah login, tampilkan header + TabBar
-          return DefaultTabController(
-            length: 3,
-            child: Scaffold(
-              backgroundColor: Colors.white,
-              floatingActionButton: FloatingActionButton.extended(
-                backgroundColor: AppColors.primary,
-                elevation: 6,
-                onPressed: () => Navigator.push(
-                  context,
-                  SlideLeftRoute(page: SettingsScreen()),
-                ),
-                icon: const Icon(Icons.settings, color: Colors.white),
-                label: const Text(
-                  'Settings',
-                  style: TextStyle(color: Colors.white),
-                ),
+          return Scaffold(
+            backgroundColor: Colors.white,
+            floatingActionButton: FloatingActionButton.extended(
+              backgroundColor: AppColors.primary,
+              elevation: 6,
+              onPressed: () => Navigator.push(
+                context,
+                SlideLeftRoute(page: SettingsScreen()),
               ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.endFloat,
-              body: NestedScrollView(
-                headerSliverBuilder: (context, innerScrolled) => [
-                  /// SliverAppBar dengan LayoutBuilder untuk hide/show konten sesuai scroll
-                  SliverAppBar(
-                    pinned: true,
-                    backgroundColor: AppColors.background,
-                    expandedHeight: _expandedHeight,
-                    automaticallyImplyLeading: false,
-                    elevation: 0,
-                    flexibleSpace: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final top = constraints.biggest.height;
-                        final statusBarHeight =
-                            MediaQuery.of(context).padding.top;
+              icon: const Icon(Icons.settings, color: Colors.white),
+              label:
+                  const Text('Settings', style: TextStyle(color: Colors.white)),
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            body: NestedScrollView(
+              headerSliverBuilder: (context, innerScrolled) => [
+                SliverAppBar(
+                  pinned: true,
+                  backgroundColor: AppColors.background,
+                  expandedHeight: _expandedHeight,
+                  automaticallyImplyLeading: false,
+                  elevation: 0,
+                  flexibleSpace: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final top = constraints.biggest.height;
+                      final statusBarHeight =
+                          MediaQuery.of(context).padding.top;
+                      final bool isCollapsed =
+                          top <= (kToolbarHeight + statusBarHeight + 8);
+                      final bool showAvatar = top > (_expandedHeight - 1);
 
-                        // Jika tinggi saat ini sudah menyentuh toolbar + status bar, berarti collapsed
-                        final bool isCollapsed =
-                            top <= (kToolbarHeight + statusBarHeight + 8);
-
-                        // Kalau masih sangat mendekati expandedHeight, tampilkan avatar + nama
-                        final bool showAvatar = top > (_expandedHeight - 1);
-
-                        return Stack(
-                          children: [
-                            // Background berubah putih saat expanded, AppColors.background saat collapse/mid
-                            Container(
+                      return Stack(
+                        children: [
+                          Container(
                               color: showAvatar
                                   ? Colors.white
-                                  : AppColors.background,
-                            ),
-
-                            // 1) Saat fully expanded: avatar + nama
-                            if (showAvatar)
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Hero(
-                                        tag: 'avatar_${vm.fullName}',
-                                        child: Material(
-                                          elevation: 4,
-                                          shape: const CircleBorder(),
-                                          child: CircleAvatar(
-                                            radius: 60,
-                                            backgroundColor:
-                                                vm.profileImageProvider != null
-                                                    ? Colors.white
-                                                    : _avatarBackgroundColor(
-                                                        vm.fullName),
-                                            backgroundImage:
-                                                vm.profileImageProvider,
-                                            child: vm.profileImageProvider ==
-                                                    null
-                                                ? Text(
-                                                    vm.fullName.isNotEmpty
-                                                        ? vm.fullName
-                                                            .trim()[0]
-                                                            .toUpperCase()
-                                                        : '?',
-                                                    style: const TextStyle(
-                                                      fontSize: 36,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white,
-                                                    ),
-                                                  )
-                                                : null,
-                                          ),
+                                  : AppColors.background),
+                          if (showAvatar)
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Hero(
+                                      tag: 'avatar_${vm.fullName}',
+                                      child: Material(
+                                        elevation: 4,
+                                        shape: const CircleBorder(),
+                                        child: CircleAvatar(
+                                          radius: 60,
+                                          backgroundColor:
+                                              vm.profileImageProvider != null
+                                                  ? Colors.white
+                                                  : _avatarBackgroundColor(
+                                                      vm.fullName),
+                                          backgroundImage:
+                                              vm.profileImageProvider,
+                                          child: vm.profileImageProvider == null
+                                              ? Text(
+                                                  vm.fullName.isNotEmpty
+                                                      ? vm.fullName
+                                                          .trim()[0]
+                                                          .toUpperCase()
+                                                      : '?',
+                                                  style: const TextStyle(
+                                                    fontSize: 36,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                )
+                                              : null,
                                         ),
                                       ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        vm.fullName,
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-
-                            // 2) Saat sudah collapse: hanya tampilkan judul "Bookmark"
-                            if (isCollapsed)
-                              Positioned(
-                                top: statusBarHeight,
-                                left: 0,
-                                right: 0,
-                                height: kToolbarHeight,
-                                child: Center(
-                                  child: Text(
-                                    'Bookmark',
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
                                     ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      vm.fullName,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          if (isCollapsed)
+                            Positioned(
+                              top: statusBarHeight,
+                              left: 0,
+                              right: 0,
+                              height: kToolbarHeight,
+                              child: const Center(
+                                child: Text(
+                                  'Bookmark',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
-
-                            // 3) Saat di antara expanded dan collapsed: kosong (hindari overflow)
-                            if (!showAvatar && !isCollapsed)
-                              const SizedBox.expand(),
-                          ],
-                        );
-                      },
+                            ),
+                          if (!showAvatar && !isCollapsed)
+                            const SizedBox.expand(),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _TabBarDelegate(
+                    TabBar(
+                      controller: _tabController,
+                      indicatorColor: AppColors.primary,
+                      labelColor: Colors.black,
+                      unselectedLabelColor: Colors.black54,
+                      labelStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      unselectedLabelStyle: const TextStyle(fontSize: 14),
+                      tabs: const [
+                        Tab(text: 'Berita'),
+                        Tab(text: 'Karya'),
+                        Tab(text: 'Produk'),
+                      ],
                     ),
                   ),
-
-                  /// SliverPersistentHeader untuk TabBar (latar putih, teks hitam)
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _TabBarDelegate(
-                      TabBar(
-                        indicatorColor: AppColors.primary,
-                        labelColor: Colors.black,
-                        unselectedLabelColor: Colors.black54,
-                        labelStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        unselectedLabelStyle: const TextStyle(
-                          fontSize: 14,
-                        ),
-                        tabs: const [
-                          Tab(text: 'Berita'),
-                          Tab(text: 'Karya'),
-                          Tab(text: 'Produk'),
-                        ],
-                      ),
-                    ),
+                ),
+              ],
+              body: TabBarView(
+                controller: _tabController,
+                children: [
+                  RefreshIndicator(
+                    onRefresh: () async {
+                      await vm.refreshUserData();
+                      await Provider.of<BeritaBookamarkViewmodel>(
+                        context,
+                        listen: false,
+                      ).refresh(userLogin);
+                    },
+                    child: BeritaBookmark(),
+                  ),
+                  RefreshIndicator(
+                    onRefresh: () async {
+                      await vm.refreshUserData();
+                      await Provider.of<KaryaBookmarkViewmodel>(
+                        context,
+                        listen: false,
+                      ).refresh(userLogin);
+                    },
+                    child: KaryaBookmark(),
+                  ),
+                  RefreshIndicator(
+                    onRefresh: () async {
+                      await vm.refreshUserData();
+                      await Provider.of<ProdukBookmarkViewmodel>(
+                        context,
+                        listen: false,
+                      ).refresh(userLogin);
+                    },
+                    child: ProdukBookmark(),
                   ),
                 ],
-                body: TabBarView(
-                  children: [
-                    // Wrap setiap page dengan RefreshIndicator
-                    RefreshIndicator(
-                      onRefresh: vm.refreshUserData,
-                      child: BeritaPage(),
-                    ),
-                    RefreshIndicator(
-                      onRefresh: vm.refreshUserData,
-                      child: KaryaPage(),
-                    ),
-                    RefreshIndicator(
-                      onRefresh: vm.refreshUserData,
-                      child: ProdukPage(),
-                    ),
-                  ],
-                ),
               ),
             ),
           );
@@ -292,8 +337,7 @@ class _NotLoggedInProfileContent extends StatefulWidget {
       __NotLoggedInProfileContentState();
 }
 
-class __NotLoggedInProfileContentState
-    extends State<_NotLoggedInProfileContent>
+class __NotLoggedInProfileContentState extends State<_NotLoggedInProfileContent>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _avatarFadeAnimation;
@@ -489,8 +533,7 @@ class BeritaPage extends StatelessWidget {
                   errorBuilder: (_, __, ___) => Container(
                     height: 140,
                     color: Colors.grey.shade300,
-                    child:
-                        const Icon(Icons.broken_image, color: Colors.grey),
+                    child: const Icon(Icons.broken_image, color: Colors.grey),
                   ),
                 ),
                 Padding(

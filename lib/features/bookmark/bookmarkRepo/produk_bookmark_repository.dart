@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:mediaexplant/core/network/api_client.dart';
-import 'package:mediaexplant/features/home/models/karya/karya.dart';
 import 'package:mediaexplant/features/home/models/produk/produk.dart';
 
 class ProdukBookmarkRepository {
