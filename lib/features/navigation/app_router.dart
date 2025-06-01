@@ -6,7 +6,6 @@ import 'package:mediaexplant/features/settings/presentation/ui/screens/settings_
 import 'package:mediaexplant/features/settings/presentation/ui/screens/hubungi_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/keamanan_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/pusat_bantuan_screen.dart';
-import 'package:mediaexplant/features/settings/presentation/ui/screens/setting_notifikasi_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/tentang_screen.dart';
 import 'package:mediaexplant/features/settings/presentation/ui/screens/umum_screen.dart';
 import 'package:mediaexplant/features/auth/presentation/ui/screens/sign_in_screen.dart';
@@ -58,8 +57,6 @@ class AppRouter {
         return _slideLeftRoute(const SettingsScreen());
       case '/settings/pusat_bantuan':
         return _slideLeftRoute(const PusatBantuanScreen());
-      case '/settings/setting_notifikasi':
-        return _slideLeftRoute(const SettingNotifikasiScreen());
       case '/settings/tentang':
         return _slideLeftRoute(const TentangScreen());
       case '/settings/umum':

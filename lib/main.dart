@@ -25,6 +25,7 @@ import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/p
 import 'package:mediaexplant/features/report/report_repository.dart';
 import 'package:mediaexplant/features/report/report_viewmodel.dart';
 import 'package:mediaexplant/features/search/search_screen.dart';
+import 'package:mediaexplant/features/settings/logic/setting_notifikasi_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/settings_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/umum_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +42,7 @@ import 'package:mediaexplant/features/profile/data/repositories/profile_reposito
 import 'package:mediaexplant/features/profile/domain/usecases/get_profile.dart';
 import 'package:mediaexplant/features/profile/presentation/logic/profile_viewmodel.dart';
 import 'package:mediaexplant/features/settings/logic/hubungi_viewmodel.dart';
+import 'package:mediaexplant/features/settings/logic/setting_notifikasi_viewmodel.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -89,6 +91,12 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider<KeamananViewModel>(
           create: (ctx) => KeamananViewModel(apiClient: ctx.read<ApiClient>()),
+        ),
+        ChangeNotifierProvider<SettingNotifikasiViewModel>(
+          create: (_) {
+            final vm = SettingNotifikasiViewModel();
+            return vm;
+          },
         ),
 
         // Provider untuk Berita
