@@ -75,110 +75,116 @@ class ProfileScreen extends StatelessWidget {
                 headerSliverBuilder: (context, innerScrolled) => [
                   /// SliverAppBar dengan LayoutBuilder untuk hide/show konten sesuai scroll
                   SliverAppBar(
-  pinned: true,
-  backgroundColor: AppColors.background,
-  expandedHeight: _expandedHeight,
-  automaticallyImplyLeading: false,
-  elevation: 0,
+                    pinned: true,
+                    backgroundColor: AppColors.background,
+                    expandedHeight: _expandedHeight,
+                    automaticallyImplyLeading: false,
+                    elevation: 0,
+                    flexibleSpace: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final top = constraints.biggest.height;
+                        final statusBarHeight =
+                            MediaQuery.of(context).padding.top;
 
-  flexibleSpace: LayoutBuilder(
-    builder: (context, constraints) {
-      final top = constraints.biggest.height;
-      final statusBarHeight = MediaQuery.of(context).padding.top;
+                        // Jika tinggi saat ini sudah menyentuh toolbar + status bar, berarti collapsed
+                        final bool isCollapsed =
+                            top <= (kToolbarHeight + statusBarHeight + 8);
 
-      // Jika tinggi saat ini sudah menyentuh toolbar + status bar, berarti collapsed
-      final bool isCollapsed =
-          top <= (kToolbarHeight + statusBarHeight + 8);
+                        // Kalau masih sangat mendekati expandedHeight, tampilkan avatar + nama
+                        final bool showAvatar = top > (_expandedHeight - 1);
 
-      // Kalau masih sangat mendekati expandedHeight, tampilkan avatar + nama
-      final bool showAvatar = top > (_expandedHeight - 1);
-
-      return Stack(
-        children: [
-          // Background berubah putih saat expanded, AppColors.background saat collapse/mid
-          Container(
-            color: showAvatar ? Colors.white : AppColors.background,
-          ),
-
-          // 1) Saat fully expanded: avatar + nama
-          if (showAvatar)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Hero(
-                      tag: 'avatar_${vm.fullName}',
-                      child: Material(
-                        elevation: 4,
-                        shape: const CircleBorder(),
-                        child: CircleAvatar(
-                          radius: 60,
-                          backgroundColor:
-                              vm.profileImageProvider != null
+                        return Stack(
+                          children: [
+                            // Background berubah putih saat expanded, AppColors.background saat collapse/mid
+                            Container(
+                              color: showAvatar
                                   ? Colors.white
-                                  : _avatarBackgroundColor(vm.fullName),
-                          backgroundImage: vm.profileImageProvider,
-                          child: vm.profileImageProvider == null
-                              ? Text(
-                                  vm.fullName.isNotEmpty
-                                      ? vm.fullName
-                                          .trim()[0]
-                                          .toUpperCase()
-                                      : '?',
-                                  style: const TextStyle(
-                                    fontSize: 36,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                                  : AppColors.background,
+                            ),
+
+                            // 1) Saat fully expanded: avatar + nama
+                            if (showAvatar)
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Hero(
+                                        tag: 'avatar_${vm.fullName}',
+                                        child: Material(
+                                          elevation: 4,
+                                          shape: const CircleBorder(),
+                                          child: CircleAvatar(
+                                            radius: 60,
+                                            backgroundColor:
+                                                vm.profileImageProvider != null
+                                                    ? Colors.white
+                                                    : _avatarBackgroundColor(
+                                                        vm.fullName),
+                                            backgroundImage:
+                                                vm.profileImageProvider,
+                                            child: vm.profileImageProvider ==
+                                                    null
+                                                ? Text(
+                                                    vm.fullName.isNotEmpty
+                                                        ? vm.fullName
+                                                            .trim()[0]
+                                                            .toUpperCase()
+                                                        : '?',
+                                                    style: const TextStyle(
+                                                      fontSize: 36,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                  )
+                                                : null,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        vm.fullName,
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                )
-                              : null,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      vm.fullName,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                                ),
+                              ),
 
-          // 2) Saat sudah collapse: hanya tampilkan judul "Bookmark"
-          if (isCollapsed)
-            Positioned(
-              top: statusBarHeight,
-              left: 0,
-              right: 0,
-              height: kToolbarHeight,
-              child: Center(
-                child: Text(
-                  'Bookmark',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                            // 2) Saat sudah collapse: hanya tampilkan judul "Bookmark"
+                            if (isCollapsed)
+                              Positioned(
+                                top: statusBarHeight,
+                                left: 0,
+                                right: 0,
+                                height: kToolbarHeight,
+                                child: Center(
+                                  child: Text(
+                                    'Bookmark',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                            // 3) Saat di antara expanded dan collapsed: kosong (hindari overflow)
+                            if (!showAvatar && !isCollapsed)
+                              const SizedBox.expand(),
+                          ],
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ),
-            ),
-
-          // 3) Saat di antara expanded dan collapsed: kosong (hindari overflow)
-          if (!showAvatar && !isCollapsed) const SizedBox.expand(),
-        ],
-      );
-    },
-  ),
-),
-
 
                   /// SliverPersistentHeader untuk TabBar (latar putih, teks hitam)
                   SliverPersistentHeader(
@@ -204,11 +210,21 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                 ],
-                body: const TabBarView(
+                body: TabBarView(
                   children: [
-                    BeritaPage(),
-                    KaryaPage(),
-                    ProdukPage(),
+                    // Wrap setiap page dengan RefreshIndicator
+                    RefreshIndicator(
+                      onRefresh: vm.refreshUserData,
+                      child: BeritaPage(),
+                    ),
+                    RefreshIndicator(
+                      onRefresh: vm.refreshUserData,
+                      child: KaryaPage(),
+                    ),
+                    RefreshIndicator(
+                      onRefresh: vm.refreshUserData,
+                      child: ProdukPage(),
+                    ),
                   ],
                 ),
               ),
@@ -450,6 +466,8 @@ class BeritaPage extends StatelessWidget {
     return Container(
       color: Colors.grey.shade100,
       child: ListView.separated(
+        // Pastikan scrollable meski konten sedikit agar RefreshIndicator aktif
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         itemCount: _dummyBerita.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
@@ -534,6 +552,7 @@ class KaryaPage extends StatelessWidget {
     return Container(
       color: Colors.grey.shade100,
       child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         itemCount: _dummyKarya.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
@@ -611,6 +630,7 @@ class ProdukPage extends StatelessWidget {
     return Container(
       color: Colors.grey.shade100,
       child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         itemCount: _dummyProduk.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
