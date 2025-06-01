@@ -4,6 +4,7 @@ import 'package:html/parser.dart' as html_parser;
 import 'package:mediaexplant/features/home/models/produk/detail_produk.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_detail_viewmodel.dart';
 import 'package:mediaexplant/features/home/presentation/logic/viewmodel/produk/produk_terkait_viewmodel.dart';
+import 'package:mediaexplant/features/home/presentation/ui/screens/produk_selengkapnya.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/produk/produk_item.dart';
 import 'package:mediaexplant/features/home/presentation/ui/widgets/title_header_widget.dart';
 import 'package:provider/provider.dart';
@@ -161,7 +162,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                             ),
                             const SizedBox(height: 5),
                             Text(
-                              "Oleh: ${produk.penulis}",
+                              "Diupload oleh: ${produk.penulis}",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey,
@@ -282,6 +283,16 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                       Consumer<DetailProduk>(builder: (context, produk, _) {
                         return IconButton(
                           onPressed: () async {
+                            if (userLogin == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Silakan login terlebih dahulu untuk menyimpan bookmark.'),
+                                ),
+                              );
+                              Navigator.pushNamed(context, '/login');
+                              return;
+                            }
                             await bookmarkProvider.toggleBookmark(
                               context,
                               Bookmark(
@@ -389,10 +400,14 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 20,),
+                  const SizedBox(
+                    height: 20,
+                  ),
 
                   titleHeader("Produk Terkait", "mungkin anda suka"),
-                  const SizedBox(height: 10,),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   // produk terkait
                   SizedBox(
                     width: double.infinity,
@@ -414,6 +429,46 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                         );
                       },
                     ),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          final karyaId = produk.idproduk;
+                          final kategoriKarya = produk.kategori;
+
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) {
+                              final viewModel = ProdukSelengkapnyaViewModel();
+                              return ChangeNotifierProvider<
+                                  ProdukSelengkapnyaViewModel>(
+                                create: (_) {
+                                  // Pastikan parameter lengkap dikirim di awal
+                                  viewModel.setKategori(KategoriProduk.terkait,
+                                      produkId: karyaId,
+                                      KategoriProduk: kategoriKarya);
+                                  return viewModel;
+                                },
+                                child: ProdukSelengkapnya(
+                                  kategori: KategoriProduk.terkait,
+                                  produkTerkait: karyaId,
+                                  kategoriTerkait: kategoriKarya,
+                                ),
+                              );
+                            }),
+                          );
+                        },
+                        child: const Text(
+                          "Selengkapnya >>",
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(
                     height: 20,

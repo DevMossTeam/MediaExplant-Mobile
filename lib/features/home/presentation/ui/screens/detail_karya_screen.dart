@@ -140,6 +140,16 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                   child: Consumer<DetailKarya>(builder: (context, karya, _) {
                     return IconButton(
                       onPressed: () async {
+                        if (userLogin == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Silakan login terlebih dahulu untuk menyimpan bookmark.'),
+                            ),
+                          );
+                          Navigator.pushNamed(context, '/login');
+                          return;
+                        }
                         await bookmarkProvider.toggleBookmark(
                           context,
                           Bookmark(
@@ -236,7 +246,13 @@ class _DetailKaryaScreenState extends State<DetailKaryaScreen> {
                             height: 10,
                           ),
                           Text(
-                            'Oleh: ${karya.penulis}  |  Kreator: ${karya.krator}',
+                            'Diupload oleh: ${karya.penulis} ',
+                            style: const TextStyle(color: Colors.grey),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            'Kreator: ${karya.krator}',
                             style: const TextStyle(color: Colors.grey),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

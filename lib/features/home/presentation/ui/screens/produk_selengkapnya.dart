@@ -8,7 +8,7 @@ import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:mediaexplant/features/home/models/produk/produk.dart';
 import 'package:mediaexplant/features/home/presentation/logic/repository/produkRepo/produk_repository.dart';
 
-enum KategoriProduk { majalah, buletin }
+enum KategoriProduk { majalah, buletin, terkait }
 
 class ProdukSelengkapnya extends StatefulWidget {
   final KategoriProduk kategori;
@@ -34,7 +34,7 @@ class _produksSelengkapnyaState extends State<ProdukSelengkapnya> {
 
     if (currentScroll == maxScroll &&
         context.read<ProdukSelengkapnyaViewModel>().hasMore) {
-      context.read<ProdukSelengkapnyaViewModel>().fetchKarya();
+      context.read<ProdukSelengkapnyaViewModel>().fetchProduk();
     }
   }
 
@@ -64,7 +64,7 @@ class _produksSelengkapnyaState extends State<ProdukSelengkapnya> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text("Semua Karya"),
+        title: const Text("Semua Produk"),
         backgroundColor: AppColors.background,
       ),
       body: Consumer<ProdukSelengkapnyaViewModel>(
@@ -123,10 +123,10 @@ class ProdukSelengkapnyaViewModel with ChangeNotifier {
     _produks = [];
     _page = 1;
     hasMore = true;
-    await fetchKarya();
+    await fetchProduk();
   }
 
-  Future<void> fetchKarya() async {
+  Future<void> fetchProduk() async {
     if (isLoading || !hasMore) return;
 
     isLoading = true;
@@ -135,14 +135,13 @@ class ProdukSelengkapnyaViewModel with ChangeNotifier {
       List<Produk> result = [];
 
       switch (kategori) {
-        // case KategoriProduk.majalah:
-        //   result = await ProdukRepository().fetchMajalah(
-        //     _page,
-        //     _limit,
-        //     userLogin,
-        //     produkTerkait!,
-        //   );
-        //   break;
+        case KategoriProduk.terkait:
+          result = await ProdukRepository().fetchMajalah(
+            _page,
+            _limit,
+            userLogin,
+          );
+          break;
         case KategoriProduk.majalah:
           result =
               await ProdukRepository().fetchMajalah(_page, _limit, userLogin);
@@ -159,7 +158,7 @@ class ProdukSelengkapnyaViewModel with ChangeNotifier {
       _page++;
       notifyListeners();
     } catch (e) {
-      if (kDebugMode) print("fetchKarya error: $e");
+      if (kDebugMode) print("fetchProduk error: $e");
     }
 
     isLoading = false;
