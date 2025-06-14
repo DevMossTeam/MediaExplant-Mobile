@@ -70,62 +70,32 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
     final beritaHotVM = Provider.of<BeritaHotViewmodel>(context, listen: false);
 
     try {
-      if (beritaTeratasVM.allBerita.isEmpty) {
-        setState(() => _isLoading['teratas'] = true);
-        try {
-          await beritaTeratasVM.refresh(userLogin);
-        } catch (e) {
-          debugPrint('Error fetchBeritaTeratas: $e');
-        } finally {
-          setState(() => _isLoading['teratas'] = false);
-        }
-      }
+      // Teratas
+      setState(() => _isLoading['teratas'] = true);
+      await beritaTeratasVM.refresh(userLogin);
+      setState(() => _isLoading['teratas'] = false);
 
-      if (beritaPopulerVM.allBerita.isEmpty) {
-        setState(() => _isLoading['populer'] = true);
-        try {
-          await beritaPopulerVM.refresh(userLogin);
-        } catch (e) {
-          debugPrint('Error fetchBeritaPopuler: $e');
-        } finally {
-          setState(() => _isLoading['populer'] = false);
-        }
-      }
+      // Populer
+      setState(() => _isLoading['populer'] = true);
+      await beritaPopulerVM.refresh(userLogin);
+      setState(() => _isLoading['populer'] = false);
 
-      if (beritaTerbaruVM.allBerita.isEmpty) {
-        setState(() => _isLoading['terbaru'] = true);
-        try {
-          await beritaTerbaruVM.refresh(userLogin);
-        } catch (e) {
-          debugPrint('Error fetchBeritaTerbaru: $e');
-        } finally {
-          setState(() => _isLoading['terbaru'] = false);
-        }
-      }
+      // Terbaru
+      setState(() => _isLoading['terbaru'] = true);
+      await beritaTerbaruVM.refresh(userLogin);
+      setState(() => _isLoading['terbaru'] = false);
 
-      if (beritaRekomendasiVM.allBerita.isEmpty) {
-        setState(() => _isLoading['rekomendasi'] = true);
-        try {
-          await beritaRekomendasiVM.refresh(userLogin);
-        } catch (e) {
-          debugPrint('Error fetchBeritaDariKami: $e');
-        } finally {
-          setState(() => _isLoading['rekomendasi'] = false);
-        }
-      }
+      // Rekomendasi
+      setState(() => _isLoading['rekomendasi'] = true);
+      await beritaRekomendasiVM.refresh(userLogin);
+      setState(() => _isLoading['rekomendasi'] = false);
 
-      if (beritaHotVM.allBerita.isEmpty) {
-        setState(() => _isLoading['rekomendasiLain'] = true);
-        try {
-          await beritaHotVM.refresh(userLogin);
-        } catch (e) {
-          debugPrint('Error fetchBeritaHot: $e');
-        } finally {
-          setState(() => _isLoading['rekomendasiLain'] = false);
-        }
-      }
+      // Rekomendasi Lain
+      setState(() => _isLoading['rekomendasiLain'] = true);
+      await beritaHotVM.refresh(userLogin);
+      setState(() => _isLoading['rekomendasiLain'] = false);
     } catch (e) {
-      debugPrint('Unexpected error: $e');
+      debugPrint('Error saat refresh: $e');
     }
   }
 
@@ -144,8 +114,11 @@ class _HomeBeritaScreenState extends State<HomeBeritaScreen>
         Provider.of<BeritaHotViewmodel>(context).allBerita;
 
     return RefreshIndicator(
-      onRefresh: _fetchBeritaSecaraBerurutan,
+      onRefresh: () async {
+        await _fetchBeritaSecaraBerurutan();
+      },
       child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(child: SizedBox(height: 10)),
 

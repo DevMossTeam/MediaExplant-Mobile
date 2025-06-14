@@ -78,7 +78,7 @@ class _BeritaSelengkapnyaState extends State<BeritaSelengkapnya> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text("Semua Berita"),
+        title: const Text("Berita selengkapnya"),
         backgroundColor: AppColors.background,
       ),
       body: Consumer<BeritaSelengkapnyaViewModel>(

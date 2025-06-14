@@ -28,29 +28,24 @@ class _HomeProdukScreenState extends State<HomeProdukScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+  }
 
-    if (_isInit) {
-      final majalahVM = Provider.of<MajalahViewmodel>(context, listen: false);
-      final buletinVM = Provider.of<BuletinViewmodel>(context, listen: false);
+  Future<void> _fetchProdukSecaraBerurutan() async {
+    final majalahVM = Provider.of<MajalahViewmodel>(context, listen: false);
+    final buletinVM = Provider.of<BuletinViewmodel>(context, listen: false);
 
-      setState(() {
-        _isLoading['produk'] = true;
-      });
+    try {
+      // produk
+      setState(() => _isLoading['produk'] = true);
+      await majalahVM.refresh(userLogin);
+      setState(() => _isLoading['produk'] = false);
 
-      Future.wait([
-        majalahVM.fetchMajalah(userLogin),
-        buletinVM.fetchBuletin(userLogin),
-      ]).then((_) {
-        setState(() {
-          _isLoading['produk'] = false;
-        });
-      }).catchError((error) {
-        setState(() {
-          _isLoading['produk'] = false;
-        });
-      });
-
-      _isInit = false;
+      // produk
+      setState(() => _isLoading['produk'] = true);
+      await buletinVM.refresh(userLogin);
+      setState(() => _isLoading['produk'] = false);
+    } catch (e) {
+      debugPrint('Error saat refresh: $e');
     }
   }
 
@@ -68,117 +63,122 @@ class _HomeProdukScreenState extends State<HomeProdukScreen>
     if (_isLoading.values.contains(true)) {
       return const Center(child: CircularProgressIndicator());
     }
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 15,
-              top: 10,
-            ),
-            child: Column(
-              children: [
-                titleHeader("Majalah", "Terbaru untuk anda"),
-                const SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  height: 240,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: majalahList.length.clamp(0, 5),
-                      itemBuilder: (contex, index) {
-                        return ChangeNotifierProvider.value(
-                          value: majalahList[index],
-                          child: ProdukItem(),
-                        );
-                      }),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () async {
-                        final viewModel = ProdukSelengkapnyaViewModel();
-                        if (!mounted) return;
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider.value(
-                            value: viewModel,
-                            child: const ProdukSelengkapnya(
-                              kategori: KategoriProduk.majalah,
+    return RefreshIndicator(
+       onRefresh: () async {
+        await _fetchProdukSecaraBerurutan();
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 15,
+                top: 10,
+              ),
+              child: Column(
+                children: [
+                  titleHeader("Majalah", "Terbaru untuk anda"),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  SizedBox(
+                    height: 240,
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: majalahList.length.clamp(0, 5),
+                        itemBuilder: (contex, index) {
+                          return ChangeNotifierProvider.value(
+                            value: majalahList[index],
+                            child: ProdukItem(),
+                          );
+                        }),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          final viewModel = ProdukSelengkapnyaViewModel();
+                          if (!mounted) return;
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider.value(
+                              value: viewModel,
+                              child: const ProdukSelengkapnya(
+                                kategori: KategoriProduk.majalah,
+                              ),
                             ),
+                          ));
+                          Future.microtask(() async {
+                            await viewModel.setKategori(KategoriProduk.majalah);
+                          });
+                        },
+                        child: const Text(
+                          "Selengkapnya >>",
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 14,
                           ),
-                        ));
-                        Future.microtask(() async {
-                          await viewModel.setKategori(KategoriProduk.majalah);
-                        });
-                      },
-                      child: const Text(
-                        "Selengkapnya >>",
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 14,
                         ),
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                titleHeader("Buletin", "Terbaru untuk anda"),
-                const SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  height: 240,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: buletinList.length.clamp(0, 5),
-                      itemBuilder: (contex, index) {
-                        return ChangeNotifierProvider.value(
-                          value: buletinList[index],
-                          child: ProdukItem(),
-                        );
-                      }),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () async {
-                        final viewModel = ProdukSelengkapnyaViewModel();
-                        if (!mounted) return;
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider.value(
-                            value: viewModel,
-                            child: const ProdukSelengkapnya(
-                              kategori: KategoriProduk.buletin,
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  titleHeader("Buletin", "Terbaru untuk anda"),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  SizedBox(
+                    height: 240,
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: buletinList.length.clamp(0, 5),
+                        itemBuilder: (contex, index) {
+                          return ChangeNotifierProvider.value(
+                            value: buletinList[index],
+                            child: ProdukItem(),
+                          );
+                        }),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          final viewModel = ProdukSelengkapnyaViewModel();
+                          if (!mounted) return;
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider.value(
+                              value: viewModel,
+                              child: const ProdukSelengkapnya(
+                                kategori: KategoriProduk.buletin,
+                              ),
                             ),
+                          ));
+                          Future.microtask(() async {
+                            await viewModel.setKategori(KategoriProduk.buletin);
+                          });
+                        },
+                        child: const Text(
+                          "Selengkapnya >>",
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 14,
                           ),
-                        ));
-                        Future.microtask(() async {
-                          await viewModel.setKategori(KategoriProduk.buletin);
-                        });
-                      },
-                      child: const Text(
-                        "Selengkapnya >>",
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 14,
                         ),
-                      ),
-                    )
-                  ],
-                ),
-              ],
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

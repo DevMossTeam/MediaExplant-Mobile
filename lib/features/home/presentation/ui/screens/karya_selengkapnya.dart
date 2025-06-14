@@ -64,7 +64,7 @@ class _KaryaSelengkapnyaState extends State<KaryaSelengkapnya> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text("Semua Karya "),
+        title: const Text("Karya selengkapnya"),
         backgroundColor: AppColors.background,
       ),
       body: Consumer<KaryaSelengkapnyaViewModel>(

@@ -610,7 +610,7 @@ class _DetailBeritaScreenState extends State<DetailBeritaScreen> {
               ),
             ),
           ],
-        ),
+        ), 
 
         // FAB untuk membuka komentar
         floatingActionButton: FloatingActionButton(

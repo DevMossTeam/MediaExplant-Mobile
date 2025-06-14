@@ -78,85 +78,48 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     final majalahVM = Provider.of<MajalahViewmodel>(context, listen: false);
     final buletinVM = Provider.of<BuletinViewmodel>(context, listen: false);
 
-    if (beritaVM.allBerita.isEmpty) {
+    try {
+      // Berita
       setState(() => _isLoading['berita'] = true);
-      try {
-        await beritaVM.refresh(userLogin);
-      } catch (e) {
-        debugPrint("Gagal fetch berita: $e");
-      } finally {
-        setState(() => _isLoading['berita'] = false);
-      }
-    }
-    if (puisiVM.allKarya.isEmpty) {
+      await beritaVM.refresh(userLogin);
+      setState(() => _isLoading['berita'] = false);
+
+      // Puisi
       setState(() => _isLoading['puisi'] = true);
-      try {
-        await puisiVM.refresh(userLogin);
-      } catch (e) {
-        debugPrint("Gagal fetch puisi: $e");
-      } finally {
-        setState(() => _isLoading['puisi'] = false);
-      }
-    }
-    if (syairVM.allKarya.isEmpty) {
+      await puisiVM.refresh(userLogin);
+      setState(() => _isLoading['puisi'] = false);
+
+      // Syair
       setState(() => _isLoading['syair'] = true);
-      try {
-        await syairVM.refresh(userLogin);
-      } catch (e) {
-        debugPrint("Gagal fetch syair: $e");
-      } finally {
-        setState(() => _isLoading['syair'] = false);
-      }
-    }
-    if (pantunVM.allKarya.isEmpty) {
+      await syairVM.refresh(userLogin);
+      setState(() => _isLoading['syair'] = false);
+
+      // Pantun
       setState(() => _isLoading['pantun'] = true);
-      try {
-        await pantunVM.refresh(userLogin);
-      } catch (e) {
-        debugPrint("Gagal fetch pantun: $e");
-      } finally {
-        setState(() => _isLoading['pantun'] = false);
-      }
-    }
-    if (desainGrafisVM.allKarya.isEmpty) {
+      await pantunVM.refresh(userLogin);
+      setState(() => _isLoading['pantun'] = false);
+
+      // Desain Grafis
       setState(() => _isLoading['desain_grafis'] = true);
-      try {
-        await desainGrafisVM.refresh(userLogin);
-      } catch (e) {
-        debugPrint("Gagal fetch desain grafis: $e");
-      } finally {
-        setState(() => _isLoading['desain_grafis'] = false);
-      }
-    }
-    if (fotografiVM.allKarya.isEmpty) {
+      await desainGrafisVM.refresh(userLogin);
+      setState(() => _isLoading['desain_grafis'] = false);
+
+      // Fotografi
       setState(() => _isLoading['fotografi'] = true);
-      try {
-        await fotografiVM.refresh(userLogin);
-      } catch (e) {
-        debugPrint("Gagal fetch fotografi: $e");
-      } finally {
-        setState(() => _isLoading['fotografi'] = false);
-      }
-    }
-    if (majalahVM.allMajalah.isEmpty) {
+      await fotografiVM.refresh(userLogin);
+      setState(() => _isLoading['fotografi'] = false);
+
+      // Majalah
       setState(() => _isLoading['majalah'] = true);
-      try {
-        await majalahVM.refresh(userLogin);
-      } catch (e) {
-        debugPrint("Gagal fetch majalah: $e");
-      } finally {
-        setState(() => _isLoading['majalah'] = false);
-      }
-    }
-    if (buletinVM.allBuletin.isEmpty) {
+      await majalahVM.refresh(userLogin);
+      setState(() => _isLoading['majalah'] = false);
+
+      // Buletin
       setState(() => _isLoading['buletin'] = true);
-      try {
-        await buletinVM.refresh(userLogin);
-      } catch (e) {
-        debugPrint("Gagal fetch buletin: $e");
-      } finally {
-        setState(() => _isLoading['buletin'] = false);
-      }
+      await buletinVM.refresh(userLogin);
+      setState(() => _isLoading['buletin'] = false);
+    } catch (e) {
+      debugPrint("Gagal fetch konten: $e");
     }
   }
 
@@ -174,7 +137,9 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
     final fotografiList = Provider.of<FotografiViewmodel>(context).allKarya;
 
     return RefreshIndicator(
-      onRefresh: _fetchKontenSecaraBerurutan,
+      onRefresh: () async {
+        await _fetchKontenSecaraBerurutan();
+      },
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
@@ -183,7 +148,7 @@ class _HomeUntukAndaScreenState extends State<HomeUntukAndaScreen>
           ),
 
           // Berita loading atau list horizontal rekomendasi berita
-          if (_isLoading['berita']!)
+          if (_isLoading['berita']! || _isLoading['puisi']!)
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) => ShimmerBeritaItem(),

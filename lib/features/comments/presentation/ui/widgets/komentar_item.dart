@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 import 'package:mediaexplant/core/utils/userID.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +24,23 @@ class KomentarItem extends StatefulWidget {
   State<KomentarItem> createState() => _KomentarItemState();
 }
 
+/// Kompres base64 jadi gambar kecil
+Future<Uint8List?> compressBase64Image(String base64Str,
+    {int maxWidth = 50, int quality = 50}) async {
+  try {
+    final bytes = base64Decode(base64Str);
+    final image = img.decodeImage(bytes);
+    if (image == null) return null;
+
+    final resized = img.copyResize(image, width: maxWidth);
+    final compressed = img.encodeJpg(resized, quality: quality);
+
+    return Uint8List.fromList(compressed);
+  } catch (_) {
+    return null;
+  }
+}
+
 class _KomentarItemState extends State<KomentarItem> {
   bool showReplies = false;
 
@@ -40,14 +59,24 @@ class _KomentarItemState extends State<KomentarItem> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Foto Profil
-                  CircleAvatar(
-                    backgroundImage: comment.profil != null &&
-                            comment.profil!.isNotEmpty
-                        ? MemoryImage(base64Decode(comment.profil!))
-                        : const AssetImage('assets/images/default_avatar.png')
-                            as ImageProvider,
-                    radius: 18,
+                  FutureBuilder<Uint8List?>(
+                    future: comment.profil != null && comment.profil!.isNotEmpty
+                        ? compressBase64Image(comment.profil!)
+                        : Future.value(null),
+                    builder: (context, snapshot) {
+                      final imageProvider = (snapshot.hasData &&
+                              snapshot.data != null)
+                          ? MemoryImage(snapshot.data!)
+                          : const AssetImage('assets/images/default_avatar.png')
+                              as ImageProvider;
+
+                      return CircleAvatar(
+                        backgroundImage: imageProvider,
+                        radius: 18,
+                      );
+                    },
                   ),
+
                   const SizedBox(width: 10),
 
                   // Komentar

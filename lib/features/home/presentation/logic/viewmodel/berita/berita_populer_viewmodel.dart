@@ -27,6 +27,7 @@ class BeritaPopulerViewmodel with ChangeNotifier {
 
   Future<void> refresh(String? userId) async {
     _beritas = [];
+    notifyListeners();
     await fetchBeritaPopuler(userId);
   }
 }

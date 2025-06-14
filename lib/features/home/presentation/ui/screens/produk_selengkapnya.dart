@@ -64,7 +64,7 @@ class _produksSelengkapnyaState extends State<ProdukSelengkapnya> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text("Semua Produk"),
+        title: const Text("Produk Selngkapnya"),
         backgroundColor: AppColors.background,
       ),
       body: Consumer<ProdukSelengkapnyaViewModel>(
